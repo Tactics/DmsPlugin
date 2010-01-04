@@ -1,0 +1,3 @@
+all:
+  javascripts: [http://cdn.jquerytools.org/1.1.2/jquery.tools.min.js, /ttBase/ui/js/dialog.js]
+  stylesheets: [/ttBase/ui/css/dialog.css]
