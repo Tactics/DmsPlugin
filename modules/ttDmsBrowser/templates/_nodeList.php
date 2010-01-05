@@ -4,7 +4,6 @@
  */
 ?>
 
-<?php use_stylesheet('/ttDms/css/filelist.css'); ?>
 <?php use_helper('Dms'); ?>
 
 <script>
@@ -133,64 +132,55 @@ function deleteNode(node_id)
 
 </script>
 
-<table class="ttDmsFileList">
-  <thead>
-  <tr>
-    <td width="16px;"><?php echo checkbox_tag('multiCheck', '', 0, array('onclick' => 'multiCheck(this);', 'class' => 'multiCheck')); ?></td>
-    <td width="250px;">Naam</td>
-    <td>Datum</td>
-    <td>Type</td>
-    <td>Grootte</td>
-    <td>Acties</td>
-  </tr>
-</thead>
-<tbody>
-<?php foreach($nodes as $subnode): ?>
-  <?php if ($options['showFolders'] && $subnode->getIsFolder()): ?>
-  <tr>
-    <td>&nbsp;</td>
-    <td>
-      <?php
-      echo link_to(image_tag('/ttDms/images/icons/folder_16.gif', array('valign' => 'middle')) . ' ' . $subnode->getName(), 'ttDmsBrowser/browse?node_id=' . $subnode->getId());
-      ?>
-    </td>
-    <td>
-      <?php echo format_date($subnode->getCreatedAt(), 'g'); ?>
-    </td>
-    <td>Folder</td>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-  <?php endif; ?>
-<?php endforeach; ?>
+<?php
+$table = new myTable(
+  array(
+    array('text' => checkbox_tag('multiCheck', '', 0, array('onclick' => 'multiCheck(this);', 'class' => 'multiCheck')), 'width' => 16),
+    array('text' => 'Naam'),
+    array('text' => 'Datum', 'width' => 110),
+    array('text' => 'Type', 'width' => 120),
+    array('text' => 'Grootte', 'width' => 80, 'align' => 'right'),
+    array('text' => 'Acties', 'width' => 60, 'align' => 'center')
+  ),
+  array(
+    'class' => 'ttDmsFileList'
+  )
+);
 
-<?php foreach($nodes as $subnode): ?>
-  <?php if (! $subnode->getIsFolder()): ?>
-    <tr>
-      <td><?php echo checkbox_tag('nodes[]', $subnode->getId(), false); ?></td>
-      <td>
-        <?php
-          echo image_tag(filetype_image_path($subnode->getExtension()), array('style' => 'vertical-align: -20%;', 'title' => $subnode->getMimeType()));
-          echo ' ';
-        
-          echo $subnode->getName();
-        ?>
-      </td>
-      <td>
-        <?php echo format_date($subnode->getCreatedAt(), 'g'); ?>
-      </td>
-      <td><?php echo $subnode->getMimeType(); ?></td>
-      <td><?php echo format_filesize($subnode->getSize()); ?></td>
-      <td>
-        <?php echo link_to(image_tag('/ttDms/images/icons/diskette_16.gif', array('title' => 'Downloaden')), 'ttDmsBrowser/download?node_ids=' . $subnode->getId()); ?>
-        <?php echo link_to_function(image_tag('/ttDms/images/icons/delete_16.gif', array('title' => 'Verwijderen')), 'deleteNode(' . $subnode->getId() . ');'); ?>
-        <?php echo link_to(image_tag('/ttDms/images/icons/document_zoom_16.gif', array('title' => 'Details')), 'ttDmsBrowser/show?node_id=' . $subnode->getId()); ?>
-      </td>
-    </tr>
-  <?php endif; ?>
-<?php endforeach; ?>
-</tbody>
-</table>
+foreach($nodes as $subnode)
+{
+  if ($options['showFolders'] && $subnode->getIsFolder())
+  {
+    $table->addRow(array(
+      '',
+      link_to(image_tag('/ttDms/images/icons/folder_16.gif', array('valign' => 'middle')) . ' ' . $subnode->getName(), 'ttDmsBrowser/browse?node_id=' . $subnode->getId()),
+      format_date($subnode->getCreatedAt(), 'g'),
+      'Folder',
+      '',
+      ''
+    ));
+  }
+}
+
+foreach($nodes as $subnode)
+{
+  if (! $subnode->getIsFolder())
+  {  
+    $table->addRow(array(
+      checkbox_tag('nodes[]', $subnode->getId(), false),
+      image_tag(filetype_image_path($subnode->getExtension()), array('style' => 'vertical-align: -20%;', 'title' => $subnode->getMimeType())) . ' ' . $subnode->getName(),
+      format_date($subnode->getCreatedAt(), 'g'),
+      $subnode->getMimeType(),
+      format_filesize($subnode->getSize()),
+      link_to(image_tag('/ttDms/images/icons/diskette_16.gif', array('title' => 'Downloaden')), 'ttDmsBrowser/download?node_ids=' . $subnode->getId())
+        . link_to_function(image_tag('/ttDms/images/icons/delete_16.gif', array('title' => 'Verwijderen')), 'deleteNode(' . $subnode->getId() . ');')
+        . link_to(image_tag('/ttDms/images/icons/document_zoom_16.gif', array('title' => 'Details')), 'ttDmsBrowser/show?node_id=' . $subnode->getId())
+    ));
+  }
+}
+
+echo $table;
+?>  
 Met geselecteerde:
 <?php echo link_to_function(image_tag('/ttDms/images/icons/delete_16.gif', array('title' => 'Verwijderen')), 'multiActie("delete")'); ?>
 <?php echo link_to_function(image_tag('/ttDms/images/icons/diskette_16.gif', array('title' => 'Downloaden')), 'multiActie("download")'); ?>

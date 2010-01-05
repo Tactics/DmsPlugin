@@ -19,6 +19,24 @@
  */
 class ttDmsBrowserComponents extends sfComponents
 {
+
+  /**
+   * Node list
+   * 
+   * @param array options
+   */
+  public function executeBrowser()
+  {
+    $this->options = is_array($this->options) ? $this->options : array();
+    
+    if ($this->store)
+    {
+      $this->nodes = $this->store->getChildNodes();
+    }
+  }
+  
+  
+  
   /**
    * Node list
    * 

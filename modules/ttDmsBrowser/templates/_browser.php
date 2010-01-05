@@ -1,10 +1,13 @@
-<?php use_helper('Dms'); ?>
-
+<?php
+  use_javascript('http://cdn.jquerytools.org/1.1.2/jquery.tools.min.js');
+  use_javascript('/ttBase/ui/js/dialog.js');
+  use_stylesheet('/ttBase/ui/js/dialog.css');
+?>
 <table>
 <tr>
-  <td style="vertical-align:top;">
+  <td style="vertical-align:top; width: 250px;">
     <h2 class="pageblock">Folders</h2>
-    <div class="pageblock" style="width: 250px; overflow: auto;">
+    <div class="pageblock" style="overflow: auto;">
       <?php include_component('ttDmsBrowser', 'nodeTree', array('root' => isset($node) ? $node : $store)); ?>
     </div>
 
