@@ -10,3 +10,5 @@
 class DmsNodeAspect extends BaseDmsNodeAspect
 {
 }
+
+sfPropelBehavior::add('DmsNodeAspect', array('updater_loggable'));

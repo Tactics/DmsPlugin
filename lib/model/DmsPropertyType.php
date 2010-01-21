@@ -10,3 +10,5 @@
 class DmsPropertyType extends BaseDmsPropertyType
 {
 }
+
+sfPropelBehavior::add('DmsPropertyType', array('updater_loggable'));

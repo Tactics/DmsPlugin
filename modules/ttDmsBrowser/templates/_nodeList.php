@@ -82,7 +82,7 @@ function multiActie(actie)
             }
             else
             {
-              loadNode(<?php echo $folder->getId(); ?>);
+              loadNode(<?php echo $node->getId(); ?>);
             }
           },
           error: function()
@@ -119,7 +119,7 @@ function deleteNode(node_id)
         }
         else
         {
-          loadNode(<?php echo $folder->getId(); ?>);
+          loadNode(<?php echo $node->getId(); ?>);
         }
       },
       error: function()
@@ -172,7 +172,7 @@ foreach($nodes as $subnode)
       format_date($subnode->getCreatedAt(), 'g'),
       $subnode->getMimeType(),
       format_filesize($subnode->getSize()),
-      link_to(image_tag('/ttDms/images/icons/diskette_16.gif', array('title' => 'Downloaden')), 'ttDmsBrowser/download?node_ids=' . $subnode->getId())
+      link_to(image_tag('/ttDms/images/icons/diskette_16.gif', array('title' => 'Downloaden')), 'ttDmsBrowser/download?node_id=' . $subnode->getId())
         . link_to_function(image_tag('/ttDms/images/icons/delete_16.gif', array('title' => 'Verwijderen')), 'deleteNode(' . $subnode->getId() . ');')
         . link_to(image_tag('/ttDms/images/icons/document_zoom_16.gif', array('title' => 'Details')), 'ttDmsBrowser/show?node_id=' . $subnode->getId())
     ));

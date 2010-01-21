@@ -68,15 +68,9 @@ class DmsStore extends BaseDmsStore
    */
   public function createFolder($name)
   {
-    try
-    {
-      $this->getStorage()->mkdir($name);
-    }
-    catch(sfException $e)
-    {
-      echo $e->getMessage();
-      return false;
-    }
+    $name = DmsTools::safeFilename($name);
+
+    $this->getStorage()->mkdir($name);
     
     $folder = new DmsNode();
     $folder->setName($name);
@@ -86,7 +80,50 @@ class DmsStore extends BaseDmsStore
     $folder->setIsFolder(true);
     $folder->save();
     
-    return $folder;
-    
+    return $folder; 
   }
+  
+  /**
+   * Geeft een node in de root van deze store op basis van de opgegeven naam
+   * 
+   * @param string $name
+   */
+  public function getChildByName($name)
+  {
+    $c = new Criteria();  
+
+    $c->add(DmsNodePeer::STORE_ID, $this->getId());
+    $c->add(DmsNodePeer::PARENT_ID, null);
+    $c->add(DmsNodePeer::NAME, $name);
+    
+    return DmsNodePeer::doSelectOne($c);
+  }
+
+  /**
+   * Geeft een node in de root van deze store op basis van de opgegeven naam op schijf
+   * 
+   * @param string $diskname
+   */
+  public function getChildByDiskName($diskname)
+  {
+    $c = new Criteria();  
+
+    $c->add(DmsNodePeer::STORE_ID, $this->getId());
+    $c->add(DmsNodePeer::PARENT_ID, null);
+    $c->add(DmsNodePeer::DISK_NAME, $diskname);
+    
+    return DmsNodePeer::doSelectOne($c);
+  }
+
+  /**
+   * Geeft de store terug 
+   */
+  public function getStore()
+  {
+    return $this;
+  }
+   
+
 }
+
+sfPropelBehavior::add('DmsStore', array('updater_loggable'));

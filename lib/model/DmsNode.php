@@ -9,7 +9,6 @@
  */ 
 class DmsNode extends BaseDmsNode
 {
-  
   /**
    * Geeft de parent node
    * 
@@ -41,6 +40,42 @@ class DmsNode extends BaseDmsNode
   }
   
   /**
+   * Geeft de onderliggende node met de opgegeven naam
+   * 
+   * @param string $name
+   * 
+   * @return DmsNode
+   */
+  public function getChildByName($name)
+  {
+    $c = new Criteria();
+    
+    $c->add(DmsNodePeer::STORE_ID, $this->getStoreId());
+    $c->add(DmsNodePeer::NAME, $name);
+    $c->add(DmsNodePeer::PARENT_ID, $this->getId());
+    
+    return DmsNodePeer::doSelectOne($c);
+  }
+
+  /**
+   * Geeft de onderliggende node met de opgegeven naam op schijf
+   * 
+   * @param string $diskname
+   * 
+   * @return DmsNode
+   */
+  public function getChildByDiskName($diskname)
+  {
+    $c = new Criteria();
+    
+    $c->add(DmsNodePeer::STORE_ID, $this->getStoreId());
+    $c->add(DmsNodePeer::DISK_NAME, $diskname);
+    $c->add(DmsNodePeer::PARENT_ID, $this->getId());
+    
+    return DmsNodePeer::doSelectOne($c);
+  }
+   
+  /**
    * Geeft het pad als een array met alle parentobjecten of 
    * als array met het resultaat van een functie op de parentobjecten
    * 
@@ -67,7 +102,7 @@ class DmsNode extends BaseDmsNode
     
     $parent = $this->getParentNode();
     
-    return ($parent ? $parent->getStoragePath() : '') . DIRECTORY_SEPARATOR . $this->getDiskName();
+    return ($parent ? $parent->getStoragePath() : '') . '/' . $this->getDiskName();
   }
 
   /**
@@ -79,14 +114,16 @@ class DmsNode extends BaseDmsNode
    */
   public function createFolder($name)
   {
+    $name = DmsTools::safeFilename($name);
+
+    $this->getDmsStore()->getStorage()->mkdir($this->getStoragePath() . '/' . $name);
+    
     $folder = new DmsNode();
     $folder->setName($name);
     $folder->setDiskName($name);
     $folder->setStoreId($this->getStoreId());
     $folder->setParentId($this->getId());
     $folder->setIsFolder(true);
-
-    $this->getDmsStore()->getStorage()->mkdir($folder->getStoragePath());
 
     $folder->save();
     
@@ -102,6 +139,8 @@ class DmsNode extends BaseDmsNode
    */
   public function createNode($name)
   {
+    $name = DmsTools::safeFilename($name);
+    
     $node = new DmsNode();
     $node->setName($name);
     $node->setDiskName($name);
@@ -132,6 +171,13 @@ class DmsNode extends BaseDmsNode
    */
   public function rename($newName)
   {
+    if ($newName == $this->getName())
+    {
+      return;
+    }
+    
+    $newName = DmsTools::safeFilename($newName);
+    
     $newDiskName = $newName;
     
     $oldPath = $this->getStoragePath();
@@ -381,4 +427,45 @@ class DmsNode extends BaseDmsNode
     return $property->getValue();
   }
 
+  
+  /**
+   * Voegt deze node toe aan de opgegeven zipfile
+   * indien deze node een folder is, wordt de folder met alle inhoud toegevoegd
+   * parameter recursive geeft aan of ook de subfolders dan nog toegevoegd moeten worden
+   * 
+   * @param ZipArchive $zip
+   * @param string $path (folder in the zip to put this node in)
+   * @param boolean $recursive default false
+   */
+  public function addToZip(&$zip, $path = "", $recursive = false)
+  {
+    if (! $this->getIsFolder())
+    {
+      // if this node is a file: just add it to the zip in the correct folder (path)
+      $zip->addFromString($path . $this->getName(), $this->read());  
+    }
+    else
+    {
+      // if this node is a folder: create the folder in the zip file
+      $zip->addEmptyDir($path . $this->getName());
+      
+      // and add all subnodes
+      foreach($this->getChildNodes() as $node)
+      {
+        // add all files
+        if (! $node->getIsFolder())
+        {
+          $node->addToZip($zip, $path . $this->getName() . '/');
+        }
+        // add sub
+        else if ($recursive)
+        {
+          $node->addToZip($zip, $path . $this->getName() . '/', true);
+        }
+      }
+    }
+  }
+
 }
+
+sfPropelBehavior::add('DmsNode', array('updater_loggable'));

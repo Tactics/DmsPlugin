@@ -11,4 +11,5 @@ class DmsAspectPropertyType extends BaseDmsAspectPropertyType
 {
 }
 
+sfPropelBehavior::add('DmsAspectPropertyType', array('updater_loggable'));
 sfPropelBehavior::add('DmsAspectPropertyType', array('act_as_sortable' => array('column' => 'volgorde', 'groupColumns' => array('aspect_id'))));

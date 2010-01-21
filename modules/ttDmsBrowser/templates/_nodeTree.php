@@ -1,7 +1,7 @@
 <?php
   use_javascript(SF_DEBUG ? '/ttDms/jsTree/jquery.tree.js' : '/ttDms/jsTree/jquery.tree.min.js');
   use_javascript('/ttDms/jsTree/plugins/jquery.tree.contextmenu.js');
-  //use_javascript('/ttDms/jsTree/lib/jquery.cookie.js');
+  //use_javascript('/ttDms/jsTree/lib/jquery.cookie.js');²
   //use_javascript('/ttDms/jsTree/plugins/jquery.tree.cookie.js');
 ?>
 
@@ -37,7 +37,7 @@
           //static: <?php echo $json_data; ?> 
         }
       },
-      selected: <?php echo isset($selectedFolder) ? ('"f' . base64_encode(rtrim($selectedFolder, '/')) . '"') : '"root"'; ?>,
+      selected: '<?php echo $node->getId(); ?>',
       cookies : {prefix: 'pageTree', open: true, selected: false, opts: {path: '/'}},
       //cookies: true,
       ui : {
@@ -46,21 +46,21 @@
         theme_name: 'classic'
       },
       plugins: {
-        cookie: {
+        /* cookie: {
           prefix: 'ttBrowserTree',
           types: {
             open: true,
           },
           keep_selected: true,
           keep_opened: true
-        },
-        contextmenu: {
+        }, */
+        "contextmenu": {
           items : {
             open: {
-              label   : "<?php echo __('Open'); ?>", 
-              icon    : "../media/images/ok.png",
-              visible : function (NODE, TREE_OBJ) { if (jQuery(NODE).attr('rel') != 'page') return -1; if(NODE.length != 1) return false; return true; }, 
-              action  : treeClick,
+              label   : "<?php echo __('Download'); ?>", 
+              icon    : "<?php echo image_path("/ttDms/images/icons/diskette_16.gif"); ?>",
+              visible : function (NODE, TREE_OBJ) {return true;}, 
+              action  : treeDownload,
               separator_after : true
             }
           }
@@ -114,13 +114,13 @@
         if (! data.success)
         {
           jQuery.tree.rollback(rollbackObject);
-          jQuery.tt.alert('error_rename', 'Error', "De folder kon niet hernoemd worden.\n Error: " + data.message);
+          jQuery.tt.alert('Error', "De folder kon niet hernoemd worden.\n Error: " + data.message);
         }
       },
       error : function(XMLHttpRequest, textStatus, errorThrown)
       {
         jQuery.tree.rollback(rollbackObject);
-        jQuery.tt.alert('error_rename', 'Error', "De folder kon niet hernoemd worden.\n Error: " + (textStatus ? textStatus : errorThrown));
+        jQuery.tt.alert('Error', "De folder kon niet hernoemd worden.\n Error: " + (textStatus ? textStatus : errorThrown));
       }
     });
 	}
@@ -130,7 +130,7 @@
 	 */
 	function treeDelete(node, tree_obj, rollbackObject)
   {
-    jQuery.tt.confirm('Bent u zeker dat u "' + TREE_OBJ.get_text(NODE) + '" wenst te verwijderen?', function(value, dialog)
+    jQuery.tt.confirm('Bent u zeker dat u wenst te verwijderen?', 'of wa ?', function(value, dialog)
     {
       if (value)
       {
@@ -144,7 +144,7 @@
             if (! data.success)
             {
               if (rollbackObject) jQuery.tree.rollback(rollbackObject);
-              jQuery.tt.alert('delete_error', 'Error', 'De pagina kon niet verwijderd worden. Error: ' + data.message);
+              jQuery.tt.alert('Error', 'De pagina kon niet verwijderd worden. Error: ' + data.message);
             }
             else
             {
@@ -183,7 +183,7 @@
           if (! data.success)
           {
             if (rollbackObject) jQuery.tree.rollback(rollbackObject);
-            jQuery.tt.alert('delete_error', 'Error', 'De file of folder kon niet verwijderd worden. Error: ' + data.message);
+            jQuery.tt.alert('Error', 'De file of folder kon niet verwijderd worden. Error: ' + data.message);
           }
         },
         "json"
@@ -209,7 +209,7 @@
         if (! data.success)
         {
           if (rollbackObject) jQuery.tree.rollback(rollbackObject);
-          jQuery.tt.alert('delete_error', 'Error', 'De file of folder kon niet verwijderd worden. Error: ' + data.message);
+          jQuery.tt.alert('Error', 'De file of folder kon niet verwijderd worden. Error: ' + data.message);
         }
         else
         {
@@ -248,7 +248,7 @@
           
           if (! data.success)
           {
-            jQuery.tt.alert('delete_error', 'Error', 'De file of folder kon niet verwijderd worden. Error: ' + data.message);
+            jQuery.tt.alert('Error', 'De file of folder kon niet verwijderd worden. Error: ' + data.message);
           }
           else
           {
@@ -272,8 +272,8 @@
   /**
    * Folder click: open node
    */
-	function treeClick(node, tree_obj)
-	{
+  function treeClick(node, tree_obj)
+  {
     node_id = jQuery(node).attr('node_id');
     
     if (node_id)
@@ -281,6 +281,22 @@
       loadNode(jQuery(node).attr('node_id'));
     }  
   }
+
+  /**
+   * Download folder
+   */
+  function treeDownload(node, tree_obj)
+  {
+    node_id = jQuery(node).attr('node_id');
+    
+    if (node_id)
+    {
+      url = "<?php echo url_for('ttDmsBrowser/download?folder_id=999&recursive=1');?>";
+      url = url.replace('999', jQuery(node).attr('node_id'));
+      document.location = url;
+    }
+  }
+
 
 </script>
 

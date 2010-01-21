@@ -65,3 +65,5 @@ class DmsNodeProperty extends BaseDmsNodeProperty
     }
   }
 }
+
+sfPropelBehavior::add('DmsNodeProperty', array('updater_loggable'));

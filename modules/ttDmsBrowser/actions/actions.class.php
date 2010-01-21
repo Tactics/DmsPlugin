@@ -34,14 +34,13 @@ class ttDmsBrowserActions extends sfActions
   {
     if ($this->hasRequestParameter('store_id'))
     {
-      $this->store = DmsStorePeer::retrieveByPK($this->getRequestParameter('store_id'));
-      $this->nodes = $this->store->getChildNodes();
+      $this->node = DmsStorePeer::retrieveByPK($this->getRequestParameter('store_id'));
+      $this->store = $this->node;
     }
     else if ($this->hasRequestParameter('node_id'))
     {
       $this->node = DmsNodePeer::retrieveByPK($this->getRequestParameter('node_id'));
-      $this->nodes = $this->node->getChildNodes();
-      $this->store = $this->node->getDmsStore();
+      $this->store = $this->node->getStore();
     }
   }
   
@@ -83,34 +82,63 @@ class ttDmsBrowserActions extends sfActions
     $this->redirect('ttDmsBrowser/browse?store_id=' . $folder->getStoreId());
   }
   
+    
+  
   /**
    * Download één of meerdere nodes.  Indien meerdere wordt verzonden als zipfile
+   * Parameter recursive bepaald of ook submappen toegevoegd moeten worden.
    */
   public function executeDownload()
   {
-    $node_ids = explode(',', trim($this->getRequestParameter('node_ids'), ','));
+    $recursive = $this->getRequestParameter('recursive', false);
     
-    $c = new Criteria();
-    $c->add(DmsNodePeer::ID, $node_ids, Criteria::IN);
-    
-    $nodes = DmsNodePeer::doSelect($c);
-    
-    if (! count($nodes))
+    // Single file download
+    if ($this->hasRequestParameter('node_id'))
     {
-      exit();
+      $node = DmsNodePeer::retrieveByPk($this->getRequestParameter('node_id'));
+      $type = 'file';
     }
-    
+    // Selection download (zip)
+    else if ($this->hasRequestParameter('node_ids'))
+    {
+      $node_ids = explode(',', trim($this->getRequestParameter('node_ids'), ','));
+      
+      $c = new Criteria();
+      $c->add(DmsNodePeer::ID, $node_ids, Criteria::IN);
+      
+      $nodes = DmsNodePeer::doSelect($c);
+      $this->forward404Unless(count($nodes));
+      
+      $zipFilename = 'files.zip';
+      $type = 'zip';
+    }
+    // Folder download (zip)
+    else if ($this->hasRequestParameter('folder_id'))
+    {
+      $folder = DmsNodePeer::retrieveByPK($this->getRequestParameter('folder_id'));
+      $this->forward404Unless($folder);
+      
+      $c = new Criteria();
+      if (! $recursive)
+      {
+        $c->add(DmsNodePeer::IS_FOLDER, false);
+      }
+      
+      $nodes = $folder->getChildNodes($c);
+      
+      $zipFilename = $folder->getDiskName() . '.zip';
+      $type = 'zip';
+    }
+
     $this->getResponse()->clearHttpHeaders();
     $this->response->setHttpheader('Pragma: public', true);
     $this->response->addCacheControlHttpHeader('Cache-Control', 'must-revalidate');
-    //$this->response->setContentType('application/octet-stream', true);
     $this->response->setHttpHeader('Expires', gmdate("D, d M Y H:i:s", time()) . " GMT");
     $this->response->setHttpHeader('Content-Description', 'File Transfer');
     
-    if (count($nodes) == 1)
+    // Indien een enkel bestand: directe download
+    if ($type == 'file')
     {
-      $node = reset($nodes);
-      
       if ($mime_type = $node->getMimeType())
       {
         $this->response->setContentType($mime_type, true);
@@ -125,34 +153,34 @@ class ttDmsBrowserActions extends sfActions
       $node->output();
       exit();
     }
-    else
+    else // $type == 'zip'
     {
       $zip = new ZipArchive();
-      $zipFilename = tempnam(sys_get_temp_dir(), 'downloadZip');
+      $tmpZipFileName = tempnam(sys_get_temp_dir(), 'downloadZip');
 
       // ZIPARCHIVE::OVERWRITE want ZIPARCHIVE::CREATE geeft foutmelding indien extensie niet .zip is
-      if ($zip->open($zipFilename, ZIPARCHIVE::OVERWRITE) !== true)
+      if ($zip->open($tmpZipFileName, ZIPARCHIVE::OVERWRITE) !== true)
       {
-        exit("cannot open $zipFilename\n");
+        exit("cannot open $tmpZipFileName\n");
       }
   
       foreach($nodes as $node)
       {
-        $zip->addFromString($node->getName(), $node->read());  
+        $node->addToZip($zip, '', $recursive);  
       }
   
       $zip->close();
 
       $this->getResponse()->clearHttpHeaders();
-      $this->response->setHttpHeader('Last-modified', gmdate("D, d M Y H:i:s", $node->getUpdatedAt(null)) . " GMT");
+      $this->response->setHttpHeader('Last-modified', gmdate("D, d M Y H:i:s", time()) . " GMT");
       $this->response->setContentType('application/octet-stream', true);
       $this->response->setHttpHeader('Content-Transfer-Encoding', 'binary', true);
-      $this->response->setHttpHeader('Content-Length', (string)filesize($zipFilename));
-      $this->response->setHttpHeader('Content-Disposition', 'attachment; filename=files.zip');   
+      $this->response->setHttpHeader('Content-Length', (string)filesize($tmpZipFileName));
+      $this->response->setHttpHeader('Content-Disposition', 'attachment; filename=' . $zipFilename);   
       $this->getResponse()->sendHttpHeaders();    
 
-      readfile($zipFilename);
-      unlink($zipFilename);
+      readfile($tmpZipFileName);
+      unlink($tmpZipFileName);
       
       exit();
     }
@@ -368,21 +396,18 @@ class ttDmsBrowserActions extends sfActions
   {
     if ($this->hasRequestParameter('store_id'))
     {
-      $this->store = DmsStorePeer::retrieveByPK($this->getRequestParameter('store_id'));
-      $this->nodes = $this->store->getChildNodes();
+      $this->node = DmsStorePeer::retrieveByPK($this->getRequestParameter('store_id'));
     }
     else if ($this->hasRequestParameter('node_id'))
     {
       $this->node = DmsNodePeer::retrieveByPK($this->getRequestParameter('node_id'));
-      $this->nodes = $this->node->getChildNodes();
-      $this->store = $this->node->getDmsStore();
     }
     
     $this->jsonErrorUnless($this->node->getIsFolder(), 'node is geen folder');
     
     Misc::use_helper('Partial');
     
-    include_component('ttDmsBrowser', 'nodeList', array('folder' => $this->node ? $this->node : $this->store, 'nodes' => $this->nodes));
+    include_component('ttDmsBrowser', 'nodeList', array('node' => $this->node));
     
     exit();
   }

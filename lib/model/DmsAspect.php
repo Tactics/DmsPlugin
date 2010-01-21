@@ -17,3 +17,5 @@ class DmsAspect extends BaseDmsAspect
     return $this->getName();
   }
 }
+
+sfPropelBehavior::add('DmsAspect', array('updater_loggable'));

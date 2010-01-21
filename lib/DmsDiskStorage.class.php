@@ -34,7 +34,10 @@ class DmsDiskStorage extends DmsStorage
    */
   public function mkdir($path)
   {
-    mkdir($this->root . DIRECTORY_SEPARATOR . $path);
+    if  (! mkdir($this->root . DIRECTORY_SEPARATOR . $path))
+    {
+      throw new sfException(sprintf('Cannot mkdir "%s".', $path));
+    }
   }
 
   /**
