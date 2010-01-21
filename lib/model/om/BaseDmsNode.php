@@ -72,6 +72,12 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 	protected $lastDmsNodeAspectCriteria = null;
 
 	
+	protected $collDmsObjectNodeRefs;
+
+	
+	protected $lastDmsObjectNodeRefCriteria = null;
+
+	
 	protected $alreadyInSave = false;
 
 	
@@ -521,6 +527,14 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 				}
 			}
 
+			if ($this->collDmsObjectNodeRefs !== null) {
+				foreach($this->collDmsObjectNodeRefs as $referrerFK) {
+					if (!$referrerFK->isDeleted()) {
+						$affectedRows += $referrerFK->save($con);
+					}
+				}
+			}
+
 			$this->alreadyInSave = false;
 		}
 		return $affectedRows;
@@ -586,6 +600,14 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 
 				if ($this->collDmsNodeAspects !== null) {
 					foreach($this->collDmsNodeAspects as $referrerFK) {
+						if (!$referrerFK->validate($columns)) {
+							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+						}
+					}
+				}
+
+				if ($this->collDmsObjectNodeRefs !== null) {
+					foreach($this->collDmsObjectNodeRefs as $referrerFK) {
 						if (!$referrerFK->validate($columns)) {
 							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
 						}
@@ -805,6 +827,10 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 
 			foreach($this->getDmsNodeAspects() as $relObj) {
 				$copyObj->addDmsNodeAspect($relObj->copy($deepCopy));
+			}
+
+			foreach($this->getDmsObjectNodeRefs() as $relObj) {
+				$copyObj->addDmsObjectNodeRef($relObj->copy($deepCopy));
 			}
 
 		} 
@@ -1203,6 +1229,76 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 		$this->lastDmsNodeAspectCriteria = $criteria;
 
 		return $this->collDmsNodeAspects;
+	}
+
+	
+	public function initDmsObjectNodeRefs()
+	{
+		if ($this->collDmsObjectNodeRefs === null) {
+			$this->collDmsObjectNodeRefs = array();
+		}
+	}
+
+	
+	public function getDmsObjectNodeRefs($criteria = null, $con = null)
+	{
+				include_once 'plugins/ttDmsPlugin/lib/model/om/BaseDmsObjectNodeRefPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collDmsObjectNodeRefs === null) {
+			if ($this->isNew()) {
+			   $this->collDmsObjectNodeRefs = array();
+			} else {
+
+				$criteria->add(DmsObjectNodeRefPeer::NODE_ID, $this->getId());
+
+				DmsObjectNodeRefPeer::addSelectColumns($criteria);
+				$this->collDmsObjectNodeRefs = DmsObjectNodeRefPeer::doSelect($criteria, $con);
+			}
+		} else {
+						if (!$this->isNew()) {
+												
+
+				$criteria->add(DmsObjectNodeRefPeer::NODE_ID, $this->getId());
+
+				DmsObjectNodeRefPeer::addSelectColumns($criteria);
+				if (!isset($this->lastDmsObjectNodeRefCriteria) || !$this->lastDmsObjectNodeRefCriteria->equals($criteria)) {
+					$this->collDmsObjectNodeRefs = DmsObjectNodeRefPeer::doSelect($criteria, $con);
+				}
+			}
+		}
+		$this->lastDmsObjectNodeRefCriteria = $criteria;
+		return $this->collDmsObjectNodeRefs;
+	}
+
+	
+	public function countDmsObjectNodeRefs($criteria = null, $distinct = false, $con = null)
+	{
+				include_once 'plugins/ttDmsPlugin/lib/model/om/BaseDmsObjectNodeRefPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		$criteria->add(DmsObjectNodeRefPeer::NODE_ID, $this->getId());
+
+		return DmsObjectNodeRefPeer::doCount($criteria, $distinct, $con);
+	}
+
+	
+	public function addDmsObjectNodeRef(DmsObjectNodeRef $l)
+	{
+		$this->collDmsObjectNodeRefs[] = $l;
+		$l->setDmsNode($this);
 	}
 
 

@@ -5,8 +5,8 @@
     <column name="store_id" type="INTEGER" required="true"/>
     <column name="parent_id" type="INTEGER"/>
     <column name="is_folder" type="BOOLEAN"/>
-    <column name="name" type="VARCHAR" size="45"/>
-    <column name="disk_name" type="VARCHAR" size="45"/>
+    <column name="name" type="VARCHAR" size="255"/>
+    <column name="disk_name" type="VARCHAR" size="255"/>
     <column name="created_by" type="INTEGER"/>
     <column name="updated_by" type="INTEGER"/>
     <column name="created_at" type="TIMESTAMP"/>
@@ -99,6 +99,20 @@
     </foreign-key>
     <foreign-key name="fk_dms_node_has_dms_aspect_dms_aspect1" foreignTable="dms_aspect">
       <reference local="aspect_id" foreign="id"/>
+    </foreign-key>
+  </table>
+
+  <table name="dms_object_node_ref">
+    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+    <column name="node_id" type="INTEGER" required="true"/>
+    <column name="object_class" type="VARCHAR" size="45"/>
+    <column name="object_id" type="INTEGER"/>
+    <column name="created_by" type="INTEGER"/>
+    <column name="updated_by" type="INTEGER"/>
+    <column name="created_at" type="TIMESTAMP"/>
+    <column name="updated_at" type="TIMESTAMP"/>
+    <foreign-key name="fk_dms_object_node_ref_dms_node1" foreignTable="dms_node" onDelete="cascade">
+      <reference local="node_id" foreign="id"/>
     </foreign-key>
   </table>
 </database>
