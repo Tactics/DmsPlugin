@@ -147,9 +147,9 @@ class ttDmsStorageBehavior
   public function preDelete($object, $con = null)
   {  
     $c = new Criteria();
-    $c->add(DmsObjectNodeRef::OBJECT_CLASS, get_class($object));
-    $c->add($object->getPrimaryKey());
+    $c->add(DmsObjectNodeRefPeer::OBJECT_CLASS, get_class($object));
+    $c->add(DmsObjectNodeRefPeer::OBJECT_ID, $object->getPrimaryKey());
     
-    DmsObjectNodeRef::doDelete($c);
+    DmsObjectNodeRefPeer::doDelete($c);
   }
 }
