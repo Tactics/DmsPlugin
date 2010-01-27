@@ -38,7 +38,6 @@ class ttDmsStorageBehavior
    */
   public function getDmsStorageFolder($object, $autoCreate = true)
   {
-    echo 'getDmsStorageFolder: ' . get_class($object);
     $c = new Criteria();
     $c->add(DmsObjectNodeRefPeer::OBJECT_CLASS, get_class($object));
     $c->add(DmsObjectNodeRefPeer::OBJECT_ID, $object->getPrimaryKey());
@@ -49,7 +48,6 @@ class ttDmsStorageBehavior
     // Node bestaat reeds: geef deze terug
     if (count($ref) && $ref = reset($ref))
     {
-      echo 'bestaand';
       return $ref->getDmsNode();
     }
     
@@ -60,6 +58,24 @@ class ttDmsStorageBehavior
     
     // Node bestaat nog niet: aanmaken
     $parentDmsNode = $object->getDmsStorageParentFolder();
+    
+    // Probleem bij fetchen parentnode
+    if (! $parentDmsNode)
+    {
+      $objStr = '';
+      
+      if (method_exists($object, '__toString'))
+      {
+        $objStr = '"' . $object->__toString() . '"';
+      }
+      else if (method_exists($object, 'getId'))
+      {
+        $objStr = 'with id ' . $object->getId();
+      }
+      
+      throw new sfException('Could not retrieve parentDmsNode from ' . get_class($object) . ' ' . $objStr);
+    }
+    
     $folder = $parentDmsNode->createFolder($object->getDmsStorageFolderName());
     
     $ref = new DmsObjectNodeRef();

@@ -43,12 +43,16 @@ class DmsNode extends BaseDmsNode
    * Geeft de onderliggende node met de opgegeven naam
    * 
    * @param string $name
+   * @param Criteria $name optional
    * 
    * @return DmsNode
    */
-  public function getChildByName($name)
+  public function getChildByName($name, Criteria $c = null)
   {
-    $c = new Criteria();
+    if (!$c)
+    {
+      $c = new Criteria();
+    }
     
     $c->add(DmsNodePeer::STORE_ID, $this->getStoreId());
     $c->add(DmsNodePeer::NAME, $name);

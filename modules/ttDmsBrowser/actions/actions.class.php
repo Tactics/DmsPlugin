@@ -273,8 +273,9 @@ class ttDmsBrowserActions extends sfActions
   public function executeJsonTree()
   {
     $node = DmsNodePeer::retrieveByPK($this->getRequestParameter('node_id'));
+    $data = DmsNodePeer::getNodeTree($node);
     
-    echo json_encode(DmsNodePeer::getNodeTree($node));
+    echo json_encode($data['children']);
     exit();
   }
   

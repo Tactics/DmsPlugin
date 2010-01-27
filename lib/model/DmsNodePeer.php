@@ -19,34 +19,39 @@ class DmsNodePeer extends BaseDmsNodePeer
    */
   public static function getNodeTree($node, $depth = 2)
   {
+    $tree = array(
+        'attributes' => array(
+          'id' => 'node_' . $node->getId(),
+          'rel' => 'folder',
+          'node_id' => $node->getId(),
+        ),
+        'data' => array(
+          'title' => $node->getName(),
+        )
+      );
+
     $c = new Criteria();
     $c->add(DmsNodePeer::IS_FOLDER, true);
-    
-    $tree = array();
-    
-    foreach($node->getChildNodes($c) as $folder)
+
+    // Indien nog in de diepte: voeg children toe
+    if ($depth > 1)
     {
-      $folderInfo = array(
-          'attributes' => array(
-            'id' => 'node_' . $folder->getId(),
-            'rel' => 'folder',
-            'node_id' => $folder->getId(),
-          ),
-          'data' => array(
-            'title' => $folder->getName(),
-          ),
-          'state' => 'closed'
-        );
-        
-      if ($depth > 1)
+      $children = array();
+  
+      foreach($node->getChildNodes($c) as $folder)
       {
-        $children = self::getNodeTree($folder, $depth - 1);
-        $folderInfo['children'] = $children;
+        $children[] = self::getNodeTree($folder, $depth - 1);
       }
       
-      $tree[] = $folderInfo;
+      $tree['children'] = $children;
     }
-    
+    // Anders indien er nog kinderen zijn: geeft dit aan met 'state=closed'
+    // Dit zorgt er voor dat jsTree de node nog openvouwbaar (met +) aangeeft
+    else if (count($node->getChildNodes($c)))
+    {
+      $tree['state'] = 'closed';
+    }
+  
     return $tree;
   }
 }

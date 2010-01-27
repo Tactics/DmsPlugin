@@ -40,9 +40,9 @@ class DmsNodeMapBuilder {
 
 		$tMap->addColumn('IS_FOLDER', 'IsFolder', 'boolean', CreoleTypes::BOOLEAN, false, null);
 
-		$tMap->addColumn('NAME', 'Name', 'string', CreoleTypes::VARCHAR, false, 45);
+		$tMap->addColumn('NAME', 'Name', 'string', CreoleTypes::VARCHAR, false, 255);
 
-		$tMap->addColumn('DISK_NAME', 'DiskName', 'string', CreoleTypes::VARCHAR, false, 45);
+		$tMap->addColumn('DISK_NAME', 'DiskName', 'string', CreoleTypes::VARCHAR, false, 255);
 
 		$tMap->addColumn('CREATED_BY', 'CreatedBy', 'int', CreoleTypes::INTEGER, false, null);
 

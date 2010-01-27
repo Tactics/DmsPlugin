@@ -30,7 +30,7 @@ class ttDmsBrowserComponents extends sfComponents
   {
     if (! $this->node || ! ($this->node instanceof DmsStore || $this->node->getIsFolder()))
     {
-      throw new sfException('cmsBorwser component verwacht een parameter "node" .');  
+      throw new sfException('cmsBrowser component verwacht een parameter "node" .');  
     }
     
     $defaultOptions = array(
@@ -55,7 +55,7 @@ class ttDmsBrowserComponents extends sfComponents
   {
     if (! $this->node || ! ($this->node instanceof DmsStore || $this->node->getIsFolder()))
     {
-      throw new sfException('cmsBorwser component verwacht een parameter "node" met een DmsNode (folder!).');  
+      throw new sfException('cmsBrowser component verwacht een parameter "node" met een DmsNode (folder!).');  
     }
 
     $defaultOptions = array(
@@ -79,25 +79,14 @@ class ttDmsBrowserComponents extends sfComponents
   {
     if (! $this->node || ! ($this->node instanceof DmsStore || $this->node->getIsFolder()))
     {
-      throw new sfException('cmsBorwser component verwacht een parameter "node" met een DmsNode (folder!).');  
+      throw new sfException('cmsBrowser component verwacht een parameter "node" met een DmsNode (folder!).');  
     }
 
     $this->id = isset($this->id) ? $this->id : 'nodeTree'; 
-    
     $json_data = DmsNodePeer::getNodeTree($this->node);
-
-    $json_data = array(
-      array(
-        'attributes' => array('id' => ($this->node instanceof DmsStore) ? 'root' : ('node_' . $this->node->getId()) , 'folder' => '/', 'uri' => myEncoders::urlEncodeUri('/'), 'rel' => 'root'),
-        'data' => array(
-          'title' => '/'
-        ),
-        'children' => $json_data
-      )
-    ); 
-    
+    $json_data['state'] = 'open';
+    $json_data['data']['title'] = '/';
     $this->json_data = json_encode($json_data);
-    
   }
 }
   

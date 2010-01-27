@@ -180,7 +180,7 @@ foreach($nodes as $subnode)
 }
 
 echo $table;
-?>  
+?>
 Met geselecteerde:
 <?php echo link_to_function(image_tag('/ttDms/images/icons/delete_16.gif', array('title' => 'Verwijderen')), 'multiActie("delete")'); ?>
 <?php echo link_to_function(image_tag('/ttDms/images/icons/diskette_16.gif', array('title' => 'Downloaden')), 'multiActie("download")'); ?>

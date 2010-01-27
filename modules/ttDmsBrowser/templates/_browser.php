@@ -63,6 +63,7 @@
   <td style="vertical-align:top;">
     <h2 class="pageblock">
       <?php //include_partial('ttDmsBrowser/nodeTrail', array('store' => $store, 'node' => isset($node) ? $node : null))?>
+      Bestanden
     </h2>
     <div class="pageblock" id="nodeList">
       <?php include_component('ttDmsBrowser', 'nodeList', array('node' => $node)); ?>
