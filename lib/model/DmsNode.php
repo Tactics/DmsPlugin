@@ -281,7 +281,7 @@ class DmsNode extends BaseDmsNode
   {
     $info = pathinfo($this->getName());
     
-    return $info['extension'];
+    return isset($info['extension']) ? $info['extension'] : null;
   }
   
   /**
