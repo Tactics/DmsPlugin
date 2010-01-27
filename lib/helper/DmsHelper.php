@@ -40,7 +40,7 @@ function filetype_image_path($extensie)
       $p = pathinfo($iconfile);
       // filename without extension via pathinfo if php > 5.2
       $filename = isset($p['filename']) ? $p['filename'] : basename($iconfile, '.' . $p['extension']);
-      $fileicons[$p['filename']] = $p['basename'];
+      $fileicons[$filename] = $p['basename'];
     }
   }
   
