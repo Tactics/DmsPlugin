@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * Geeft bestandsgrootte weer in een compact formaat
  * 
@@ -39,6 +38,8 @@ function filetype_image_path($extensie)
     foreach(glob(sfConfig::get('sf_web_dir') . $fileiconspath . '*.png') as $iconfile)
     {
       $p = pathinfo($iconfile);
+      // filename without extension via pathinfo if php > 5.2
+      $filename = isset($p['filename']) ? $p['filename'] : basename($iconfile, '.' . $p['extension']);
       $fileicons[$p['filename']] = $p['basename'];
     }
   }
