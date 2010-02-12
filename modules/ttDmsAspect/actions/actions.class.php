@@ -77,6 +77,21 @@ class ttDmsAspectActions extends sfActions
 
     return $this->redirect('ttDmsAspect/show?id='.$dms_aspect->getId());
   }
+  
+  /**
+	 * Handelt form validation errors af bij het bewerken van een dms_aspect
+	 */
+	public function handleErrorUpdate()
+  {
+	  if ($this->getRequestParameter("id") != "")
+	  {
+		  $this->forward('ttDmsAspect', 'edit');
+		}
+	  else
+	  {
+		  $this->forward('ttDmsAspect', 'create');
+		}
+  }
 
   /**
    * Verwijdert een dms_aspect
@@ -144,6 +159,21 @@ class ttDmsAspectActions extends sfActions
     $dms_type->save();
 
     return $this->redirect('ttDmsAspect/listTypes');
+  }
+  
+  /**
+	 * Handelt form validation errors af bij het bewerken van een dms_property_type
+	 */
+	public function handleErrorUpdateType()
+  {
+	  if ($this->getRequestParameter("id") != "")
+	  {
+		  $this->forward('ttDmsAspect', 'editType');
+		}
+	  else
+	  {
+		  $this->forward('ttDmsAspect', 'createType');
+		}
   }
 
   /**

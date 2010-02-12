@@ -1,0 +1,18 @@
+methods:
+  get:      [name]
+  post:     [name]
+
+names:
+  name:
+    required:       Yes
+    required_msg:   Geef een naam op.
+    validators:     lengteValidator    
+ 
+lengteValidator:
+  class:            sfStringValidator
+  param:
+    min:            3
+    min_error:      De naam moet minstens 3 tekens lang zijn.
+
+fillin:
+  enabled: on   # activate the form repopulation

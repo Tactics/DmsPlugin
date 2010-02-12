@@ -8,9 +8,12 @@
 
 <h2 class="pageblock"><?php echo $dms_type->getId() ? 'Bewerk' : 'Nieuw'; ?> aspect</h2>
 <div class="pageblock">
+
+<?php include_partial("global/formvalidationerrors"); ?>
+
 <table class="formtable">
 <tbody>
-<tr>
+<tr class='<?php echo $sf_request->hasError('name') ? 'error' : 'required'; ?>'>
   <th>Naam:</th>
   <td><?php echo object_input_tag($dms_type, 'getName', array (
   'size' => 45,
