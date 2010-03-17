@@ -263,36 +263,43 @@ class DmsDiskStorage extends DmsStorage
     if (function_exists('finfo_open'))
     {
       static $fileInfoInstance;
-      
+
       if (! $fileInfoInstance)
       {
-        // For windows: download a magic file and set MAGIC environment variable
-        // For unix: will use the default /usr/share/file/magic
+        // Windows: download een magic file en zet MAGIC environment variable
+        // Unix: gebruikt default /usr/share/file/magic
         $fileInfoInstance = finfo_open(FILEINFO_MIME);
       }
-      
+
       $info = finfo_file($fileInfoInstance, $this->root . $path);
-      
-      if (strpos($info, ';') !== false)
-      {
-        $info = explode(';', $info);
-        $info = $info[0];
-      }
-      
-      return $info;
     }
 
     // Only on unix
-    if (strtoupper (substr(PHP_OS, 0,3)) != 'WIN')
+    if (!$info && (strtoupper (substr(PHP_OS, 0,3)) != 'WIN'))
     {
-      @system("file -bi '" . $this->root . $path . "'", $info);
+      $info = @exec("file -bi '" . $this->root . $path . "'");
     }
-    
+
     if (! $info && function_exists('mime_content_type'))
     {
       $info = mime_content_type($this->root . $path);
     }
-    
+
+    if (strpos($info, ';') !== false)
+    {
+      $info = explode(';', $info);
+      $info = $info[0];
+    }
+
+    // Hack: Met excel wil het al eens mislopen
+    $extension = pathinfo($path, PATHINFO_EXTENSION);
+
+    if (in_array($extension, array('xls', 'xlsx', 'xla', 'xlc', 'xlm')))
+    {
+      return 'application/vnd.ms-excel';
+    }
+
     return $info;
   }
+
 }
