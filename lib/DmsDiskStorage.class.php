@@ -258,13 +258,17 @@ class DmsDiskStorage extends DmsStorage
    */
   public function getMimeType($path)
   {
+    $info = null;
+
     if (function_exists('finfo_open'))
     {
       static $fileInfoInstance;
       
       if (! $fileInfoInstance)
       {
-        $fileInfoInstance = finfo_open(FILEINFO_MIME, 'D:\xampp\php\extras\mime_from_linux\magic'); // return mime type ala mimetype extension      
+        // For windows: download a magic file and set MAGIC environment variable
+        // For unix: will use the default /usr/share/file/magic
+        $fileInfoInstance = finfo_open(FILEINFO_MIME);
       }
       
       $info = finfo_file($fileInfoInstance, $this->root . $path);
@@ -277,11 +281,18 @@ class DmsDiskStorage extends DmsStorage
       
       return $info;
     }
-    else if (function_exists('mime_content_type'))
+
+    // Only on unix
+    if (strtoupper (substr(PHP_OS, 0,3)) != 'WIN')
     {
-      return mime_content_type($this->root . $path);      
+      $info = @system("file -bi '" . $this->root . $path . "'");
     }
     
-    return null;    
+    if (! $info && function_exists('mime_content_type'))
+    {
+      $info = mime_content_type($this->root . $path);
+    }
+    
+    return $info;
   }
 }
