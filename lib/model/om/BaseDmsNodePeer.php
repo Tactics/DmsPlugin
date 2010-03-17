@@ -680,6 +680,20 @@ abstract class BaseDmsNodePeer {
 		foreach($objects as $obj) {
 
 
+			include_once 'plugins/ttDmsPlugin/lib/model/DmsNodeProperty.php';
+
+						$c = new Criteria();
+			
+			$c->add(DmsNodePropertyPeer::NODE_ID, $obj->getId());
+			$affectedRows += DmsNodePropertyPeer::doDelete($c, $con);
+
+			include_once 'plugins/ttDmsPlugin/lib/model/DmsNodeAspect.php';
+
+						$c = new Criteria();
+			
+			$c->add(DmsNodeAspectPeer::NODE_ID, $obj->getId());
+			$affectedRows += DmsNodeAspectPeer::doDelete($c, $con);
+
 			include_once 'plugins/ttDmsPlugin/lib/model/DmsObjectNodeRef.php';
 
 						$c = new Criteria();

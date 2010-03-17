@@ -32,10 +32,10 @@
     <column name="updated_by" type="INTEGER"/>
     <column name="created_at" type="TIMESTAMP"/>
     <column name="updated_at" type="TIMESTAMP"/>
-    <foreign-key name="fk_tt_node_property_tt_node_property_type" foreignTable="dms_property_type">
+    <foreign-key name="fk_tt_node_property_tt_node_property_type" foreignTable="dms_property_type" onDelete="cascade">
       <reference local="type_id" foreign="id"/>
     </foreign-key>
-    <foreign-key name="fk_tt_node_property_tt_node1" foreignTable="dms_node">
+    <foreign-key name="fk_tt_node_property_tt_node1" foreignTable="dms_node" onDelete="cascade">
       <reference local="node_id" foreign="id"/>
     </foreign-key>
   </table>
@@ -78,10 +78,10 @@
     <column name="updated_by" type="INTEGER"/>
     <column name="created_at" type="TIMESTAMP"/>
     <column name="updated_at" type="TIMESTAMP"/>
-    <foreign-key name="fk_dms_aspect_has_dms_node_property_type_dms_aspect1" foreignTable="dms_aspect">
+    <foreign-key name="fk_dms_aspect_has_dms_node_property_type_dms_aspect1" foreignTable="dms_aspect" onDelete="cascade">
       <reference local="aspect_id" foreign="id"/>
     </foreign-key>
-    <foreign-key name="fk_dms_aspect_has_dms_node_property_type_dms_node_property_ty1" foreignTable="dms_property_type">
+    <foreign-key name="fk_dms_aspect_has_dms_node_property_type_dms_node_property_ty1" foreignTable="dms_property_type" onDelete="cascade">
       <reference local="type_id" foreign="id"/>
     </foreign-key>
   </table>
@@ -94,10 +94,10 @@
     <column name="updated_by" type="INTEGER"/>
     <column name="created_at" type="TIMESTAMP"/>
     <column name="updated_at" type="TIMESTAMP"/>
-    <foreign-key name="fk_dms_node_has_dms_aspect_dms_node1" foreignTable="dms_node">
+    <foreign-key name="fk_dms_node_has_dms_aspect_dms_node1" foreignTable="dms_node" onDelete="cascade">
       <reference local="node_id" foreign="id"/>
     </foreign-key>
-    <foreign-key name="fk_dms_node_has_dms_aspect_dms_aspect1" foreignTable="dms_aspect">
+    <foreign-key name="fk_dms_node_has_dms_aspect_dms_aspect1" foreignTable="dms_aspect" onDelete="cascade">
       <reference local="aspect_id" foreign="id"/>
     </foreign-key>
   </table>
