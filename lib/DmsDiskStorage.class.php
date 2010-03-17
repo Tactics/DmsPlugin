@@ -285,7 +285,7 @@ class DmsDiskStorage extends DmsStorage
     // Only on unix
     if (strtoupper (substr(PHP_OS, 0,3)) != 'WIN')
     {
-      $info = @system("file -bi '" . $this->root . $path . "'");
+      @system("file -bi '" . $this->root . $path . "'", $info);
     }
     
     if (! $info && function_exists('mime_content_type'))
