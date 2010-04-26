@@ -9,4 +9,16 @@
  */ 
 class DmsStorePeer extends BaseDmsStorePeer
 {
+  /**
+   * Return DmsStore by name
+   *
+   * @return DmsStore
+   */
+  public static function retrieveByName($name)
+  {
+    $c = new Criteria();
+    $c->add(DmsStorePeer::NAME, $name);
+
+    return self::doSelectOne($c);
+  }
 }
