@@ -175,7 +175,7 @@ foreach($nodes as $subnode)
       link_to(image_tag('/ttDms/images/icons/diskette_16.gif', array('title' => 'Downloaden')), 'ttDmsBrowser/download?node_id=' . $subnode->getId())
         . link_to_function(image_tag('/ttDms/images/icons/delete_16.gif', array('title' => 'Verwijderen')), 'deleteNode(' . $subnode->getId() . ');')
         . link_to(image_tag('/ttDms/images/icons/document_zoom_16.gif', array('title' => 'Details')), 'ttDmsBrowser/show?node_id=' . $subnode->getId())
-    ));
+    ), array('style' => 'white-space: nowrap'));
   }
 }
 
