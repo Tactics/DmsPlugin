@@ -130,7 +130,7 @@
 	 */
 	function treeDelete(node, tree_obj, rollbackObject)
   {
-    jQuery.tt.confirm('Bent u zeker dat u wenst te verwijderen?', 'of wa ?', function(value, dialog)
+    jQuery.tt.confirm('Bent u zeker dat u wenst te verwijderen?', '', function(value, dialog)
     {
       if (value)
       {
