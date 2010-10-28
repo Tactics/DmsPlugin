@@ -118,6 +118,11 @@ class DmsNode extends BaseDmsNode
    */
   public function createFolder($name)
   {
+    if ($this->getChildByName($name))
+    {
+      throw new DmsNodeExistsException('A node with this name already exists. (Name: ' . $name . ')');
+    }
+
     $name = DmsTools::safeFilename($name);
 
     $this->getDmsStore()->getStorage()->mkdir($this->getStoragePath() . '/' . $name);
@@ -140,9 +145,16 @@ class DmsNode extends BaseDmsNode
    * @param string $name
    * 
    * @return DmsNode
+   *
+   * @throws DmsNodeExistsException
    */
   public function createNode($name)
   {
+    if ($this->getChildByName($name))
+    {
+      throw new DmsNodeExistsException('A node with this name already exists. (Name: ' . $name . ')');
+    }
+    
     $name = DmsTools::safeFilename($name);
     
     $node = new DmsNode();
@@ -159,10 +171,13 @@ class DmsNode extends BaseDmsNode
   
   /**
    * Maakt een nieuwe subnode op basis van een geuploaded bestand
+   *
+   * @param string $file_id : id of the HTML upload component
+   * @param string optional : name for the uploaded file.  Defaults to the original uploaded file name
    */
-  public function createNodeFromUpload($file_id)
+  public function createNodeFromUpload($file_id, $fileName = null)
   {
-    $node = $this->createNode(sfContext::getInstance()->getRequest()->getFileName($file_id));
+    $node = $this->createNode($fileName ? $fileName : sfContext::getInstance()->getRequest()->getFileName($file_id));
     $node->moveUploadedFile($file_id);
     
     return $node;

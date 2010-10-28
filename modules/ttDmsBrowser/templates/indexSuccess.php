@@ -1,6 +1,6 @@
 <ul class="breadcrumb">
   <li><?php echo link_to("Home", "@homepage") ?></li>
-  <li>Dms Stores</li>
+  <li>&gt;Dms Stores</li>
 </ul>
 
 <h2 class="pageblock">Stores</h2>
