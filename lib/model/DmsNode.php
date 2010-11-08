@@ -123,13 +123,13 @@ class DmsNode extends BaseDmsNode
       throw new DmsNodeExistsException('A node with this name already exists. (Name: ' . $name . ')');
     }
 
-    $name = DmsTools::safeFilename($name);
+    $safeName = DmsTools::safeFilename($name);
 
     $this->getDmsStore()->getStorage()->mkdir($this->getStoragePath() . '/' . $name);
     
     $folder = new DmsNode();
     $folder->setName($name);
-    $folder->setDiskName($name);
+    $folder->setDiskName($safeName);
     $folder->setStoreId($this->getStoreId());
     $folder->setParentId($this->getId());
     $folder->setIsFolder(true);
