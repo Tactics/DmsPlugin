@@ -431,7 +431,7 @@ class ttDmsBrowserActions extends sfActions
       $this->node = DmsNodePeer::retrieveByPK($this->getRequestParameter('node_id'));
     }
     
-    $this->jsonErrorUnless($this->node->getIsFolder(), 'node is geen folder');
+    $this->jsonErrorUnless($this->node && $this->node->getIsFolder(), 'node is geen folder');
     
     Misc::use_helper('Partial');
     

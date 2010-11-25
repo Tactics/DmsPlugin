@@ -38,27 +38,28 @@ class ttDmsStorageBehavior
    */
   public function getDmsStorageFolder($object, $autoCreate = true)
   {
+
     $c = new Criteria();
     $c->add(DmsObjectNodeRefPeer::OBJECT_CLASS, get_class($object));
     $c->add(DmsObjectNodeRefPeer::OBJECT_ID, $object->getPrimaryKey());
     $c->setLimit(1);
     
     $ref = DmsObjectNodeRefPeer::doSelectJoinDmsNode($c);
-    
+
+
     // Node bestaat reeds: geef deze terug
     if (count($ref) && $ref = reset($ref))
     {
       return $ref->getDmsNode();
     }
-    
     if (! $autoCreate)
     {
       return null;
     }
-    
+
     // Node bestaat nog niet: aanmaken
     $parentDmsNode = $object->getDmsStorageParentFolder();
-    
+
     // Probleem bij fetchen parentnode
     if (! $parentDmsNode)
     {
