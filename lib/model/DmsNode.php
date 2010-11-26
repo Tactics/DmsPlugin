@@ -132,7 +132,7 @@ class DmsNode extends BaseDmsNode
    *
    * @throws DmsNodeExistsException
    */
-  public function createNode($name, $folder = true)
+  public function createNode($name, $folder = false)
   {
     // Controleer of er reeds een node bestaat met exact dezelfde naam (speciale characters ..)
     if ($this->getChildByName($name))
