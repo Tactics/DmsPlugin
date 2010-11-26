@@ -38,7 +38,7 @@ class DmsNode extends BaseDmsNode
     
     return $this->getDmsNodesRelatedByParentIdJoinDmsStore($c);
   }
-  
+
   /**
    * Geeft de onderliggende node met de opgegeven naam
    * 
@@ -115,28 +115,12 @@ class DmsNode extends BaseDmsNode
    * @param string $name
    * 
    * @return DmsNode
+   *
+   * @throws DmsNodeExistsException
    */
   public function createFolder($name)
   {
-    if ($this->getChildByName($name))
-    {
-      throw new DmsNodeExistsException('A node with this name already exists. (Name: ' . $name . ')');
-    }
-
-    $safeName = DmsTools::safeFilename($name);
-
-    $this->getDmsStore()->getStorage()->mkdir($this->getStoragePath() . '/' . $name);
-    
-    $folder = new DmsNode();
-    $folder->setName($name);
-    $folder->setDiskName($safeName);
-    $folder->setStoreId($this->getStoreId());
-    $folder->setParentId($this->getId());
-    $folder->setIsFolder(true);
-
-    $folder->save();
-    
-    return $folder;
+    return $this->createNode($name, true);
   }
   
   /**
@@ -148,21 +132,32 @@ class DmsNode extends BaseDmsNode
    *
    * @throws DmsNodeExistsException
    */
-  public function createNode($name)
+  public function createNode($name, $folder = true)
   {
+    // Controleer of er reeds een node bestaat met exact dezelfde naam (speciale characters ..)
     if ($this->getChildByName($name))
     {
       throw new DmsNodeExistsException('A node with this name already exists. (Name: ' . $name . ')');
     }
+
+    // Controleer of er reeds een node bestaat met dezelfde diskname: zoek een ongebruikte diskname
+    $safeName = DmsTools::safeFilename($name);
+    $extension = pathinfo($safeName, PATHINFO_EXTENSION);
+    $basename = basename($safeName, $extension ? ('.' . $extension) : '');
+    $c = 1;
     
-    $name = DmsTools::safeFilename($name);
+    while ($this->getChildByDiskName($safeName))
+    {
+      $safeName = $basename . '_' . $c . ($extension ? ('.' . $extension) : '');
+      $c++;
+    }
     
     $node = new DmsNode();
     $node->setName($name);
-    $node->setDiskName($name);
+    $node->setDiskName($safeName);
     $node->setStoreId($this->getStoreId());
     $node->setParentId($this->getId());
-    $node->setIsFolder(false);
+    $node->setIsFolder($folder);
     
     $node->save();
     
