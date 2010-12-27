@@ -189,19 +189,36 @@ class DmsNode extends BaseDmsNode
     {
       return;
     }
-    
-    $newName = DmsTools::safeFilename($newName);
-    
-    $newDiskName = $newName;
-    
+
+    // Controleer of er reeds een node bestaat met exact dezelfde naam (speciale characters ..)
+    $existingNode = $this->getChildByName($newName);
+    if ($existingNode && $existingNode->getId() != $this->getId())
+    {
+      throw new DmsNodeExistsException('A node with this name already exists. (Name: ' . $name . ')');
+    }
+
+    // Controleer of er reeds een node bestaat met dezelfde diskname: zoek een ongebruikte diskname
+    $safeName = DmsTools::safeFilename($newName);
+    $extension = pathinfo($safeName, PATHINFO_EXTENSION);
+    $basename = basename($safeName, $extension ? ('.' . $extension) : '');
+    $c = 1;
+
+    while (($existingNode = $this->getChildByDiskName($safeName)) && $existingNode->getId() != $this->getId())
+    {
+      $safeName = $basename . '_' . $c . ($extension ? ('.' . $extension) : '');
+      $c++;
+    }
+
     $oldPath = $this->getStoragePath();
-    $newPath = dirname($oldPath) . DIRECTORY_SEPARATOR . $newDiskName;
-    
+    $newPath = dirname($oldPath) . '/' . $safeName;
+
     $this->getDmsStore()->getStorage()->rename($oldPath, $newPath);
-    
+
     $this->setName($newName);
-    $this->setDiskName($newDiskName);
+    $this->setDiskName($safeName);
     $this->save();
+    
+    return $this;
   }
   
   /**
@@ -212,7 +229,7 @@ class DmsNode extends BaseDmsNode
   public function move($targetNode)
   {
     $oldPath = $this->getStoragePath();
-    $newPath = $targetNode->getStoragePath() . DIRECTORY_SEPARATOR . $this->getDiskName();
+    $newPath = $targetNode->getStoragePath() . '/' . $this->getDiskName();
     
     $this->getDmsStore()->getStorage()->rename($oldPath, $newPath);
     
