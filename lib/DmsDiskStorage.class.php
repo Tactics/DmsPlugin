@@ -16,12 +16,12 @@ class DmsDiskStorage extends DmsStorage
    */
   public function initialize()
   {
-    if (! file_exists($this->root))
+    if (! @file_exists($this->root))
     {
       throw new sfException("DMS disk root folder '$this->root' bestaat niet");
     }
     
-    if (! is_dir($this->root))
+    if (! @is_dir($this->root))
     {
       throw new sfException("Dms disk root folder '$this->root' is geen geldige folder");
     }
@@ -34,7 +34,7 @@ class DmsDiskStorage extends DmsStorage
    */
   public function mkdir($path)
   {
-    if  (! mkdir($this->root . DIRECTORY_SEPARATOR . $path))
+    if  (! @mkdir($this->root . '/' . $path))
     {
       throw new sfException(sprintf('Cannot mkdir "%s".', $path));
     }
@@ -100,7 +100,7 @@ class DmsDiskStorage extends DmsStorage
    */
   public function rename($fromPath, $toPath)
   {
-    if  (! rename($this->root . $fromPath, $this->root . $toPath))
+    if  (! @rename($this->root . $fromPath, $this->root . $toPath))
     {
       throw new sfException(sprintf('Cannot rename "%s" to "%s".', $fromPath, $toPath));
     }
@@ -268,7 +268,7 @@ class DmsDiskStorage extends DmsStorage
       {
         // Windows: download een magic file en zet MAGIC environment variable
         // Unix: gebruikt default /usr/share/file/magic
-        $fileInfoInstance = finfo_open(FILEINFO_MIME);
+        $fileInfoInstance = finfo_open(FILEINFO_MIME, 'D:\xampp\php\extras\magic.mime');
       }
 
       $info = finfo_file($fileInfoInstance, $this->root . $path);
