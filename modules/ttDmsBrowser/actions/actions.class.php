@@ -393,7 +393,20 @@ class ttDmsBrowserActions extends sfActions
    */
   public function executeJsonNodeDelete()
   {
-    $node_ids = explode(',', trim($this->getRequestParameter('node_ids'), ','));
+    if ($this->getRequestParameter('node_id'))
+    {
+      $node_ids = array($this->getRequestParameter('node_id'));;
+    }
+    else
+    {
+      $node_ids = explode(',', trim($this->getRequestParameter('node_ids'), ','));
+    }
+
+    if (! count($node_ids))
+    {
+      echo json_encode(array('success' => false, 'message' => 'Geen bestand(en) geselecteerd'));
+      exit();
+    }
     
     $c = new Criteria();
     $c->add(DmsNodePeer::ID, $node_ids, Criteria::IN);

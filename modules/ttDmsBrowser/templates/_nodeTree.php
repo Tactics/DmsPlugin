@@ -37,7 +37,7 @@
           //static: <?php echo $json_data; ?> 
         }
       },
-      selected: '<?php echo $node->getId(); ?>',
+      selected: 'node_<?php echo $node->getId(); ?>',
       cookies : {prefix: 'pageTree', open: true, selected: false, opts: {path: '/'}},
       //cookies: true,
       ui : {
@@ -137,18 +137,14 @@
         jQuery.post(
           '<?php echo url_for('ttDmsBrowser/jsonNodeDelete'); ?>',
           {
-            node_id: jQuery(node).attr('node_id'),
+            node_id: jQuery(node).attr('node_id')
           },
           function(data)
           {
             if (! data.success)
             {
               if (rollbackObject) jQuery.tree.rollback(rollbackObject);
-              jQuery.tt.alert('Error', 'De pagina kon niet verwijderd worden. Error: ' + data.message);
-            }
-            else
-            {
-              tree_obj.remove(node);
+              jQuery.tt.alert('Error', 'Het object kon niet verwijderd worden. Error: ' + data.message);
             }
           },
           "json"

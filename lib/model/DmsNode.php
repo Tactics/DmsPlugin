@@ -151,6 +151,11 @@ class DmsNode extends BaseDmsNode
       $safeName = $basename . '_' . $c . ($extension ? ('.' . $extension) : '');
       $c++;
     }
+
+    if ($folder)
+    {
+      $this->getDmsStore()->getStorage()->mkdir($this->getStoragePath() . '/' . $safeName);
+    }
     
     $node = new DmsNode();
     $node->setName($name);

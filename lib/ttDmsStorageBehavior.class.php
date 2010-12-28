@@ -73,8 +73,8 @@ class ttDmsStorageBehavior
       {
         $objStr = 'with id ' . $object->getId();
       }
-      
-      throw new sfException('Could not retrieve parentDmsNode from ' . get_class($object) . ' ' . $objStr);
+
+     throw new sfException('Could not retrieve parentDmsNode from ' . get_class($object) . ' ' . $objStr);
     }
     
     $folder = $parentDmsNode->createFolder($object->getDmsStorageFolderName());
@@ -114,7 +114,7 @@ class ttDmsStorageBehavior
     }
     
     $folder = self::getDmsStorageFolder($object, $autoCreate);
-    
+
     if ($folder && ($name != $folder->getName()))
     {
       $folder->rename($name);
