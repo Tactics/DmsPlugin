@@ -184,11 +184,8 @@ class DmsNode extends BaseDmsNode
     $success = false;
     $cnt = 1;
 
-    $i = pathinfo($fileName);
-    if (! isset($i['filename'])) // Pre PHP 5.2
-    {
-      $i['filename'] = substr($fileParts['basename'], 0, strrpos($fileParts['basename'], '.'));
-    }
+    $extension = pathinfo($fileName, PATHINFO_EXTENSION);
+    $basename = basename($fileName, $extension ? ('.' . $extension) : '');
 
     while (! $success)
     {
@@ -204,7 +201,7 @@ class DmsNode extends BaseDmsNode
           throw($e);
         }
         // bestand bestaat al, begin te nummeren
-        $fileName = $i['filename'] . '_' . $cnt . '.' . $i['extension'];
+        $fileName = $basename . '_' . $cnt . ($extension ? ('.' . $extension) : '');
         $cnt++;
       }
     }
