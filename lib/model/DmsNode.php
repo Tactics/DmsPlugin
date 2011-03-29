@@ -173,11 +173,42 @@ class DmsNode extends BaseDmsNode
    * Maakt een nieuwe subnode op basis van een geuploaded bestand
    *
    * @param string $file_id : id of the HTML upload component
-   * @param string optional : name for the uploaded file.  Defaults to the original uploaded file name
+   * @param string optional $fileName: name for the uploaded file.  Defaults to the original uploaded file name
+   * @param boolean optional $autoRename default false: auto numbering if file exists
    */
-  public function createNodeFromUpload($file_id, $fileName = null)
+  public function createNodeFromUpload($file_id, $fileName = null, $autoRename = false)
   {
-    $node = $this->createNode($fileName ? $fileName : sfContext::getInstance()->getRequest()->getFileName($file_id));
+    $fileName = $fileName ? $fileName : sfContext::getInstance()->getRequest()->getFileName($file_id);
+
+    // Info voor mocht het bestand reeds bestaan, dan beginnen we te nummeren
+    $success = false;
+    $cnt = 1;
+
+    $i = pathinfo($fileName);
+    if (! isset($i['filename'])) // Pre PHP 5.2
+    {
+      $i['filename'] = substr($fileParts['basename'], 0, strrpos($fileParts['basename'], '.'));
+    }
+
+    while (! $success)
+    {
+      try
+      {
+        $node = $this->createNode($fileName);
+        $success = true;
+      }
+      catch(DmsNodeExistsException $e)
+      {
+        if (! $autoRename)
+        {
+          throw($e);
+        }
+        // bestand bestaat al, begin te nummeren
+        $fileName = $i['filename'] . '_' . $cnt . '.' . $i['extension'];
+        $cnt++;
+      }
+    }
+
     $node->moveUploadedFile($file_id);
     
     return $node;
