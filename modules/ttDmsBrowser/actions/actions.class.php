@@ -82,8 +82,6 @@ class ttDmsBrowserActions extends sfActions
     $this->redirect('ttDmsBrowser/browse?store_id=' . $folder->getStoreId());
   }
   
-    
-  
   /**
    * Download één of meerdere nodes.  Indien meerdere wordt verzonden als zipfile
    * Parameter recursive bepaald of ook submappen toegevoegd moeten worden.
