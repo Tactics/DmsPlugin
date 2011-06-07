@@ -144,6 +144,11 @@ class DmsNode extends BaseDmsNode
     $safeName = DmsTools::safeFilename($name);
     $extension = pathinfo($safeName, PATHINFO_EXTENSION);
     $basename = basename($safeName, $extension ? ('.' . $extension) : '');
+    
+    $maxFilenameLength = sfConfig::get('sf_dms_filename_maxlength', 255);    
+    $basename = substr($basename, 0, min(strlen($basename), $maxFilenameLength - strlen($extension) - 1));
+    $safeName = $basename . ($extension ? ('.' . $extension) : '');    
+    
     $c = 1;
     
     while ($this->getChildByDiskName($safeName))
