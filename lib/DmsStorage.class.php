@@ -82,5 +82,7 @@ abstract class DmsStorage
   abstract function write($path, $data);
   
   abstract function moveUploadedFile($requestFileName, $path);
+  abstract function loadFromFile($absoluteFilepath, $storagePath);
+  abstract function saveToFile($storagePath, $absoluteFilepath);
   abstract function getMimeType($path);
 } 

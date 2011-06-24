@@ -326,7 +326,27 @@ class DmsNode extends BaseDmsNode
   {
     $this->getDmsStore()->getStorage()->moveUploadedFile($file_id, $this->getStoragePath());
   }
-  
+
+  /**
+   * Exporteert de node naar een bestandslocatie
+   *
+   * @param string $file_id File upload id
+   */
+  public function saveToFile($filePath)
+  {
+    $this->getDmsStore()->getStorage()->saveToFile($this->getStoragePath(), $filePath);
+  }
+
+  /**
+   * Exporteert de node naar een bestandslocatie
+   *
+   * @param string $file_id File upload id
+   */
+  public function loadFromFile($filePath)
+  {
+    $this->getDmsStore()->getStorage()->loadFromFile($filePath, $this->getStoragePath());
+  }
+
   /**
    * Geeft het mimetype terug
    * 

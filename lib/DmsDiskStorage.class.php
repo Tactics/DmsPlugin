@@ -132,7 +132,7 @@ class DmsDiskStorage extends DmsStorage
     }
     else
     {
-      copy($this->root . $from, $this->root . $to);
+      copy($this->root . $fromPath, $this->root . $toPath);
     }
   }
 
@@ -250,6 +250,35 @@ class DmsDiskStorage extends DmsStorage
   {
     sfContext::getInstance()->getRequest()->moveFile($requestFileName, $this->root . $path);
   }
+
+  /**
+   * Kopieert een bestand op schijf met $absoluteNativeFilepath naar
+   * de storage locatie $storagePath
+   *
+   * (in geval van DmsDiskStorage staan ze beiden op disk)
+   *
+   * @param string $requestFileName de file name van het request
+   * @param string $path
+   */
+  function loadFromFile($absoluteFilepath, $storagePath)
+  {
+    copy($absoluteFilepath, $this->root . $storagePath);
+  }
+
+  /**
+   * Kopieert de storage locatie $storagePath naar een bestand op schijf
+   * met $absoluteNativeFilepath naar
+   *
+   * (in geval van DmsDiskStorage staan ze beiden op disk)
+   *
+   * @param string $requestFileName de file name van het request
+   * @param string $path
+   */
+  function saveToFile($storagePath, $absoluteFilepath)
+  {
+    copy($this->root . $storagePath, $absoluteFilepath);
+  }
+
   
   /**
    * Geeft het mimetype van het bestand
