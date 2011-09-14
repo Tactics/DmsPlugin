@@ -321,16 +321,29 @@ class DmsDiskStorage extends DmsStorage
     }
 
     // Hack: Met excel wil het al eens mislopen
+    // met powerpoint ook
+    // + office 2010 extensions compatible
     $extension = pathinfo($path, PATHINFO_EXTENSION);
 
-    if (in_array($extension, array('xls', 'xlsx', 'xla', 'xlc', 'xlm')))
+    if (in_array($extension, array('xls', 'xla', 'xlc', 'xlm')))
     {
       return 'application/vnd.ms-excel';
     }
-    // Hack: Met powerpoint wil het ook al eens mislopen
-    else if (in_array($extension, array('ppt', 'pptx')))
+    else if ($extension == 'xlsx')
+    {
+      return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    }    
+    else if ($extension == 'ppt')
     {
       return 'application/vnd.ms-powerpoint';
+    }
+    else if ($extension == 'ppxt')
+    {
+      return 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+    }
+    else if ($extension == 'docx')
+    {
+      return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
     }
 
     return $info;
