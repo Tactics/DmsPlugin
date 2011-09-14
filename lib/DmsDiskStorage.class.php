@@ -327,6 +327,11 @@ class DmsDiskStorage extends DmsStorage
     {
       return 'application/vnd.ms-excel';
     }
+    // Hack: Met powerpoint wil het ook al eens mislopen
+    else if (in_array($extension, array('ppt', 'pptx')))
+    {
+      return 'application/vnd.ms-powerpoint';
+    }
 
     return $info;
   }
