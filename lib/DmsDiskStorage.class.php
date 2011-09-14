@@ -337,7 +337,7 @@ class DmsDiskStorage extends DmsStorage
     {
       return 'application/vnd.ms-powerpoint';
     }
-    else if ($extension == 'ppxt')
+    else if ($extension == 'pptx')
     {
       return 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
     }
