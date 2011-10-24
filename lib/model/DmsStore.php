@@ -28,6 +28,11 @@ class DmsStore extends BaseDmsStore
             $storageRootFolder = sfConfig::get('sf_data_dir') . '/' . $uri['host'] . $uri['path'];
             $this->_storage = new DmsDiskStorage(array('root' => $storageRootFolder));
             break;
+          
+          case 'sfweb':
+            $storageRootFolder = sfConfig::get('sf_web_dir') . '/' . $uri['host'] . $uri['path'];
+            $this->_storage = new DmsDiskStorage(array('root' => $storageRootFolder));
+            break;
         }
       }
     
