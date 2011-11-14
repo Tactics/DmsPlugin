@@ -308,6 +308,7 @@ abstract class BaseDmsAspectPeer {
 		}
 		$affectedRows = 0; 		try {
 									$con->begin();
+			$affectedRows += DmsAspectPeer::doOnDeleteCascade(new Criteria(), $con);
 			$affectedRows += BasePeer::doDeleteAll(DmsAspectPeer::TABLE_NAME, $con);
 			$con->commit();
 			return $affectedRows;
@@ -338,7 +339,7 @@ abstract class BaseDmsAspectPeer {
 		$affectedRows = 0; 
 		try {
 									$con->begin();
-			
+			$affectedRows += DmsAspectPeer::doOnDeleteCascade($criteria, $con);
 			$affectedRows += BasePeer::doDelete($criteria, $con);
 			$con->commit();
 			return $affectedRows;
@@ -346,6 +347,32 @@ abstract class BaseDmsAspectPeer {
 			$con->rollback();
 			throw $e;
 		}
+	}
+
+	
+	protected static function doOnDeleteCascade(Criteria $criteria, Connection $con)
+	{
+				$affectedRows = 0;
+
+				$objects = DmsAspectPeer::doSelect($criteria, $con);
+		foreach($objects as $obj) {
+
+
+			include_once 'plugins/ttDmsPlugin/lib/model/DmsAspectPropertyType.php';
+
+						$c = new Criteria();
+			
+			$c->add(DmsAspectPropertyTypePeer::ASPECT_ID, $obj->getId());
+			$affectedRows += DmsAspectPropertyTypePeer::doDelete($c, $con);
+
+			include_once 'plugins/ttDmsPlugin/lib/model/DmsNodeAspect.php';
+
+						$c = new Criteria();
+			
+			$c->add(DmsNodeAspectPeer::ASPECT_ID, $obj->getId());
+			$affectedRows += DmsNodeAspectPeer::doDelete($c, $con);
+		}
+		return $affectedRows;
 	}
 
 	
