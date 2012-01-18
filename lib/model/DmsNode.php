@@ -381,9 +381,31 @@ class DmsNode extends BaseDmsNode
 
   /**
    * Stuur inhoud naar output
+   * 
+   * @param boolean $includeHeaders : default false
    */
-  public function output()
+  public function output($includeHeaders = false)
   {
+    if ($includeHeaders)
+    {
+      $response = sfContext::getInstance()->getResponse();
+      $response->clearHttpHeaders();
+      $response->setHttpheader('Pragma: public', true);
+      $response->addCacheControlHttpHeader('Cache-Control', 'must-revalidate');
+      $response->setHttpHeader('Expires', gmdate("D, d M Y H:i:s", time()) . " GMT");
+      $response->setHttpHeader('Content-Description', 'File Transfer');
+
+      if ($mime_type = $this->getMimeType())
+      {
+        $response->setContentType($mime_type, true);
+      }
+
+      $response->setHttpHeader('Content-Length', (string)($this->getSize()));
+      $response->setHttpHeader('Last-modified', gmdate("D, d M Y H:i:s", $this->getUpdatedAt(null)) . " GMT");
+      $response->setHttpHeader('Content-Disposition', 'attachment; filename="' . $this->getName() . '"');
+      $response->sendHttpHeaders();      
+    }
+    
     return $this->getDmsStore()->getStorage()->output($this->getStoragePath());
   }
   
