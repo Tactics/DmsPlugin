@@ -65,7 +65,20 @@ class ttDmsBrowserComponents extends sfComponents
     $this->options = is_array($this->options) ? $this->options : array();
     $this->options = $this->options + $defaultOptions;
     
-    $this->nodes = $this->node->getChildNodes();
+    // sorteerbaar maken van ttDmsBrowser
+    // deze params worden gezet in ttDmsBrowser/ajaxNodeList
+    $namespace = 'ttDmsBrowser';
+    $attributeHolder = $this->getUser()->getAttributeHolder();
+    $this->orderAsc = $attributeHolder->get("orderasc", true, $namespace);
+    $this->orderBy = $attributeHolder->get("orderby", '-', $namespace);
+    
+    $c = new Criteria();
+    if ($this->orderBy != '-')
+    {
+      $this->orderAsc ? $c->addAscendingOrderByColumn($this->orderBy) : $c->addDescendingOrderByColumn($this->orderBy);
+    }    
+    
+    $this->nodes = $this->node->getChildNodes($c);    
   }
   
   

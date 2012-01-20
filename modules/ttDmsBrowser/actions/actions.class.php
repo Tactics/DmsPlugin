@@ -444,6 +444,37 @@ class ttDmsBrowserActions extends sfActions
     
     $this->jsonErrorUnless($this->node && $this->node->getIsFolder(), 'node is geen folder');
     
+    // sorteerbaar maken van ttDmsBrowser
+    $namespace = 'ttDmsBrowser';        
+    $attributeHolder = $this->getUser()->getAttributeHolder();
+    
+    $this->orderAsc = $attributeHolder->get("orderasc", true, $namespace);    
+
+    // Op volgorde geklikt ?
+    if ($this->getRequestParameter("orderby"))
+    {
+      // zelfde = keer volgorde om
+      if ($this->getRequestParameter("orderby") == $attributeHolder->get("orderby", "-", $namespace))
+      {
+        $this->orderBy  = $this->getRequestParameter("orderby");
+        $this->orderAsc = ! $this->orderAsc;
+      }
+      // anders: nieuw sorteerveld en ascending
+      else
+      {
+        $this->orderBy  = $this->getRequestParameter("orderby");
+        $this->orderAsc = true;
+      }
+    }
+    // Behoud volgorde (uit sessie)
+    else
+    {
+      $this->orderBy = $attributeHolder->get("orderby", DmsNodePeer::NAME, $namespace);
+    }  	
+
+    $attributeHolder->set("orderasc", $this->orderAsc, $namespace);
+    $attributeHolder->set("orderby", $this->orderBy, $namespace);
+        
     Misc::use_helper('Partial');
     
     include_component('ttDmsBrowser', 'nodeList', array('node' => $this->node));

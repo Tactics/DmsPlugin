@@ -136,14 +136,18 @@ function deleteNode(node_id)
 $table = new myTable(
   array(
     array('text' => checkbox_tag('multiCheck', '', 0, array('onclick' => 'multiCheck(this);', 'class' => 'multiCheck')), 'width' => 16),
-    array('text' => 'Naam'),
-    array('text' => 'Datum', 'width' => 110),
+    array('name' => DmsNodePeer::NAME, 'text' => 'Naam', 'sortable' => true),
+    array('name' => DmsNodePeer::CREATED_AT, 'text' => 'Datum', 'width' => 110, 'sortable' => true),
     array('text' => 'Type', 'width' => 120),
     array('text' => 'Grootte', 'width' => 80, 'align' => 'right'),
     array('text' => 'Acties', 'width' => 60, 'align' => 'center')
   ),
   array(
-    'class' => 'ttDmsFileList'
+    'class' => 'ttDmsFileList',
+    "sortfield"  => $orderBy,
+    "sortorder"  => $orderAsc ? "ASC" : "DESC",
+    "sorturi"    => 'ttDmsBrowser/ajaxNodeList?node_id=' . $node->getId(),
+    "sorttarget" => 'nodeList',
   )
 );
 
