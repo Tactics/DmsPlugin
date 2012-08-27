@@ -141,9 +141,7 @@ abstract class BaseDmsAspectPropertyType extends BaseObject  implements Persiste
 	public function setId($v)
 	{
 
-		
-		
-		if ($v !== null && !is_int($v) && is_numeric($v)) {
+						if ($v !== null && !is_int($v) && is_numeric($v)) {
 			$v = (int) $v;
 		}
 
@@ -157,9 +155,7 @@ abstract class BaseDmsAspectPropertyType extends BaseObject  implements Persiste
 	public function setAspectId($v)
 	{
 
-		
-		
-		if ($v !== null && !is_int($v) && is_numeric($v)) {
+						if ($v !== null && !is_int($v) && is_numeric($v)) {
 			$v = (int) $v;
 		}
 
@@ -177,9 +173,7 @@ abstract class BaseDmsAspectPropertyType extends BaseObject  implements Persiste
 	public function setTypeId($v)
 	{
 
-		
-		
-		if ($v !== null && !is_int($v) && is_numeric($v)) {
+						if ($v !== null && !is_int($v) && is_numeric($v)) {
 			$v = (int) $v;
 		}
 
@@ -197,9 +191,7 @@ abstract class BaseDmsAspectPropertyType extends BaseObject  implements Persiste
 	public function setVolgorde($v)
 	{
 
-		
-		
-		if ($v !== null && !is_int($v) && is_numeric($v)) {
+						if ($v !== null && !is_int($v) && is_numeric($v)) {
 			$v = (int) $v;
 		}
 
@@ -213,9 +205,7 @@ abstract class BaseDmsAspectPropertyType extends BaseObject  implements Persiste
 	public function setCreatedBy($v)
 	{
 
-		
-		
-		if ($v !== null && !is_int($v) && is_numeric($v)) {
+						if ($v !== null && !is_int($v) && is_numeric($v)) {
 			$v = (int) $v;
 		}
 
@@ -229,9 +219,7 @@ abstract class BaseDmsAspectPropertyType extends BaseObject  implements Persiste
 	public function setUpdatedBy($v)
 	{
 
-		
-		
-		if ($v !== null && !is_int($v) && is_numeric($v)) {
+						if ($v !== null && !is_int($v) && is_numeric($v)) {
 			$v = (int) $v;
 		}
 
