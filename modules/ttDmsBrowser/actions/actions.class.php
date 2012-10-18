@@ -146,6 +146,11 @@ class ttDmsBrowserActions extends sfActions
   
       $this->response->setHttpHeader('Last-modified', gmdate("D, d M Y H:i:s", $node->getUpdatedAt(null)) . " GMT");
       $this->response->setHttpHeader('Content-Disposition', 'attachment; filename="' . $node->getName() . '"');
+      if(strstr($_SERVER["HTTP_USER_AGENT"],"MSIE") == false)
+      {
+        $this->response->setHttpHeader('Content-Type', 'application/force-download');
+      }
+ 
       $this->getResponse()->sendHttpHeaders();
           
       $node->output();
