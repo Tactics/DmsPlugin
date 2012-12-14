@@ -1,7 +1,7 @@
 <?php
   //use_javascript('http://cdn.jquerytools.org/1.1.2/jquery.tools.min.js');
   use_javascript('/ttBase/ui/js/dialog.js');
-  use_stylesheet('/ttBase/ui/js/dialog.css');
+  use_stylesheet('/ttBase/ui/css/dialog.css');
   use_javascript('/ttDms/js/ajaxupload.js');
 ?>
 <table style="width: <?php echo $options['width']; ?>">

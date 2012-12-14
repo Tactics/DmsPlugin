@@ -1,6 +1,6 @@
 <?php
   use_javascript('/ttBase/ui/js/dialog.js');
-  use_stylesheet('/ttBase/ui/js/dialog.css');
+  use_stylesheet('/ttBase/ui/css/dialog.css');
   use_javascript('/ttDms/js/ajaxupload.js');
 ?>
 
