@@ -300,7 +300,7 @@ class DmsDiskStorage extends DmsStorage
         $fileInfoInstance = finfo_open(FILEINFO_MIME, 'D:\xampp\php\extras\magic.mime');
       }
 
-      $info = finfo_file($fileInfoInstance, $this->root . $path);
+      $info = false !== $fileInfoInstance ? finfo_file($fileInfoInstance, $this->root . $path) : null;
     }
 
     // Only on unix
