@@ -172,7 +172,7 @@ foreach($nodes as $subnode)
   {  
     $table->addRow(array(
       checkbox_tag('nodes[]', $subnode->getId(), false),
-      image_tag(filetype_image_path($subnode->getExtension()), array('style' => 'vertical-align: -20%;', 'title' => $subnode->getMimeType())) . ' ' . $subnode->getName(),
+      image_tag(filetype_image_path($subnode->getExtension()), array('style' => 'width:16px; vertical-align: -20%;', 'title' => $subnode->getMimeType())) . ' ' . $subnode->getName(),
       format_date($subnode->getCreatedAt(), 'g'),
       $subnode->getMimeType(),
       format_filesize($subnode->getSize()),
