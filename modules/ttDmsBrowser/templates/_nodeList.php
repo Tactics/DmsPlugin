@@ -168,6 +168,25 @@ foreach($nodes as $subnode)
 
 foreach($nodes as $subnode)
 {
+  // controle of bestand gevonden kan worden in de storage
+  $storage = $subnode->getDmsStore()->getStorage();
+  if (!$storage->exists($subnode->getStoragePath()))
+  {    
+    $errorTdAttributes= array('style' => 'color: red; background-color:pink');
+    
+    $table->addRow(array(
+      array('content' => '', 'tdAttributes' => $errorTdAttributes),
+      array('content' => $subnode->getName(), 'tdAttributes' => $errorTdAttributes),
+      array('content' => format_date($subnode->getCreatedAt(), 'g'), 'tdAttributes' => $errorTdAttributes),      
+      array('content' => '', 'tdAttributes' => $errorTdAttributes),
+      array('content' => '', 'tdAttributes' => $errorTdAttributes),
+      array('content' => '', 'tdAttributes' => $errorTdAttributes),
+    ), array('style' => 'white-space: nowrap;')
+    );
+    
+    continue;
+  }
+  
   if (! $subnode->getIsFolder())
   {  
     $table->addRow(array(
