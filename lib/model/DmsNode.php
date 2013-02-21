@@ -78,6 +78,24 @@ class DmsNode extends BaseDmsNode
     
     return DmsNodePeer::doSelectOne($c);
   }
+  
+  /**
+   * Geeft de node onder dezelfde parent met de opgegeven naam op schijf
+   * 
+   * @param string $diskname
+   * 
+   * @return DmsNode
+   */
+  public function getSibblingByDiskName($diskname)
+  {
+    $c = new Criteria();
+    
+    $c->add(DmsNodePeer::STORE_ID, $this->getStoreId());
+    $c->add(DmsNodePeer::DISK_NAME, $diskname);
+    $c->add(DmsNodePeer::PARENT_ID, $this->getParentId());
+    
+    return DmsNodePeer::doSelectOne($c);
+  }
    
   /**
    * Geeft het pad als een array met alle parentobjecten of 
@@ -255,7 +273,7 @@ class DmsNode extends BaseDmsNode
     
     $c = 1;
 
-    while (($existingNode = $this->getChildByDiskName($safeName)) && $existingNode->getId() != $this->getId())
+    while (($existingNode = $this->getSibblingByDiskName($safeName)) && ($existingNode->getId() != $this->getId()))
     {
       $safeName = $basename . '_' . $c . ($extension ? ('.' . $extension) : '');
       $c++;
