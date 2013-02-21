@@ -240,7 +240,9 @@ class DmsNode extends BaseDmsNode
     $maxFilenameLength = sfConfig::get('sf_dms_filename_maxlength', 30);
     if ($this->getIsFolder())
     {
-      $safeName = substr($safeName, 0, min(strlen($safeName), $maxFilenameLength)); 
+      $extension = '';
+      $basename = substr($safeName, 0, min(strlen($safeName), $maxFilenameLength));
+      $safeName = $basename;
     }
     else
     {
