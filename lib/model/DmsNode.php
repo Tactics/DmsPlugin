@@ -237,8 +237,20 @@ class DmsNode extends BaseDmsNode
 
     // Controleer of er reeds een node bestaat met dezelfde diskname: zoek een ongebruikte diskname
     $safeName = DmsTools::safeFilename($newName);
-    $extension = pathinfo($safeName, PATHINFO_EXTENSION);
-    $basename = basename($safeName, $extension ? ('.' . $extension) : '');
+    $maxFilenameLength = sfConfig::get('sf_dms_filename_maxlength', 30);
+    if ($this->getIsFolder())
+    {
+      $safeName = substr($safeName, 0, min(strlen($safeName), $maxFilenameLength)); 
+    }
+    else
+    {
+      $extension = pathinfo($safeName, PATHINFO_EXTENSION);
+      $basename = basename($safeName, $extension ? ('.' . $extension) : '');
+       
+      $basename = substr($basename, 0, min(strlen($basename), $maxFilenameLength - strlen($extension) - 1));   
+      $safeName = $basename . ($extension ? ('.' . $extension) : '');    
+    }
+    
     $c = 1;
 
     while (($existingNode = $this->getChildByDiskName($safeName)) && $existingNode->getId() != $this->getId())
