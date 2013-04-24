@@ -34,7 +34,8 @@ class DmsDiskStorage extends DmsStorage
    */
   public function mkdir($path)
   {
-    if  (! @mkdir($this->root . '/' . $path))
+    // indien niet in productie maken we de dir recursive aan om exceptions te voorkomen
+    if  (! @mkdir($this->root . '/' . $path, 0777, sfConfig::get('sf_omgeving') != 'productie'))
     {
       throw new sfException(sprintf('Cannot mkdir "%s".', $path));
     }
