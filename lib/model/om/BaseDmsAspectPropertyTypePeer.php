@@ -178,13 +178,6 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	
 	public static function doSelectRS(Criteria $criteria, $con = null)
 	{
-
-    foreach (sfMixer::getCallables('BaseDmsAspectPropertyTypePeer:addDoSelectRS:addDoSelectRS') as $callable)
-    {
-      call_user_func($callable, 'BaseDmsAspectPropertyTypePeer', $criteria, $con);
-    }
-
-
 		if ($con === null) {
 			$con = Propel::getConnection(self::DATABASE_NAME);
 		}
@@ -665,17 +658,6 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	
 	public static function doInsert($values, $con = null)
 	{
-
-    foreach (sfMixer::getCallables('BaseDmsAspectPropertyTypePeer:doInsert:pre') as $callable)
-    {
-      $ret = call_user_func($callable, 'BaseDmsAspectPropertyTypePeer', $values, $con);
-      if (false !== $ret)
-      {
-        return $ret;
-      }
-    }
-
-
 		if ($con === null) {
 			$con = Propel::getConnection(self::DATABASE_NAME);
 		}
@@ -697,29 +679,12 @@ abstract class BaseDmsAspectPropertyTypePeer {
 			throw $e;
 		}
 
-		
-    foreach (sfMixer::getCallables('BaseDmsAspectPropertyTypePeer:doInsert:post') as $callable)
-    {
-      call_user_func($callable, 'BaseDmsAspectPropertyTypePeer', $values, $con, $pk);
-    }
-
-    return $pk;
+		return $pk;
 	}
 
 	
 	public static function doUpdate($values, $con = null)
 	{
-
-    foreach (sfMixer::getCallables('BaseDmsAspectPropertyTypePeer:doUpdate:pre') as $callable)
-    {
-      $ret = call_user_func($callable, 'BaseDmsAspectPropertyTypePeer', $values, $con);
-      if (false !== $ret)
-      {
-        return $ret;
-      }
-    }
-
-
 		if ($con === null) {
 			$con = Propel::getConnection(self::DATABASE_NAME);
 		}
@@ -735,16 +700,8 @@ abstract class BaseDmsAspectPropertyTypePeer {
 
 				$criteria->setDbName(self::DATABASE_NAME);
 
-		$ret = BasePeer::doUpdate($selectCriteria, $criteria, $con);
-	
-
-    foreach (sfMixer::getCallables('BaseDmsAspectPropertyTypePeer:doUpdate:post') as $callable)
-    {
-      call_user_func($callable, 'BaseDmsAspectPropertyTypePeer', $values, $con, $ret);
-    }
-
-    return $ret;
-  }
+		return BasePeer::doUpdate($selectCriteria, $criteria, $con);
+	}
 
 	
 	public static function doDeleteAll($con = null)
