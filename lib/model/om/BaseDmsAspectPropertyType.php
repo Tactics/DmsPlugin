@@ -297,6 +297,17 @@ abstract class BaseDmsAspectPropertyType extends BaseObject  implements Persiste
 	
 	public function delete($con = null)
 	{
+
+    foreach (sfMixer::getCallables('BaseDmsAspectPropertyType:delete:pre') as $callable)
+    {
+      $ret = call_user_func($callable, $this, $con);
+      if ($ret)
+      {
+        return;
+      }
+    }
+
+
 		if ($this->isDeleted()) {
 			throw new PropelException("This object has already been deleted.");
 		}
@@ -314,11 +325,28 @@ abstract class BaseDmsAspectPropertyType extends BaseObject  implements Persiste
 			$con->rollback();
 			throw $e;
 		}
-	}
+	
 
+    foreach (sfMixer::getCallables('BaseDmsAspectPropertyType:delete:post') as $callable)
+    {
+      call_user_func($callable, $this, $con);
+    }
+
+  }
 	
 	public function save($con = null)
 	{
+
+    foreach (sfMixer::getCallables('BaseDmsAspectPropertyType:save:pre') as $callable)
+    {
+      $affectedRows = call_user_func($callable, $this, $con);
+      if (is_int($affectedRows))
+      {
+        return $affectedRows;
+      }
+    }
+
+
     if ($this->isNew() && !$this->isColumnModified(DmsAspectPropertyTypePeer::CREATED_AT))
     {
       $this->setCreatedAt(time());
@@ -341,6 +369,11 @@ abstract class BaseDmsAspectPropertyType extends BaseObject  implements Persiste
 			$con->begin();
 			$affectedRows = $this->doSave($con);
 			$con->commit();
+    foreach (sfMixer::getCallables('BaseDmsAspectPropertyType:save:post') as $callable)
+    {
+      call_user_func($callable, $this, $con, $affectedRows);
+    }
+
 			return $affectedRows;
 		} catch (PropelException $e) {
 			$con->rollback();
@@ -691,5 +724,19 @@ abstract class BaseDmsAspectPropertyType extends BaseObject  implements Persiste
 		}
 		return $this->aDmsPropertyType;
 	}
+
+
+  public function __call($method, $arguments)
+  {
+    if (!$callable = sfMixer::getCallable('BaseDmsAspectPropertyType:'.$method))
+    {
+      throw new sfException(sprintf('Call to undefined method BaseDmsAspectPropertyType::%s', $method));
+    }
+
+    array_unshift($arguments, $this);
+
+    return call_user_func_array($callable, $arguments);
+  }
+
 
 } 
