@@ -1,3 +1,6 @@
 all:
   javascripts: [/ttBase/ui/js/dialog.js]
   stylesheets: [/ttBase/ui/css/dialog.css]
+
+listSuccess:
+  javascripts: [jquery.maskedinput.js]

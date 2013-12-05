@@ -26,7 +26,75 @@ class ttDmsBrowserActions extends sfActions
   {
     $this->stores = DmsStorePeer::doSelect(new Criteria());
   }
-  
+
+  /**
+   * Lijst van alle geuploade bestanden
+   */
+  public function executeList()
+  {
+    $this->pager = $this->getPager();
+    $this->pager->init();
+  }
+
+  /**
+   * Pager voor node lijst
+   */
+  private function getPager()
+  {
+    $pager = new myFilteredPager('DmsNode', 'DmsNode/list');
+
+    $pager->getCriteria()->addJoin(DmsNodePeer::ID, DmsNodeAspectPeer::NODE_ID, Criteria::LEFT_JOIN);
+    $pager->getCriteria()->add(DmsNodePeer::IS_FOLDER, 1, Criteria::NOT_EQUAL);
+    $pager->getCriteria()->addDescendingOrderByColumn(DmsNodePeer::CREATED_AT);
+    $pager->getCriteria()->setDistinct();
+
+    $aspectId = $pager->add(DmsNodeAspectPeer::ASPECT_ID);
+    $pager->add(DmsNodePeer::NAME, array('comparison' => Criteria::LIKE));
+    $values = $pager->add('aspect_type', array('addToCriteria' => false));
+
+    $crit = $pager->getCriteria();
+    if ($aspectId && is_array($values))
+    {
+      $aspect = DmsAspectPeer::retrieveByPK($aspectId);
+
+      foreach($aspect->getDmsAspectPropertyTypes() as $propertyType)
+      {
+        $property = DmsPropertyTypePeer::retrieveByPK($propertyType->getTypeId());
+        $value = $values[$propertyType->getTypeId()];
+        $dataType = $property->getDataType();
+
+        if (!$value)
+        {
+          continue;
+        }
+
+        $alias = 'prop' . $property->getId();
+        $crit->addAlias($alias, DmsNodePropertyPeer::TABLE_NAME);
+        $crit->addJoin(DmsNodePeer::ID, DmsNodePropertyPeer::alias($alias, DmsNodePropertyPeer::NODE_ID), Criteria::JOIN);
+        $crit->add(DmsNodePropertyPeer::alias($alias, DmsNodePropertyPeer::TYPE_ID), $property->getId());
+
+        switch ($dataType)
+        {
+          case DmsPropertyTypePeer::TYPE_TEXT:
+          case DmsPropertyTypePeer::TYPE_DATE:
+            $crit->add(DmsNodePropertyPeer::alias($alias, DmsNodePropertyPeer::STRING_VALUE), '%' . $value . '%', Criteria::LIKE);
+            break;
+          case DmsPropertyTypePeer::TYPE_TEXTAREA:
+            $crit->add(DmsNodePropertyPeer::alias($alias, DmsNodePropertyPeer::TEXT_VALUE), '%' . $value . '%', Criteria::LIKE);
+            break;
+          case DmsPropertyTypePeer::TYPE_CHECKBOX:
+            $crit->add(DmsNodePropertyPeer::alias($alias, DmsNodePropertyPeer::BOOLEAN_VALUE), $value);
+            break;
+          default:
+            $crit->add(DmsNodePropertyPeer::alias($alias, DmsNodePropertyPeer::STRING_VALUE), '%' . $value . '%', Criteria::LIKE);
+            break;
+        }
+      }
+    }
+
+    return $pager;
+  }
+
   /**
    * Browse a content store
    */
@@ -40,10 +108,10 @@ class ttDmsBrowserActions extends sfActions
     else if ($this->hasRequestParameter('node_id'))
     {
       $this->node = DmsNodePeer::retrieveByPK($this->getRequestParameter('node_id'));
-      $this->store = $this->node->getStore();
+      $this->store = $this->node->getDmsStore();
     }
   }
-  
+
   /**
    * Creates a new folder
    */
@@ -66,22 +134,22 @@ class ttDmsBrowserActions extends sfActions
 
     $this->redirect('ttDmsBrowser/browse?store_id=' . $folder->getStoreId());
   }
-  
+
   /**
    * Upload een bestand in de opgegeven folder
    */
   public function executeUpload()
   {
     $folder = DmsNodePeer::retrieveByPK($this->getRequestParameter('node_id'));
-    
+
     if ($this->getRequest()->hasFile('file') && ! $this->getRequest()->hasFileError('file'))
     {
       $folder->createNodeFromUpload('file');
     }
-    
+
     $this->redirect('ttDmsBrowser/browse?store_id=' . $folder->getStoreId());
   }
-  
+
   /**
    * Download één of meerdere nodes.  Indien meerdere wordt verzonden als zipfile
    * Parameter recursive bepaald of ook submappen toegevoegd moeten worden.
@@ -89,7 +157,7 @@ class ttDmsBrowserActions extends sfActions
   public function executeDownload()
   {
     $recursive = $this->getRequestParameter('recursive', false);
-    
+
     // Single file download
     if ($this->hasRequestParameter('node_id'))
     {
@@ -100,13 +168,13 @@ class ttDmsBrowserActions extends sfActions
     else if ($this->hasRequestParameter('node_ids'))
     {
       $node_ids = explode(',', trim($this->getRequestParameter('node_ids'), ','));
-      
+
       $c = new Criteria();
       $c->add(DmsNodePeer::ID, $node_ids, Criteria::IN);
-      
+
       $nodes = DmsNodePeer::doSelect($c);
       $this->forward404Unless(count($nodes));
-      
+
       $zipFilename = 'files.zip';
       $type = 'zip';
     }
@@ -115,15 +183,15 @@ class ttDmsBrowserActions extends sfActions
     {
       $folder = DmsNodePeer::retrieveByPK($this->getRequestParameter('folder_id'));
       $this->forward404Unless($folder);
-      
+
       $c = new Criteria();
       if (! $recursive)
       {
         $c->add(DmsNodePeer::IS_FOLDER, false);
       }
-      
+
       $nodes = $folder->getChildNodes($c);
-      
+
       $zipFilename = $folder->getDiskName() . '.zip';
       $type = 'zip';
     }
@@ -133,7 +201,7 @@ class ttDmsBrowserActions extends sfActions
     $this->response->addCacheControlHttpHeader('Cache-Control', 'must-revalidate');
     $this->response->setHttpHeader('Expires', gmdate("D, d M Y H:i:s", time()) . " GMT");
     $this->response->setHttpHeader('Content-Description', 'File Transfer');
-    
+
     // Indien een enkel bestand: directe download
     if ($type == 'file')
     {
@@ -141,18 +209,18 @@ class ttDmsBrowserActions extends sfActions
       {
         $this->response->setContentType($mime_type, true);
       }
-    
+
       $this->response->setHttpHeader('Content-Length', (string)($node->getSize()));
-  
+
       $this->response->setHttpHeader('Last-modified', gmdate("D, d M Y H:i:s", $node->getUpdatedAt(null)) . " GMT");
       $this->response->setHttpHeader('Content-Disposition', 'attachment; filename="' . $node->getName() . '"');
       if(strstr($_SERVER["HTTP_USER_AGENT"],"MSIE") == false)
       {
         $this->response->setHttpHeader('Content-Type', 'application/force-download');
       }
- 
+
       $this->getResponse()->sendHttpHeaders();
-          
+
       $node->output();
       exit();
     }
@@ -193,12 +261,12 @@ class ttDmsBrowserActions extends sfActions
       {
         exit("cannot open $tmpZipFileName\n");
       }
-  
+
       foreach($nodes as $node)
       {
-        $node->addToZip($zip, '', $recursive);  
+        $node->addToZip($zip, '', $recursive);
       }
-  
+
       $zip->close();
 
       $this->getResponse()->clearHttpHeaders();
@@ -206,17 +274,17 @@ class ttDmsBrowserActions extends sfActions
       $this->response->setContentType('application/octet-stream', true);
       $this->response->setHttpHeader('Content-Transfer-Encoding', 'binary', true);
       $this->response->setHttpHeader('Content-Length', (string)filesize($tmpZipFileName));
-      $this->response->setHttpHeader('Content-Disposition', 'attachment; filename=' . $zipFilename);   
-      $this->getResponse()->sendHttpHeaders();    
+      $this->response->setHttpHeader('Content-Disposition', 'attachment; filename=' . $zipFilename);
+      $this->getResponse()->sendHttpHeaders();
 
       readfile($tmpZipFileName);
       unlink($tmpZipFileName);
-      
+
       exit();
     }
   }
-  
-  
+
+
   /**
    * Geeft een node detali weer
    */
@@ -225,18 +293,18 @@ class ttDmsBrowserActions extends sfActions
     $this->node = DmsNodePeer::retrieveByPK($this->getRequestParameter('node_id'));
     $this->forward404Unless($this->node);
     $this->mime_type = $this->node->getMimeType();
-    
+
     $aspect_ids = array();
     foreach($this->node->getDmsNodeAspects() as $nodeAspect)
     {
       $aspect_ids[] = $nodeAspect->getAspectId();
     }
-    
+
     $c = new Criteria();
     $c->add(DmsAspectPeer::ID, $aspect_ids, Criteria::NOT_IN);
     $this->aspects = DmsAspectPeer::doSelect($c);
   }
-  
+
   /**
    * Voegt een aspect toe aan een node
    */
@@ -244,14 +312,14 @@ class ttDmsBrowserActions extends sfActions
   {
     $node = DmsNodePeer::retrieveByPK($this->getRequestParameter('node_id'));
     $this->forward404Unless($node);
-    
+
     $aspect = DmsAspectPeer::retrieveByPK($this->getRequestParameter('aspect_id'));
-    
+
     $node->addAspect($aspect);
-    
+
     $this->redirect('ttDmsBrowser/show?node_id=' . $node->getId());
   }
-  
+
   /**
    * Verwijdert een aspect van een node
    */
@@ -259,9 +327,9 @@ class ttDmsBrowserActions extends sfActions
   {
     $nodeAspect = DmsNodeAspectPeer::retrieveByPK($this->getRequestParameter('nodeaspect_id'));
     $this->forward404Unless($nodeAspect);
-    
+
     $nodeAspect->getDmsNode()->removeAspect($nodeAspect->getDmsAspect());
-    
+
     $this->redirect('ttDmsBrowser/show?node_id=' . $nodeAspect->getDmsNode()->getId());
   }
 
@@ -273,7 +341,7 @@ class ttDmsBrowserActions extends sfActions
   {
     $node = DmsNodePeer::retrieveByPK($this->getRequestParameter('node_id'));
     $this->forward404Unless($node);
-    
+
     foreach($node->getDmsNodeAspectsJoinDmsAspect() as $nodeAspect)
     {
       foreach($nodeAspect->getDmsAspect()->getDmsAspectPropertyTypesJoinDmsPropertyType() as $aspectPropertyType)
@@ -282,7 +350,7 @@ class ttDmsBrowserActions extends sfActions
       }
     }
 
-    $this->redirect('ttDmsBrowser/show?node_id=' . $node->getId());
+    $this->redirect('ttDmsBrowser/list');
   }
 
   /**
@@ -296,7 +364,7 @@ class ttDmsBrowserActions extends sfActions
       exit();
     }
   }
-  
+
   /**
    * Geeft json folder data voor nodeTree
    */
@@ -304,11 +372,11 @@ class ttDmsBrowserActions extends sfActions
   {
     $node = DmsNodePeer::retrieveByPK($this->getRequestParameter('node_id'));
     $data = DmsNodePeer::getNodeTree($node);
-    
+
     echo json_encode($data['children']);
     exit();
   }
-  
+
   /**
    * JSON Rename node
    */
@@ -316,7 +384,7 @@ class ttDmsBrowserActions extends sfActions
   {
     $node = DmsNodePeer::retrieveByPK($this->getRequestParameter('node_id'));
     $this->jsonErrorUnless($node, 'Node niet gevonden');
-    
+
     try
     {
       $node->rename($this->getRequestParameter('new_name'));
@@ -326,11 +394,11 @@ class ttDmsBrowserActions extends sfActions
       echo json_encode(array('success' => false, 'message' => $e->getMessage()));
       exit();
     }
-    
+
     echo json_encode(array('success' => true, 'message' => 'ok'));
     exit();
   }
- 
+
   /**
    *JSON Move node
    */
@@ -340,14 +408,14 @@ class ttDmsBrowserActions extends sfActions
     $this->jsonErrorUnless($node, 'Node niet gevonden');
     $target_node = DmsNodePeer::retrieveByPK($this->getRequestParameter('target_id'));
     $this->jsonErrorUnless($target_node, 'Targetnode niet gevonden');
-    
+
     $type = $this->getRequestParameter('type');
-    
+
     if ($type == 'after' || $type == 'before')
     {
       $target_node = $target_node->getParentNode();
     }
-    
+
     try
     {
       $node->move($target_node);
@@ -357,7 +425,7 @@ class ttDmsBrowserActions extends sfActions
       echo json_encode(array('success' => false, 'message' => $e->getMessage()));
       exit();
     }
-    
+
     echo json_encode(array('success' => true, 'message' => 'ok'));
     exit();
   }
@@ -369,14 +437,14 @@ class ttDmsBrowserActions extends sfActions
   {
     $target_node = DmsNodePeer::retrieveByPK($this->getRequestParameter('target_id'));
     $this->jsonErrorUnless($target_node, 'Targetnode niet gevonden');
-    
+
     $type = $this->getRequestParameter('type');
-    
+
     if ($type == 'after' || $type == 'before')
     {
       $target_node = $target_node->getParentNode();
     }
-    
+
     try
     {
       $folder = $target_node->createFolder($this->getRequestParameter('name'));
@@ -386,11 +454,11 @@ class ttDmsBrowserActions extends sfActions
       echo json_encode(array('success' => false, 'message' => $e->getMessage()));
       exit();
     }
-    
+
     echo json_encode(array('success' => true, 'message' => 'ok', 'node_id' => $folder->getId()));
     exit();
   }
- 
+
   /**
    *JSON Move delete
    */
@@ -410,10 +478,10 @@ class ttDmsBrowserActions extends sfActions
       echo json_encode(array('success' => false, 'message' => 'Geen bestand(en) geselecteerd'));
       exit();
     }
-    
+
     $c = new Criteria();
     $c->add(DmsNodePeer::ID, $node_ids, Criteria::IN);
-    
+
     foreach(DmsNodePeer::doSelect($c) as $node)
     {
       try
@@ -427,12 +495,12 @@ class ttDmsBrowserActions extends sfActions
         exit();
       }
     }
-        
+
     echo json_encode(array('success' => true, 'message' => 'ok'));
     exit();
   }
-  
-  
+
+
   /**
    * AJAX Node list (folder list)
    */
@@ -446,14 +514,14 @@ class ttDmsBrowserActions extends sfActions
     {
       $this->node = DmsNodePeer::retrieveByPK($this->getRequestParameter('node_id'));
     }
-    
+
     $this->jsonErrorUnless($this->node && $this->node->getIsFolder(), 'node is geen folder');
-    
+
     // sorteerbaar maken van ttDmsBrowser
-    $namespace = 'ttDmsBrowser';        
+    $namespace = 'ttDmsBrowser';
     $attributeHolder = $this->getUser()->getAttributeHolder();
-    
-    $this->orderAsc = $attributeHolder->get("orderasc", true, $namespace);    
+
+    $this->orderAsc = $attributeHolder->get("orderasc", true, $namespace);
 
     // Op volgorde geklikt ?
     if ($this->getRequestParameter("orderby"))
@@ -475,16 +543,16 @@ class ttDmsBrowserActions extends sfActions
     else
     {
       $this->orderBy = $attributeHolder->get("orderby", DmsNodePeer::NAME, $namespace);
-    }  	
+    }
 
     $attributeHolder->set("orderasc", $this->orderAsc, $namespace);
     $attributeHolder->set("orderby", $this->orderBy, $namespace);
-        
+
     Misc::use_helper('Partial');
-    
+
     include_component('ttDmsBrowser', 'nodeList', array('node' => $this->node));
-    
+
     exit();
   }
-  
+
 }

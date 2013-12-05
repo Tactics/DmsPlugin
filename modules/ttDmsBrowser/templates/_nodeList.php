@@ -130,6 +130,18 @@ function deleteNode(node_id)
   });
 }
 
+function showNodeDetails(node_id)
+{
+  var showNodeDetail = $('#showNodeDetail');
+  if (! showNodeDetail.size())
+  {
+    $('body').append($('<div id="showNodeDetail"><' + '/div>')); // fix voor validator dom parser (closing div tag)
+    showNodeDetail = $('#showNodeDetail');
+  }
+
+  showNodeDetail.load('<?php echo url_for('ttDmsBrowser/show'); ?>?node_id='+node_id);
+  showNodeDetail.tt_window({width: '750px', top: 100});
+}
 </script>
 
 <?php
@@ -197,7 +209,7 @@ foreach($nodes as $subnode)
       format_filesize($subnode->getSize()),
       link_to(image_tag('/ttDms/images/icons/diskette_16.gif', array('title' => 'Downloaden')), 'ttDmsBrowser/download?node_id=' . $subnode->getId())
         . link_to_function(image_tag('/ttDms/images/icons/delete_16.gif', array('title' => 'Verwijderen')), 'deleteNode(' . $subnode->getId() . ');')
-        . link_to(image_tag('/ttDms/images/icons/document_zoom_16.gif', array('title' => 'Details')), 'ttDmsBrowser/show?node_id=' . $subnode->getId())
+        . link_to_function(image_tag('/ttDms/images/icons/document_zoom_16.gif', array('title' => 'Details')), 'showNodeDetails(' . $subnode->getId() . ');')
     ), array('style' => 'white-space: nowrap'));
   }
 }
