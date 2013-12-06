@@ -1,0 +1,16 @@
+{
+    "name": "tactics/tt-dms-plugin",
+    "type": "symfony1-plugin",
+    "description": "System that manages your documents!",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Gert Vrebos",
+            "email": "gert@tactics.be"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "composer/installers": "~1.0"
+    }
+}
