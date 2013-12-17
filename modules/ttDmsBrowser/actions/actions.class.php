@@ -91,6 +91,28 @@ class ttDmsBrowserActions extends sfActions
         }
       }
     }
+        
+    // filter op datum van - tot
+    if ($pager->addAndGet('datum_van', array('addToCriteria' => false)))
+    {
+      $van = myDateTools::cultureDateToMyDate($pager->get('datum_van'));
+      // datum na de 'van' datum
+      $cton = $pager->getCriteria()->getNewCriterion(DmsNodePeer::CREATED_AT, $van->getPropelDate(), Criteria::GREATER_EQUAL);
+      $pager->getCriteria()->add($cton);
+    }
+    if ($pager->addAndGet('datum_tot', array('addToCriteria' => false)))
+    {
+      $tot = myDateTools::cultureDateToMyDate($pager->get('datum_tot'));
+      // datum tot en met de 'tot' datum
+      if(isset($cton))
+      {
+        $cton->addAnd($pager->getCriteria()->getNewCriterion(DmsNodePeer::CREATED_AT, $tot->addDays(1)->getPropelDate(), Criteria::LESS_EQUAL));
+      }
+      else
+      {
+        $pager->getCriteria()->add(DmsNodePeer::CREATED_AT, $tot->addDays(1)->getPropelDate(), Criteria::LESS_EQUAL);
+      }
+    }
 
     return $pager;
   }
