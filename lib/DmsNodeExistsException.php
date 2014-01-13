@@ -9,7 +9,19 @@
  *
  * @author taco
  */
-class DmsNodeExistsException extends sfException {
-    //put your code here
+class DmsNodeExistsException extends sfException
+{
+  //put your code here
+  protected $node = null;
+  
+  public function setNode($dms_node)
+  {
+    $this->node = $dms_node;
+  }
+
+  public function getNode()
+  {
+    return $this->node;
+  }
 }
 ?>
