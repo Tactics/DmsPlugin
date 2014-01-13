@@ -76,8 +76,18 @@ class ttDmsStorageBehavior
 
      throw new sfException('Could not retrieve parentDmsNode from ' . get_class($object) . ' ' . $objStr);
     }
-    
-    $folder = $parentDmsNode->createFolder($object->getDmsStorageFolderName());
+
+    try {
+      $folder = $parentDmsNode->createFolder($object->getDmsStorageFolderName());
+    }
+    catch (DmsNodeExistsException $e)
+    {
+      $folder = $e->getNode();
+      if (!$folder)
+      {
+        throw $e;
+      }
+    }
     
     $ref = new DmsObjectNodeRef();
     $ref->setObject($object);
