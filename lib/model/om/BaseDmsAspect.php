@@ -17,6 +17,10 @@ abstract class BaseDmsAspect extends BaseObject  implements Persistent {
 
 
 	
+	protected $system_name;
+
+
+	
 	protected $created_by;
 
 
@@ -61,6 +65,13 @@ abstract class BaseDmsAspect extends BaseObject  implements Persistent {
 	{
 
 		return $this->name;
+	}
+
+	
+	public function getSystemName()
+	{
+
+		return $this->system_name;
 	}
 
 	
@@ -150,6 +161,20 @@ abstract class BaseDmsAspect extends BaseObject  implements Persistent {
 
 	} 
 	
+	public function setSystemName($v)
+	{
+
+						if ($v !== null && !is_string($v)) {
+			$v = (string) $v; 
+		}
+
+		if ($this->system_name !== $v) {
+			$this->system_name = $v;
+			$this->modifiedColumns[] = DmsAspectPeer::SYSTEM_NAME;
+		}
+
+	} 
+	
 	public function setCreatedBy($v)
 	{
 
@@ -220,19 +245,21 @@ abstract class BaseDmsAspect extends BaseObject  implements Persistent {
 
 			$this->name = $rs->getString($startcol + 1);
 
-			$this->created_by = $rs->getInt($startcol + 2);
+			$this->system_name = $rs->getString($startcol + 2);
 
-			$this->updated_by = $rs->getInt($startcol + 3);
+			$this->created_by = $rs->getInt($startcol + 3);
 
-			$this->created_at = $rs->getTimestamp($startcol + 4, null);
+			$this->updated_by = $rs->getInt($startcol + 4);
 
-			$this->updated_at = $rs->getTimestamp($startcol + 5, null);
+			$this->created_at = $rs->getTimestamp($startcol + 5, null);
+
+			$this->updated_at = $rs->getTimestamp($startcol + 6, null);
 
 			$this->resetModified();
 
 			$this->setNew(false);
 
-						return $startcol + 6; 
+						return $startcol + 7; 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating DmsAspect object", $e);
 		}
@@ -441,15 +468,18 @@ abstract class BaseDmsAspect extends BaseObject  implements Persistent {
 				return $this->getName();
 				break;
 			case 2:
-				return $this->getCreatedBy();
+				return $this->getSystemName();
 				break;
 			case 3:
-				return $this->getUpdatedBy();
+				return $this->getCreatedBy();
 				break;
 			case 4:
-				return $this->getCreatedAt();
+				return $this->getUpdatedBy();
 				break;
 			case 5:
+				return $this->getCreatedAt();
+				break;
+			case 6:
 				return $this->getUpdatedAt();
 				break;
 			default:
@@ -464,10 +494,11 @@ abstract class BaseDmsAspect extends BaseObject  implements Persistent {
 		$result = array(
 			$keys[0] => $this->getId(),
 			$keys[1] => $this->getName(),
-			$keys[2] => $this->getCreatedBy(),
-			$keys[3] => $this->getUpdatedBy(),
-			$keys[4] => $this->getCreatedAt(),
-			$keys[5] => $this->getUpdatedAt(),
+			$keys[2] => $this->getSystemName(),
+			$keys[3] => $this->getCreatedBy(),
+			$keys[4] => $this->getUpdatedBy(),
+			$keys[5] => $this->getCreatedAt(),
+			$keys[6] => $this->getUpdatedAt(),
 		);
 		return $result;
 	}
@@ -490,15 +521,18 @@ abstract class BaseDmsAspect extends BaseObject  implements Persistent {
 				$this->setName($value);
 				break;
 			case 2:
-				$this->setCreatedBy($value);
+				$this->setSystemName($value);
 				break;
 			case 3:
-				$this->setUpdatedBy($value);
+				$this->setCreatedBy($value);
 				break;
 			case 4:
-				$this->setCreatedAt($value);
+				$this->setUpdatedBy($value);
 				break;
 			case 5:
+				$this->setCreatedAt($value);
+				break;
+			case 6:
 				$this->setUpdatedAt($value);
 				break;
 		} 	}
@@ -510,10 +544,11 @@ abstract class BaseDmsAspect extends BaseObject  implements Persistent {
 
 		if (array_key_exists($keys[0], $arr)) $this->setId($arr[$keys[0]]);
 		if (array_key_exists($keys[1], $arr)) $this->setName($arr[$keys[1]]);
-		if (array_key_exists($keys[2], $arr)) $this->setCreatedBy($arr[$keys[2]]);
-		if (array_key_exists($keys[3], $arr)) $this->setUpdatedBy($arr[$keys[3]]);
-		if (array_key_exists($keys[4], $arr)) $this->setCreatedAt($arr[$keys[4]]);
-		if (array_key_exists($keys[5], $arr)) $this->setUpdatedAt($arr[$keys[5]]);
+		if (array_key_exists($keys[2], $arr)) $this->setSystemName($arr[$keys[2]]);
+		if (array_key_exists($keys[3], $arr)) $this->setCreatedBy($arr[$keys[3]]);
+		if (array_key_exists($keys[4], $arr)) $this->setUpdatedBy($arr[$keys[4]]);
+		if (array_key_exists($keys[5], $arr)) $this->setCreatedAt($arr[$keys[5]]);
+		if (array_key_exists($keys[6], $arr)) $this->setUpdatedAt($arr[$keys[6]]);
 	}
 
 	
@@ -523,6 +558,7 @@ abstract class BaseDmsAspect extends BaseObject  implements Persistent {
 
 		if ($this->isColumnModified(DmsAspectPeer::ID)) $criteria->add(DmsAspectPeer::ID, $this->id);
 		if ($this->isColumnModified(DmsAspectPeer::NAME)) $criteria->add(DmsAspectPeer::NAME, $this->name);
+		if ($this->isColumnModified(DmsAspectPeer::SYSTEM_NAME)) $criteria->add(DmsAspectPeer::SYSTEM_NAME, $this->system_name);
 		if ($this->isColumnModified(DmsAspectPeer::CREATED_BY)) $criteria->add(DmsAspectPeer::CREATED_BY, $this->created_by);
 		if ($this->isColumnModified(DmsAspectPeer::UPDATED_BY)) $criteria->add(DmsAspectPeer::UPDATED_BY, $this->updated_by);
 		if ($this->isColumnModified(DmsAspectPeer::CREATED_AT)) $criteria->add(DmsAspectPeer::CREATED_AT, $this->created_at);
@@ -558,6 +594,8 @@ abstract class BaseDmsAspect extends BaseObject  implements Persistent {
 	{
 
 		$copyObj->setName($this->name);
+
+		$copyObj->setSystemName($this->system_name);
 
 		$copyObj->setCreatedBy($this->created_by);
 

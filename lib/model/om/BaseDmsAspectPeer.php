@@ -13,7 +13,7 @@ abstract class BaseDmsAspectPeer {
 	const CLASS_DEFAULT = 'plugins.ttDmsPlugin.lib.model.DmsAspect';
 
 	
-	const NUM_COLUMNS = 6;
+	const NUM_COLUMNS = 7;
 
 	
 	const NUM_LAZY_LOAD_COLUMNS = 0;
@@ -24,6 +24,9 @@ abstract class BaseDmsAspectPeer {
 
 	
 	const NAME = 'dms_aspect.NAME';
+
+	
+	const SYSTEM_NAME = 'dms_aspect.SYSTEM_NAME';
 
 	
 	const CREATED_BY = 'dms_aspect.CREATED_BY';
@@ -43,18 +46,18 @@ abstract class BaseDmsAspectPeer {
 
 	
 	private static $fieldNames = array (
-		BasePeer::TYPE_PHPNAME => array ('Id', 'Name', 'CreatedBy', 'UpdatedBy', 'CreatedAt', 'UpdatedAt', ),
-		BasePeer::TYPE_COLNAME => array (DmsAspectPeer::ID, DmsAspectPeer::NAME, DmsAspectPeer::CREATED_BY, DmsAspectPeer::UPDATED_BY, DmsAspectPeer::CREATED_AT, DmsAspectPeer::UPDATED_AT, ),
-		BasePeer::TYPE_FIELDNAME => array ('id', 'name', 'created_by', 'updated_by', 'created_at', 'updated_at', ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, )
+		BasePeer::TYPE_PHPNAME => array ('Id', 'Name', 'SystemName', 'CreatedBy', 'UpdatedBy', 'CreatedAt', 'UpdatedAt', ),
+		BasePeer::TYPE_COLNAME => array (DmsAspectPeer::ID, DmsAspectPeer::NAME, DmsAspectPeer::SYSTEM_NAME, DmsAspectPeer::CREATED_BY, DmsAspectPeer::UPDATED_BY, DmsAspectPeer::CREATED_AT, DmsAspectPeer::UPDATED_AT, ),
+		BasePeer::TYPE_FIELDNAME => array ('id', 'name', 'system_name', 'created_by', 'updated_by', 'created_at', 'updated_at', ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, )
 	);
 
 	
 	private static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Name' => 1, 'CreatedBy' => 2, 'UpdatedBy' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
-		BasePeer::TYPE_COLNAME => array (DmsAspectPeer::ID => 0, DmsAspectPeer::NAME => 1, DmsAspectPeer::CREATED_BY => 2, DmsAspectPeer::UPDATED_BY => 3, DmsAspectPeer::CREATED_AT => 4, DmsAspectPeer::UPDATED_AT => 5, ),
-		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'name' => 1, 'created_by' => 2, 'updated_by' => 3, 'created_at' => 4, 'updated_at' => 5, ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, )
+		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Name' => 1, 'SystemName' => 2, 'CreatedBy' => 3, 'UpdatedBy' => 4, 'CreatedAt' => 5, 'UpdatedAt' => 6, ),
+		BasePeer::TYPE_COLNAME => array (DmsAspectPeer::ID => 0, DmsAspectPeer::NAME => 1, DmsAspectPeer::SYSTEM_NAME => 2, DmsAspectPeer::CREATED_BY => 3, DmsAspectPeer::UPDATED_BY => 4, DmsAspectPeer::CREATED_AT => 5, DmsAspectPeer::UPDATED_AT => 6, ),
+		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'name' => 1, 'system_name' => 2, 'created_by' => 3, 'updated_by' => 4, 'created_at' => 5, 'updated_at' => 6, ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, )
 	);
 
 	
@@ -111,6 +114,8 @@ abstract class BaseDmsAspectPeer {
 		$criteria->addSelectColumn(DmsAspectPeer::ID);
 
 		$criteria->addSelectColumn(DmsAspectPeer::NAME);
+
+		$criteria->addSelectColumn(DmsAspectPeer::SYSTEM_NAME);
 
 		$criteria->addSelectColumn(DmsAspectPeer::CREATED_BY);
 
