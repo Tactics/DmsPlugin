@@ -142,6 +142,11 @@ function showNodeDetails(node_id)
   showNodeDetail.load('<?php echo url_for('ttDmsBrowser/show'); ?>?node_id='+node_id);
   showNodeDetail.tt_window({width: '750px', top: 100});
 }
+
+function closeNodeDetails()
+{
+  $('#showNodeDetail').tt_window().close();
+}
 </script>
 
 <?php
