@@ -91,7 +91,7 @@
     <?php endforeach; ?>
   
     <?php echo submit_tag('Opslaan');?>
-    <?php echo button_to_function('Annuleren', 'history.back();'); ?>
+    <?php echo button_to_function('Annuleren', 'closeNodeDetails();'); ?>
   </form>
   <?php 
   endif;
