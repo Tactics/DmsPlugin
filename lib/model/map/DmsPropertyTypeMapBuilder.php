@@ -36,6 +36,8 @@ class DmsPropertyTypeMapBuilder {
 
 		$tMap->addColumn('NAME', 'Name', 'string', CreoleTypes::VARCHAR, false, 45);
 
+		$tMap->addColumn('SYSTEM_NAME', 'SystemName', 'string', CreoleTypes::VARCHAR, false, 100);
+
 		$tMap->addColumn('DATA_TYPE', 'DataType', 'string', CreoleTypes::VARCHAR, false, 20);
 
 		$tMap->addColumn('CREATED_BY', 'CreatedBy', 'int', CreoleTypes::INTEGER, false, null);

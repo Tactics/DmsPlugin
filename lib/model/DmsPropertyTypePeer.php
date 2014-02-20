@@ -27,5 +27,18 @@ class DmsPropertyTypePeer extends BaseDmsPropertyTypePeer
   {
     return self::$data_types;
   }
-  
+
+  /**
+   * Geeft het property type met de gegeven system_name terug
+   *
+   * @param string $sys_name
+   * @return \DmsPropertyType
+   */
+  public static function retrieveBySystemName($sys_name)
+  {
+    $c = new Criteria();
+    $c->add(self::SYSTEM_NAME, $sys_name);
+
+    return self::doSelectOne($c);
+  }
 }

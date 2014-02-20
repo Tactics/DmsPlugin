@@ -43,6 +43,7 @@
   <table name="dms_property_type">
     <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
     <column name="name" type="VARCHAR" size="45"/>
+    <column name="system_name" type="VARCHAR" size="100"/>
     <column name="data_type" type="VARCHAR" size="20"/>
     <column name="created_by" type="INTEGER"/>
     <column name="updated_by" type="INTEGER"/>

@@ -13,7 +13,7 @@ abstract class BaseDmsPropertyTypePeer {
 	const CLASS_DEFAULT = 'plugins.ttDmsPlugin.lib.model.DmsPropertyType';
 
 	
-	const NUM_COLUMNS = 7;
+	const NUM_COLUMNS = 8;
 
 	
 	const NUM_LAZY_LOAD_COLUMNS = 0;
@@ -24,6 +24,9 @@ abstract class BaseDmsPropertyTypePeer {
 
 	
 	const NAME = 'dms_property_type.NAME';
+
+	
+	const SYSTEM_NAME = 'dms_property_type.SYSTEM_NAME';
 
 	
 	const DATA_TYPE = 'dms_property_type.DATA_TYPE';
@@ -46,18 +49,18 @@ abstract class BaseDmsPropertyTypePeer {
 
 	
 	private static $fieldNames = array (
-		BasePeer::TYPE_PHPNAME => array ('Id', 'Name', 'DataType', 'CreatedBy', 'UpdatedBy', 'CreatedAt', 'UpdatedAt', ),
-		BasePeer::TYPE_COLNAME => array (DmsPropertyTypePeer::ID, DmsPropertyTypePeer::NAME, DmsPropertyTypePeer::DATA_TYPE, DmsPropertyTypePeer::CREATED_BY, DmsPropertyTypePeer::UPDATED_BY, DmsPropertyTypePeer::CREATED_AT, DmsPropertyTypePeer::UPDATED_AT, ),
-		BasePeer::TYPE_FIELDNAME => array ('id', 'name', 'data_type', 'created_by', 'updated_by', 'created_at', 'updated_at', ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, )
+		BasePeer::TYPE_PHPNAME => array ('Id', 'Name', 'SystemName', 'DataType', 'CreatedBy', 'UpdatedBy', 'CreatedAt', 'UpdatedAt', ),
+		BasePeer::TYPE_COLNAME => array (DmsPropertyTypePeer::ID, DmsPropertyTypePeer::NAME, DmsPropertyTypePeer::SYSTEM_NAME, DmsPropertyTypePeer::DATA_TYPE, DmsPropertyTypePeer::CREATED_BY, DmsPropertyTypePeer::UPDATED_BY, DmsPropertyTypePeer::CREATED_AT, DmsPropertyTypePeer::UPDATED_AT, ),
+		BasePeer::TYPE_FIELDNAME => array ('id', 'name', 'system_name', 'data_type', 'created_by', 'updated_by', 'created_at', 'updated_at', ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, )
 	);
 
 	
 	private static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Name' => 1, 'DataType' => 2, 'CreatedBy' => 3, 'UpdatedBy' => 4, 'CreatedAt' => 5, 'UpdatedAt' => 6, ),
-		BasePeer::TYPE_COLNAME => array (DmsPropertyTypePeer::ID => 0, DmsPropertyTypePeer::NAME => 1, DmsPropertyTypePeer::DATA_TYPE => 2, DmsPropertyTypePeer::CREATED_BY => 3, DmsPropertyTypePeer::UPDATED_BY => 4, DmsPropertyTypePeer::CREATED_AT => 5, DmsPropertyTypePeer::UPDATED_AT => 6, ),
-		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'name' => 1, 'data_type' => 2, 'created_by' => 3, 'updated_by' => 4, 'created_at' => 5, 'updated_at' => 6, ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, )
+		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'Name' => 1, 'SystemName' => 2, 'DataType' => 3, 'CreatedBy' => 4, 'UpdatedBy' => 5, 'CreatedAt' => 6, 'UpdatedAt' => 7, ),
+		BasePeer::TYPE_COLNAME => array (DmsPropertyTypePeer::ID => 0, DmsPropertyTypePeer::NAME => 1, DmsPropertyTypePeer::SYSTEM_NAME => 2, DmsPropertyTypePeer::DATA_TYPE => 3, DmsPropertyTypePeer::CREATED_BY => 4, DmsPropertyTypePeer::UPDATED_BY => 5, DmsPropertyTypePeer::CREATED_AT => 6, DmsPropertyTypePeer::UPDATED_AT => 7, ),
+		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'name' => 1, 'system_name' => 2, 'data_type' => 3, 'created_by' => 4, 'updated_by' => 5, 'created_at' => 6, 'updated_at' => 7, ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, )
 	);
 
 	
@@ -114,6 +117,8 @@ abstract class BaseDmsPropertyTypePeer {
 		$criteria->addSelectColumn(DmsPropertyTypePeer::ID);
 
 		$criteria->addSelectColumn(DmsPropertyTypePeer::NAME);
+
+		$criteria->addSelectColumn(DmsPropertyTypePeer::SYSTEM_NAME);
 
 		$criteria->addSelectColumn(DmsPropertyTypePeer::DATA_TYPE);
 
