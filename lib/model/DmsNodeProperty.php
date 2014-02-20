@@ -36,7 +36,10 @@ class DmsNodeProperty extends BaseDmsNodeProperty
         
       case DmsPropertyTypePeer::TYPE_DATE:
         return $this->setStringValue($value);
-        
+
+      case DmsPropertyTypePeer::TYPE_SELECTLIST:
+        return $this->setStringValue($value);
+
       default:
         return $this->setStringValue('Unknow type: ' . $this->getTypeId());
     }
@@ -44,7 +47,7 @@ class DmsNodeProperty extends BaseDmsNodeProperty
 
   /**
    * Geeft de waarde van deze property
-   * 
+   *
    * Afhankelijk van het datatype wordt de waarde uit een ander dbveld opgehaald
    */
   public function getValue()
@@ -53,14 +56,17 @@ class DmsNodeProperty extends BaseDmsNodeProperty
     {
       case DmsPropertyTypePeer::TYPE_TEXT:
         return $this->getStringValue();
-        
+
       case DmsPropertyTypePeer::TYPE_TEXTAREA:
         return $this->getTextValue();
-        
+
       case DmsPropertyTypePeer::TYPE_CHECKBOX:
         return $this->getBooleanValue();
-        
+
       case DmsPropertyTypePeer::TYPE_DATE:
+        return $this->getStringValue();
+
+      case DmsPropertyTypePeer::TYPE_SELECTLIST:
         return $this->getStringValue();
     }
   }

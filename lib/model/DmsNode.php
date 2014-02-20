@@ -568,7 +568,7 @@ class DmsNode extends BaseDmsNode
     {
       return null;
     }
-    
+
     return $property->getValue();
   }
 
