@@ -78,6 +78,9 @@
                 case DmsPropertyTypePeer::TYPE_CHECKBOX:
                   echo select_tag('input_' . $aspectProperyType->getId(), options_for_select(array(0 => 'Ja', 1 => 'Nee'), $node->getProperty($propertyType)));
                   break;
+                case DmsPropertyTypePeer::TYPE_SELECTLIST:
+                  echo select_tag('input_' . $aspectProperyType->getId(), options_for_select(json_decode($propertyType->getOptions()), $node->getProperty($propertyType)));
+                  break;
                 default:
                   echo  'Unknow type: ' . $aspectProperyType->getDmsPropertyType()->getName();
               }

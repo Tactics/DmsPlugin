@@ -155,6 +155,7 @@ class ttDmsAspectActions extends sfActions
 
     $dms_type->setName($this->getRequestParameter('name'));
     $dms_type->setDataType($this->getRequestParameter('data_type'));
+    $dms_type->setOptions(json_encode(explode("\n", $this->getRequestParameter('options'))));
 
     $dms_type->save();
 

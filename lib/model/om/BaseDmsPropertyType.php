@@ -25,6 +25,10 @@ abstract class BaseDmsPropertyType extends BaseObject  implements Persistent {
 
 
 	
+	protected $options;
+
+
+	
 	protected $created_by;
 
 
@@ -83,6 +87,13 @@ abstract class BaseDmsPropertyType extends BaseObject  implements Persistent {
 	{
 
 		return $this->data_type;
+	}
+
+	
+	public function getOptions()
+	{
+
+		return $this->options;
 	}
 
 	
@@ -200,6 +211,20 @@ abstract class BaseDmsPropertyType extends BaseObject  implements Persistent {
 
 	} 
 	
+	public function setOptions($v)
+	{
+
+						if ($v !== null && !is_string($v)) {
+			$v = (string) $v; 
+		}
+
+		if ($this->options !== $v) {
+			$this->options = $v;
+			$this->modifiedColumns[] = DmsPropertyTypePeer::OPTIONS;
+		}
+
+	} 
+	
 	public function setCreatedBy($v)
 	{
 
@@ -274,19 +299,21 @@ abstract class BaseDmsPropertyType extends BaseObject  implements Persistent {
 
 			$this->data_type = $rs->getString($startcol + 3);
 
-			$this->created_by = $rs->getInt($startcol + 4);
+			$this->options = $rs->getString($startcol + 4);
 
-			$this->updated_by = $rs->getInt($startcol + 5);
+			$this->created_by = $rs->getInt($startcol + 5);
 
-			$this->created_at = $rs->getTimestamp($startcol + 6, null);
+			$this->updated_by = $rs->getInt($startcol + 6);
 
-			$this->updated_at = $rs->getTimestamp($startcol + 7, null);
+			$this->created_at = $rs->getTimestamp($startcol + 7, null);
+
+			$this->updated_at = $rs->getTimestamp($startcol + 8, null);
 
 			$this->resetModified();
 
 			$this->setNew(false);
 
-						return $startcol + 8; 
+						return $startcol + 9; 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating DmsPropertyType object", $e);
 		}
@@ -501,15 +528,18 @@ abstract class BaseDmsPropertyType extends BaseObject  implements Persistent {
 				return $this->getDataType();
 				break;
 			case 4:
-				return $this->getCreatedBy();
+				return $this->getOptions();
 				break;
 			case 5:
-				return $this->getUpdatedBy();
+				return $this->getCreatedBy();
 				break;
 			case 6:
-				return $this->getCreatedAt();
+				return $this->getUpdatedBy();
 				break;
 			case 7:
+				return $this->getCreatedAt();
+				break;
+			case 8:
 				return $this->getUpdatedAt();
 				break;
 			default:
@@ -526,10 +556,11 @@ abstract class BaseDmsPropertyType extends BaseObject  implements Persistent {
 			$keys[1] => $this->getName(),
 			$keys[2] => $this->getSystemName(),
 			$keys[3] => $this->getDataType(),
-			$keys[4] => $this->getCreatedBy(),
-			$keys[5] => $this->getUpdatedBy(),
-			$keys[6] => $this->getCreatedAt(),
-			$keys[7] => $this->getUpdatedAt(),
+			$keys[4] => $this->getOptions(),
+			$keys[5] => $this->getCreatedBy(),
+			$keys[6] => $this->getUpdatedBy(),
+			$keys[7] => $this->getCreatedAt(),
+			$keys[8] => $this->getUpdatedAt(),
 		);
 		return $result;
 	}
@@ -558,15 +589,18 @@ abstract class BaseDmsPropertyType extends BaseObject  implements Persistent {
 				$this->setDataType($value);
 				break;
 			case 4:
-				$this->setCreatedBy($value);
+				$this->setOptions($value);
 				break;
 			case 5:
-				$this->setUpdatedBy($value);
+				$this->setCreatedBy($value);
 				break;
 			case 6:
-				$this->setCreatedAt($value);
+				$this->setUpdatedBy($value);
 				break;
 			case 7:
+				$this->setCreatedAt($value);
+				break;
+			case 8:
 				$this->setUpdatedAt($value);
 				break;
 		} 	}
@@ -580,10 +614,11 @@ abstract class BaseDmsPropertyType extends BaseObject  implements Persistent {
 		if (array_key_exists($keys[1], $arr)) $this->setName($arr[$keys[1]]);
 		if (array_key_exists($keys[2], $arr)) $this->setSystemName($arr[$keys[2]]);
 		if (array_key_exists($keys[3], $arr)) $this->setDataType($arr[$keys[3]]);
-		if (array_key_exists($keys[4], $arr)) $this->setCreatedBy($arr[$keys[4]]);
-		if (array_key_exists($keys[5], $arr)) $this->setUpdatedBy($arr[$keys[5]]);
-		if (array_key_exists($keys[6], $arr)) $this->setCreatedAt($arr[$keys[6]]);
-		if (array_key_exists($keys[7], $arr)) $this->setUpdatedAt($arr[$keys[7]]);
+		if (array_key_exists($keys[4], $arr)) $this->setOptions($arr[$keys[4]]);
+		if (array_key_exists($keys[5], $arr)) $this->setCreatedBy($arr[$keys[5]]);
+		if (array_key_exists($keys[6], $arr)) $this->setUpdatedBy($arr[$keys[6]]);
+		if (array_key_exists($keys[7], $arr)) $this->setCreatedAt($arr[$keys[7]]);
+		if (array_key_exists($keys[8], $arr)) $this->setUpdatedAt($arr[$keys[8]]);
 	}
 
 	
@@ -595,6 +630,7 @@ abstract class BaseDmsPropertyType extends BaseObject  implements Persistent {
 		if ($this->isColumnModified(DmsPropertyTypePeer::NAME)) $criteria->add(DmsPropertyTypePeer::NAME, $this->name);
 		if ($this->isColumnModified(DmsPropertyTypePeer::SYSTEM_NAME)) $criteria->add(DmsPropertyTypePeer::SYSTEM_NAME, $this->system_name);
 		if ($this->isColumnModified(DmsPropertyTypePeer::DATA_TYPE)) $criteria->add(DmsPropertyTypePeer::DATA_TYPE, $this->data_type);
+		if ($this->isColumnModified(DmsPropertyTypePeer::OPTIONS)) $criteria->add(DmsPropertyTypePeer::OPTIONS, $this->options);
 		if ($this->isColumnModified(DmsPropertyTypePeer::CREATED_BY)) $criteria->add(DmsPropertyTypePeer::CREATED_BY, $this->created_by);
 		if ($this->isColumnModified(DmsPropertyTypePeer::UPDATED_BY)) $criteria->add(DmsPropertyTypePeer::UPDATED_BY, $this->updated_by);
 		if ($this->isColumnModified(DmsPropertyTypePeer::CREATED_AT)) $criteria->add(DmsPropertyTypePeer::CREATED_AT, $this->created_at);
@@ -634,6 +670,8 @@ abstract class BaseDmsPropertyType extends BaseObject  implements Persistent {
 		$copyObj->setSystemName($this->system_name);
 
 		$copyObj->setDataType($this->data_type);
+
+		$copyObj->setOptions($this->options);
 
 		$copyObj->setCreatedBy($this->created_by);
 

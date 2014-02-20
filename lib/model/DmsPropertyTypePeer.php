@@ -13,11 +13,12 @@ class DmsPropertyTypePeer extends BaseDmsPropertyTypePeer
   const TYPE_DATE = 'date';
   const TYPE_CHECKBOX = 'checkbox';
   const TYPE_TEXTAREA = 'textarea';
-  
-  
-  static $data_types = 
+  const TYPE_SELECTLIST = 'selectlist';
+
+
+  static $data_types =
     array(
-      self::TYPE_TEXT => 'Tekstregel', self::TYPE_DATE => 'Datum', self::TYPE_CHECKBOX => 'Checkbox', self::TYPE_TEXTAREA => 'Tekstveld'
+      self::TYPE_TEXT => 'Tekstregel', self::TYPE_DATE => 'Datum', self::TYPE_CHECKBOX => 'Checkbox', self::TYPE_TEXTAREA => 'Tekstveld', self::TYPE_SELECTLIST => 'Selectlijst'
     );
   
   /**
