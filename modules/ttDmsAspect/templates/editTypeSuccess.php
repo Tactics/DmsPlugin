@@ -22,7 +22,11 @@
 
 <tr>
   <th>Datatype:</th>
-  <td><?php echo select_tag('data_type', options_for_select(DmsPropertyTypePeer::getDataTypes(), $dms_type->getDataType())) ?></td>
+  <td><?php echo select_tag('data_type', options_for_select(DmsPropertyTypePeer::getDataTypes(), $dms_type->getDataType()), array('class' => 'datatype')) ?></td>
+</tr>
+<tr class="select_options" style="display:none">
+  <th>Opties:</th>
+  <td><?php echo textarea_tag('options', $dms_type->getOptions() ? implode("\n", json_decode($dms_type->getOptions())) : '', array('size' => '45x5')); ?> (Elke optie op een andere lijn)</td>
 </tr>
 </tbody>
 </table>
@@ -31,3 +35,11 @@
 &nbsp;<?php echo button_to_function('Annuleren', 'history.back();') ?>
 </form>
 </div>
+
+<script type="text/javascript">
+  jQuery(function($){
+    $('.datatype').change(function(){
+      $('.select_options').toggle(this.value == 'selectlist')
+    }).trigger('change');
+  });
+</script>
