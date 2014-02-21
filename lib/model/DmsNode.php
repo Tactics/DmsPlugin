@@ -237,6 +237,46 @@ class DmsNode extends BaseDmsNode
   }
   
   /**
+   * Maakt een nieuwe subnode op basis van een bestand
+   *
+   * @param string $filePath : absolute path of the file
+   * @param string optional $fileName: name for file
+   * @param boolean optional $autoRename default false: auto numbering if file exists
+   */
+  public function createNodeFromFile($filePath, $fileName = null, $autoRename = false)
+  {
+    // Info voor mocht het bestand reeds bestaan, dan beginnen we te nummeren
+    $success = false;
+    $cnt = 1;
+
+    $extension = pathinfo($fileName, PATHINFO_EXTENSION);
+    $basename = basename($fileName, $extension ? ('.' . $extension) : '');
+
+    while (! $success)
+    {
+      try
+      {
+        $node = $this->createNode($fileName);
+        $success = true;
+      }
+      catch(DmsNodeExistsException $e)
+      {
+        if (! $autoRename)
+        {
+          throw($e);
+        }
+        // bestand bestaat al, begin te nummeren
+        $fileName = $basename . '_' . $cnt . ($extension ? ('.' . $extension) : '');
+        $cnt++;
+      }
+    }
+
+    $node->loadFromFile($filePath);
+
+    return $node;
+  }
+  
+  /**
    * Hernoemt de node
    * 
    * @param string $newName
