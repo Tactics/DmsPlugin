@@ -325,6 +325,8 @@ class ttDmsBrowserActions extends sfActions
     $c = new Criteria();
     $c->add(DmsAspectPeer::ID, $aspect_ids, Criteria::NOT_IN);
     $this->aspects = DmsAspectPeer::doSelect($c);
+
+    $this->redirect_url = $this->getRequestParameter('redirect_url', 'ttDmsBrowser/list');
   }
 
   /**
@@ -372,7 +374,7 @@ class ttDmsBrowserActions extends sfActions
       }
     }
 
-    $this->redirect('ttDmsBrowser/list');
+    $this->redirect($this->getRequestParameter('redirect_url', 'ttDmsBrowser/list'));
   }
 
   /**
