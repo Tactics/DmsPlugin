@@ -50,7 +50,7 @@ class DmsNodeProperty extends BaseDmsNodeProperty
    *
    * Afhankelijk van het datatype wordt de waarde uit een ander dbveld opgehaald
    */
-  public function getValue()
+  public function getValue($formatted = false)
   {
     switch($this->getDmsPropertyType()->getDataType())
     {
@@ -64,10 +64,16 @@ class DmsNodeProperty extends BaseDmsNodeProperty
         return $this->getBooleanValue();
 
       case DmsPropertyTypePeer::TYPE_DATE:
-        return $this->getStringValue();
+        return $formatted
+          ? format_date($this->getStringValue(), 'dd/MM/yyyy')
+          : $this->getStringValue();
 
       case DmsPropertyTypePeer::TYPE_SELECTLIST:
-        return $this->getStringValue();
+        if ($formatted)
+        {
+          $options = json_decode($this->getDmsPropertyType()->getOptions());
+        }
+        return $formatted ? $options[$this->getStringValue()] : $this->getStringValue();
     }
   }
 }
