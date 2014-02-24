@@ -26,7 +26,7 @@
 </tr>
 <tr class="select_options" style="display:none">
   <th>Opties:</th>
-  <td><?php echo textarea_tag('options', $dms_type->getOptions() ? implode("\n", json_decode($dms_type->getOptions())) : '', array('size' => '45x5')); ?> (Elke optie op een andere lijn)</td>
+  <td><?php echo textarea_tag('options', ($dms_type->getOptions() && ($dms_type->getDataType() == 'selectlist')) ? implode("\n", json_decode($dms_type->getOptions())) : $dms_type->getOptions(), array('size' => '45x5')); ?></td>
 </tr>
 </tbody>
 </table>
@@ -39,7 +39,7 @@
 <script type="text/javascript">
   jQuery(function($){
     $('.datatype').change(function(){
-      $('.select_options').toggle(this.value == 'selectlist')
+      $('.select_options').toggle((this.value == 'selectlist') || (this.value == 'sqlselect'))
     }).trigger('change');
   });
 </script>
