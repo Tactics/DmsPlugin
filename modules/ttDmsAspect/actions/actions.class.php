@@ -156,13 +156,44 @@ class ttDmsAspectActions extends sfActions
     $dms_type->setName($this->getRequestParameter('name'));
     $dms_type->setDataType($this->getRequestParameter('data_type'));
     $options = $this->getRequestParameter('options');
-    $dms_type->setOptions($options ? json_encode(explode("\n", $options)) : null);
+    $dms_type->setOptions(($options && ($this->getRequestParameter('name') == 'selectlist')) ? json_encode(explode("\n", $options)) : $this->getRequestParameter('options'));
 
     $dms_type->save();
 
     return $this->redirect('ttDmsAspect/listTypes');
   }
-  
+
+  /**
+   * Valideert voor het opslaan van dms_property_type
+   */
+  public function validateUpdateType()
+  {
+    $sql = $this->getRequestParameter('options');
+    $sql_lowercase = strtolower($sql);
+
+    $harmfullSQL = array(
+      'insert', 'update', 'delete', 'drop', 'alter', 'create', 'index', 'execute', 'show'
+    );
+
+    foreach ($harmfullSQL as $keyword)
+    {
+      if (strpos($sql_lowercase, $keyword) !== false)
+      {
+        $this->getRequest()->setError('options', 'Keyword "' . strtoupper($keyword) . '" niet toegestaan in SQL query.');
+      }
+    }
+
+    foreach(myDbTools::getArrayFromSQL($sql) as $row)
+    {
+      if (count($row) > 2)
+      {
+        $this->getRequest()->setError('options', 'Selecteer minstens 1 en maximaal 2 kolommen.');
+      }
+    }
+
+    return !$this->getRequest()->hasErrors();
+  }
+
   /**
 	 * Handelt form validation errors af bij het bewerken van een dms_property_type
 	 */
