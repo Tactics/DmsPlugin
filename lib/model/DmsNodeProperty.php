@@ -67,6 +67,7 @@ class DmsNodeProperty extends BaseDmsNodeProperty
         return $this->getBooleanValue();
 
       case DmsPropertyTypePeer::TYPE_DATE:
+        sfLoader::loadHelpers(array('Date'));
         return $formatted
           ? format_date($this->getStringValue(), 'dd/MM/yyyy')
           : $this->getStringValue();
