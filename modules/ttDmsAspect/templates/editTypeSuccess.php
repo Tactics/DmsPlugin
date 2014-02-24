@@ -26,7 +26,7 @@
 </tr>
 <tr class="select_options" style="display:none">
   <th>Opties:</th>
-  <td><?php echo textarea_tag('options', ($dms_type->getOptions() && ($dms_type->getDataType() == 'selectlist')) ? implode("\n", json_decode($dms_type->getOptions())) : $dms_type->getOptions(), array('size' => '45x5')); ?></td>
+  <td><?php echo textarea_tag('options', ($dms_type->getOptions() && ($dms_type->getDataType() == 'selectlist')) ? implode("\r\n", json_decode($dms_type->getOptions())) : $dms_type->getOptions(), array('size' => '45x5')); ?></td>
 </tr>
 </tbody>
 </table>
