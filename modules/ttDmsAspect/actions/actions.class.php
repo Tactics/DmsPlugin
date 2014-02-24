@@ -25,6 +25,11 @@ class ttDmsAspectActions extends sfActions
   public function executeList()
   {
     $this->pager = new myFilteredPager('DmsAspect', 'ttDmsAspectActions/list');
+
+    // aspects met system_name laten we niet zien
+    $c = $this->pager->getCriteria();
+    $c->add(DmsAspectPeer::SYSTEM_NAME, NULL, Criteria::ISNULL);
+    
     $this->pager->init();
   }
 
@@ -114,6 +119,11 @@ class ttDmsAspectActions extends sfActions
   public function executeListTypes()
   {
     $this->pager = new myFilteredPager('DmsPropertyType', 'ttDmsAspectActions/listTypes');
+
+    // aspects met system_name laten we niet zien
+    $c = $this->pager->getCriteria();
+    $c->add(DmsPropertyTypePeer::SYSTEM_NAME, NULL, Criteria::ISNULL);
+    
     $this->pager->init();
     
     $this->setTemplate('listTypes');
@@ -156,7 +166,7 @@ class ttDmsAspectActions extends sfActions
     $dms_type->setName($this->getRequestParameter('name'));
     $dms_type->setDataType($this->getRequestParameter('data_type'));
     $options = $this->getRequestParameter('options');
-    $dms_type->setOptions(($options && ($this->getRequestParameter('name') == 'selectlist')) ? json_encode(explode("\n", $options)) : $this->getRequestParameter('options'));
+    $dms_type->setOptions(($options && ($this->getRequestParameter('name') == 'selectlist')) ? json_encode(explode("\r\n", $options)) : $this->getRequestParameter('options'));
 
     $dms_type->save();
 
