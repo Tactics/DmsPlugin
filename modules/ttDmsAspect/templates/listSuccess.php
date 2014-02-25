@@ -11,8 +11,8 @@
   foreach($pager->getResults() as $dms_aspect)
   {
     $table->addRow(array(
-      link_to($dms_aspect->getName(), 'ttDmsAspect/show?id='.$dms_aspect->getId()),
-      link_to(image_tag('icons/bewerk.16.png'), 'ttDmsAspect/edit?id='.$dms_aspect->getId())
+      link_to_unless($dms_aspect->getSystemName(), $dms_aspect->getName(), 'ttDmsAspect/show?id='.$dms_aspect->getId()),
+      !$dms_aspect->getSystemName() ? link_to(image_tag('icons/bewerk.16.png'), 'ttDmsAspect/edit?id='.$dms_aspect->getId()) : ''
     ));
   }
 
