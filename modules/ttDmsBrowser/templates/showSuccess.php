@@ -89,28 +89,12 @@
                   echo select_tag('input_' . $aspectProperyType->getId(), options_for_select(json_decode($propertyType->getOptions()), $node->getProperty($propertyType)));
                   break;
                 case DmsPropertyTypePeer::TYPE_SQLSELECT:
-                  foreach(myDbTools::getArrayFromSQL($propertyType->getOptions()) as $row)
-                  {
-                    // skip dubbele indexen
-                    if (isset($selectOptions[$row[0]]))
-                    {
-                      continue;
-                    }
-
-                    switch (count($row))
-                    {
-                      case 1:
-                        $selectOptions[$row[0]] = $row[0];
-                        break;
-                      case 2:
-                        $selectOptions[$row[0]] = $row[1];
-                        break;
-                    }
-                  }
-                  echo select_tag('input_' . $aspectProperyType->getId(), options_for_select($selectOptions, $node->getProperty($propertyType)));
+                  $sql = $propertyType->getOptions();
+                  echo select_tag('input_' . $aspectProperyType->getId(), options_for_select(myDbTools::getIndexedArrayFromSQL($sql), $node->getProperty($propertyType)));
                   break;
                 default:
                   echo  'Unknow type: ' . $aspectProperyType->getDmsPropertyType()->getName();
+                  break;
               }
             ?>
           </td>
