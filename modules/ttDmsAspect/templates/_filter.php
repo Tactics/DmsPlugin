@@ -30,7 +30,9 @@ $aspects = isset($aspects)
     {
       case DmsPropertyTypePeer::TYPE_TEXT:
       case DmsPropertyTypePeer::TYPE_TEXTAREA:
-        echo input_tag($domId, isset($values[$id]) ? $values[$id] : '');
+        echo input_tag($domId, isset($values[$id]) ? $values[$id] : '', array(
+          'data-initial-value' => isset($values[$id]) ? $values[$id] : ''
+        ));
         break;
       case DmsPropertyTypePeer::TYPE_CHECKBOX:
         echo ja_nee_tag($domId, isset($values[$id]) ? $values[$id] : '' ,array('include_blank' => true));
@@ -43,6 +45,17 @@ $aspects = isset($aspects)
             'format' => 'dd/MM/yyyy',
             'size' => '11',
           ));
+        break;
+      case DmsPropertyTypePeer::TYPE_SELECTLIST:        
+        echo select_tag($domId, options_for_select(json_decode($propertyType->getOptions())), array(
+          'data-initial-value' => isset($values[$id]) ? $values[$id] : ''
+        ));
+        break;
+      case DmsPropertyTypePeer::TYPE_SQLSELECT:
+        $sql = $propertyType->getOptions();
+        echo select_tag($domId, options_for_select(myDbTools::getIndexedArrayFromSQL($sql)), array(
+          'data-initial-value' => isset($values[$id]) ? $values[$id] : ''
+        ));
         break;
       default:
         break;
@@ -58,11 +71,22 @@ $aspects = isset($aspects)
   {
     // Juiste properties laten zien om op te filteren
     $('.aspects').on('change', function(){
-      var rows = $('tr.property_type');
-      rows.hide();
-      if ($(this).val() != '')
+      var $rows = $('tr.property_type');      
+      $rows.find(':input').each(function(){
+        var $input = $(this);
+        var initVal = $input.data('initial-value');
+        $input.val(initVal ? initVal : '');
+        $input.data('initial-value', '');
+      });
+      
+      var aspectId = this.value;
+      if (aspectId != '')
       {
-        rows.filter("[data-aspects*='aspect-" + $(this).val()+ "']").show();
+        $rows.each(function(){
+          var $row = $(this);
+          var aspects = $row.data('aspects').split(' ');          
+          $row.toggle($.inArray('aspect-' + aspectId, aspects) !== -1);
+        });
       }
     }).trigger('change');
   });
