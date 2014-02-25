@@ -12,8 +12,8 @@ $table = new myTable(array(
 foreach ($pager->getResults() as $dms_type)
 {
   $table->addRow(array(
-    link_to($dms_type->getName(), 'ttDmsAspect/editType?id='.$dms_type->getId()),
-    link_to(image_tag('icons/bewerk.16.png'), 'ttDmsAspect/editType?id='.$dms_type->getId())
+    link_to_unless($dms_type->getSystemName(), $dms_type->getName(), 'ttDmsAspect/editType?id='.$dms_type->getId()),
+    !$dms_type->getSystemName() ? link_to(image_tag('icons/bewerk.16.png'), 'ttDmsAspect/editType?id='.$dms_type->getId()) : ''
   ));
 }
 
