@@ -11,7 +11,7 @@ class DmsAspectPeer extends BaseDmsAspectPeer
 {
   public static function getOptionsForSelect($c = null)
   {
-    $c = $c ? $c : new Criteria();
+    $c = $c ? clone $c : new Criteria();
 
     $options = array();
 
