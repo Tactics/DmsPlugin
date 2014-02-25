@@ -71,7 +71,8 @@ $aspects = isset($aspects)
   {
     // Juiste properties laten zien om op te filteren
     $('.aspects').on('change', function(){
-      var $rows = $('tr.property_type');      
+      var $rows = $('tr.property_type');
+      $rows.hide();
       $rows.find(':input').each(function(){
         var $input = $(this);
         var initVal = $input.data('initial-value');
