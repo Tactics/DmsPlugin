@@ -156,7 +156,7 @@ class ttDmsAspectActions extends sfActions
     $dms_type->setName($this->getRequestParameter('name'));
     $dms_type->setDataType($this->getRequestParameter('data_type'));
     $options = $this->getRequestParameter('options');
-    $dms_type->setOptions(($options && ($this->getRequestParameter('name') == 'selectlist')) ? json_encode(explode("\r\n", $options)) : $this->getRequestParameter('options'));
+    $dms_type->setOptions(($options && ($this->getRequestParameter('data_type') == 'selectlist')) ? json_encode(explode("\r\n", $options)) : $this->getRequestParameter('options'));
 
     $dms_type->save();
 
@@ -168,28 +168,31 @@ class ttDmsAspectActions extends sfActions
    */
   public function validateUpdateType()
   {
-    $sql = $this->getRequestParameter('options');
-    $sql_lowercase = strtolower($sql);
-
-    $harmfullSQL = array(
-      'insert', 'update', 'delete', 'drop', 'alter', 'create', 'index', 'execute', 'show'
-    );
-
-    foreach ($harmfullSQL as $keyword)
+    if ($this->getRequestParameter(('data_type') == 'sqlselect'))
     {
-      if (strpos($sql_lowercase, $keyword) !== false)
-      {
-        $this->getRequest()->setError('options', 'Keyword "' . strtoupper($keyword) . '" niet toegestaan in SQL query.');
-      }
-    }
+      $sql = $this->getRequestParameter('options');
+      $sql_lowercase = strtolower($sql);
 
-    foreach(myDbTools::getArrayFromSQL($sql) as $row)
-    {
-      if (count($row) > 2)
+      $harmfullSQL = array(
+        'insert', 'update', 'delete', 'drop', 'alter', 'create', 'index', 'execute', 'show'
+      );
+
+      foreach ($harmfullSQL as $keyword)
       {
-        $this->getRequest()->setError('options', 'Selecteer minstens 1 en maximaal 2 kolommen.');
+        if (strpos($sql_lowercase, $keyword) !== false)
+        {
+          $this->getRequest()->setError('options', 'Keyword "' . strtoupper($keyword) . '" niet toegestaan in SQL query.');
+        }
       }
-    }
+
+      foreach(myDbTools::getArrayFromSQL($sql) as $row)
+      {
+        if (count($row) > 2)
+        {
+          $this->getRequest()->setError('options', 'Selecteer minstens 1 en maximaal 2 kolommen.');
+        }
+      }
+    }    
 
     return !$this->getRequest()->hasErrors();
   }
