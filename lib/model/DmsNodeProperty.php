@@ -77,7 +77,7 @@ class DmsNodeProperty extends BaseDmsNodeProperty
         {
           $options = json_decode($this->getDmsPropertyType()->getOptions());
         }
-        return $formatted ? $options[$this->getStringValue()] : $this->getStringValue();
+        return $formatted && isset($options[$this->getStringValue()]) ? $options[$this->getStringValue()] : $this->getStringValue();
       case DmsPropertyTypePeer::TYPE_SQLSELECT:
         if($formatted)
         {
