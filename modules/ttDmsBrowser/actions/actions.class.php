@@ -144,10 +144,15 @@ class ttDmsBrowserActions extends sfActions
 
     if ($this->getRequest()->hasFile('file') && ! $this->getRequest()->hasFileError('file'))
     {
-      $folder->createNodeFromUpload('file');
+      $node = $folder->createNodeFromUpload('file', null, true);
     }
-
-    $this->redirect('ttDmsBrowser/browse?store_id=' . $folder->getStoreId());
+    
+    echo json_encode(array(
+      'node_id' => $node ? $node->getId() : ''
+    ));
+    
+    return sfView::NONE;
+    //$this->redirect('ttDmsBrowser/browse?store_id=' . $folder->getStoreId());
   }
 
   /**
