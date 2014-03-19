@@ -75,9 +75,13 @@ class DmsNodeProperty extends BaseDmsNodeProperty
       case DmsPropertyTypePeer::TYPE_SELECTLIST:
         if ($formatted)
         {
-          $options = json_decode($this->getDmsPropertyType()->getOptions());
+          return $this->getStringValue();
         }
-        return $formatted && isset($options[$this->getStringValue()]) ? $options[$this->getStringValue()] : $this->getStringValue();
+        
+        $options = json_decode($this->getDmsPropertyType()->getOptions());
+        $index = array_search($this->getStringValue(), $options);
+        
+        return $index !== false ? $index : $this->getStringValue();
       case DmsPropertyTypePeer::TYPE_SQLSELECT:
         if($formatted)
         {

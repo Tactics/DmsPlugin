@@ -573,6 +573,10 @@ class DmsNode extends BaseDmsNode
         case DmsPropertyTypePeer::TYPE_DATE:
           $value = myDateTools::cultureDateToPropelDate($value);
           break;
+        case DmsPropertyTypePeer::TYPE_SELECTLIST:
+          $options = json_decode($propertyType->getOptions());
+          $value = isset($options[$value]) ? $options[$value] : null;
+          break;
         default:
           break;
       }
