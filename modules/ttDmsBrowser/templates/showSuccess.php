@@ -5,39 +5,50 @@
 </style>
 
 <?php use_helper('Dms'); ?>
-<h2 class="pageblock">
-  <?php echo image_tag(filetype_image_path($node->getExtension()), array('title' => $mime_type)); ?>
-  <?php include_partial('nodeTrail', array('node' => $node)); ?>
-</h2>
 <div class="pageblock">
+  <header>
+  <h2 class="pageblock">
+    <?php echo image_tag(filetype_image_path($node->getExtension()), array('title' => $mime_type)); ?>
+    <?php include_partial('nodeTrail', array('node' => $node)); ?>
+  </h2>
+  </header>
   <table class="objectdetails">
     <tr>
-      <th>Naam:</th>
-      <td><?php echo $node->getName(); ?></td>
-    </tr>
-    <tr>
-      <th>Type:</th>
-      <td><?php echo $mime_type; ?></td>
-    </tr>
-    <tr>
-      <th>Grootte:</th>
-      <td><?php echo format_filesize($node->getSize()); ?></td>
-    </tr>
-    <tr>
-      <th>Aangemaakt op:</th>
       <td>
-        <?php echo format_date($node->getCreatedAt(), 'f'); ?>
+        <table class="objectdetails">
+          <tr>
+            <th>Naam:</th>
+            <td><?php echo $node->getName(); ?></td>
+          </tr>
+          <tr>
+            <th>Type:</th>
+            <td><?php echo $mime_type; ?></td>
+          </tr>
+          <tr>
+            <th>Grootte:</th>
+            <td><?php echo format_filesize($node->getSize()); ?></td>
+          </tr>
+          <tr>
+            <th>Aangemaakt op:</th>
+            <td>
+              <?php echo format_date($node->getCreatedAt(), 'f'); ?>
+            </td>
+          </tr>
+          <tr>
+            <th>Laatst gewijzigd op:</th>
+            <td><?php echo format_date($node->getUpdatedAt(), 'f'); ?></td>
+          </tr>
+        </table>
       </td>
-    </tr>
-    <tr>
-      <th>Laatst gewijzigd op:</th>
-      <td><?php echo format_date($node->getUpdatedAt(), 'f'); ?></td>
     </tr>
   </table>
 </div>
 
-<h2 class="pageblock">Eigenschappen</h2>
+<?php if (count($aspects)): ?>
 <div class="pageblock">
+  <header>
+  <h2 class="pageblock">Eigenschappen</h2>
+  </header>
   <?php if (count($aspects)): ?>
     <?php echo form_tag('ttDmsBrowser/addAspect'); ?>
       Aspect <?php echo input_hidden_tag('node_id', $node->getId()); ?>
@@ -113,7 +124,7 @@
   ?>
   
 </div>
-
+<?php endif; ?>
 
 <!-- wordt blijkbaar nergens gebruikt?
 <h2 class="pageblock">Preview</h2>
