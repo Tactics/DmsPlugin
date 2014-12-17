@@ -125,7 +125,7 @@ class ttDmsStorageBehavior
     
     $folder = self::getDmsStorageFolder($object, $autoCreate);
 
-    if ($folder && ($name != $folder->getName()))
+    if ($folder && ($folder->getName() != DmsTools::safeFilename($name)))
     {
       $folder->rename($name);
     }
