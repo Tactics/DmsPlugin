@@ -1,3 +1,7 @@
+<header>
+  <h2 class="pageblock">Bestanden</h2>
+</header>
+<div>
 <?php
 /**
  * nodeList component (dit is geen partial !) 
@@ -95,7 +99,7 @@ function multiActie(actie)
       break;
     case 'download':
       input = "<input name='node_ids' value='" + checkboxes + "'/>";
-      jQuery('<form action="<?php echo url_for('ttDmsBrowser/download'); ?>" method="post">'+input+'</form>')
+      jQuery('<form action="<?php echo url_for('ttDmsBrowser/download'); ?>" method="post" class="smart-form">'+input+'</form>')
 		  .appendTo('body').submit().remove();
 
       break;
@@ -165,6 +169,7 @@ $table = new myTable(
     "sortorder"  => $orderAsc ? "ASC" : "DESC",
     "sorturi"    => 'ttDmsBrowser/ajaxNodeList?node_id=' . $node->getId(),
     "sorttarget" => 'nodeList',
+    "smartadmin" => sfConfig::get('sf_style_smartadmin')
   )
 );
 
@@ -212,9 +217,9 @@ foreach($nodes as $subnode)
       format_date($subnode->getCreatedAt(), 'g'),
       $subnode->getMimeType(),
       format_filesize($subnode->getSize()),
-      link_to(image_tag('/ttDms/images/icons/diskette_16.gif', array('title' => 'Downloaden')), 'ttDmsBrowser/download?node_id=' . $subnode->getId())
-        . link_to_function(image_tag('/ttDms/images/icons/delete_16.gif', array('title' => 'Verwijderen')), 'deleteNode(' . $subnode->getId() . ');')
-        . link_to_function(image_tag('/ttDms/images/icons/document_zoom_16.gif', array('title' => 'Details')), 'showNodeDetails(' . $subnode->getId() . ');')
+      link_to(sfConfig::get('sf_style_smartadmin') ? '<i class="fa fa-save" title="Downloaden"></i>' : image_tag('/ttDms/images/icons/diskette_16.gif', array('title' => 'Downloaden')), 'ttDmsBrowser/download?node_id=' . $subnode->getId())
+        . link_to_function(sfConfig::get('sf_style_smartadmin') ? '<i class="fa fa-minus-circle" title="Verwijderen"></i>' : image_tag('/ttDms/images/icons/delete_16.gif', array('title' => 'Verwijderen')), 'deleteNode(' . $subnode->getId() . ');')
+        . link_to_function(sfConfig::get('sf_style_smartadmin') ? '<i class="fa fa-search" title="Details"></i>' : image_tag('/ttDms/images/icons/document_zoom_16.gif', array('title' => 'Details')), 'showNodeDetails(' . $subnode->getId() . ');')
     ), array('style' => 'white-space: nowrap'));
   }
 }
@@ -222,7 +227,11 @@ foreach($nodes as $subnode)
 echo $table;
 ?>
 Met geselecteerde:
-<?php echo link_to_function(image_tag('/ttDms/images/icons/delete_16.gif', array('title' => 'Verwijderen')), 'multiActie("delete")'); ?>
-<?php echo link_to_function(image_tag('/ttDms/images/icons/diskette_16.gif', array('title' => 'Downloaden')), 'multiActie("download")'); ?>
-
-
+<?php if (sfConfig::get('sf_style_smartadmin')): ?>
+  <?php echo link_to_function('<i class="fa fa-minus-circle" title="Verwijderen"></i>', 'multiActie("delete")'); ?>
+  <?php echo link_to_function('<i class="fa fa-save" title="downloaden"></i>', 'multiActie("download")'); ?>
+<?php else: ?>
+  <?php echo link_to_function(image_tag('/ttDms/images/icons/delete_16.gif', array('title' => 'Verwijderen')), 'multiActie("delete")'); ?>
+  <?php echo link_to_function(image_tag('/ttDms/images/icons/diskette_16.gif', array('title' => 'Downloaden')), 'multiActie("download")'); ?>
+<?php endif; ?>
+</div>

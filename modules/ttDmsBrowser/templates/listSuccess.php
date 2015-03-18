@@ -30,6 +30,24 @@
               <th>Aspect:</th>
               <td><?php echo select_tag(DmsNodeAspectPeer::ASPECT_ID, options_for_select(DmsAspectPeer::getOptionsForSelect(), $pager->get(DmsNodeAspectPeer::ASPECT_ID), array('include_blank' => true)), array('class' => 'aspects')) ?></td>
             </tr>
+            <tr>
+              <th style='width: 80px;'><label for='datum_van'>Geupload van:</label></th>
+              <td>
+                <?php
+                echo input_date_tag('datum_van', myDateTools::cultureDateToPropelDate($pager->get('datum_van', null)),
+                  array("rich" => true, "calendar_button_img" => "calendar.gif", "class" => "mask_date", "format" => "dd/MM/yyyy"))
+                ?>
+              </td>
+            </tr>
+            <tr>
+              <th style='width: 80px;'><label for='datum_tot'>Geupload tot:</label></th>
+              <td>
+                <?php
+                echo input_date_tag('datum_tot', myDateTools::cultureDateToPropelDate($pager->get('datum_tot', null)),
+                  array("rich" => true, "calendar_button_img" => "calendar.gif", "class" => "mask_date", "format" => "dd/MM/yyyy"))
+                ?>
+              </td>
+            </tr>
           </table>
         </td>
         <td width='50%'>
@@ -108,6 +126,7 @@ $table = new myTable(
     array('name' => DmsNodePeer::NAME, 'text' => 'Naam', 'align' => 'left', 'sortable' => true),
     array('name' => DmsObjectNodeRefPeer::ID, 'text' => 'Object', 'align' => 'left', 'sortable' => true),
     array('name' => 'storagepath', 'text' => 'Mapstructuur', 'align' => 'left'),
+    array('name' => DmsNodePeer::CREATED_AT, 'text' => 'Datum upload', 'align' => 'left', 'sortable' => true),
     array("text" => "Acties", "width" => 55, "align" => "center")
   ),
   array(
@@ -132,6 +151,7 @@ foreach ($pager->getResults() as $file) {
         array('content' => $file->getName(), 'tdAttributes' => $errorTdAttributes),
         array('content' => $objectNodeRefs ? $objectNodeRefs[0]->getObjectClass() : '', 'tdAttributes' => $errorTdAttributes),
         array('content' => $file->getStoragePath(), 'tdAttributes' => $errorTdAttributes),
+        array('content' => myDateTools::propelDateToCultureDate($file->getCreatedAt()), 'tdAttributes' => $errorTdAttributes),
         array('content' => '', 'tdAttributes' => $errorTdAttributes)
       ));
 
@@ -142,6 +162,7 @@ foreach ($pager->getResults() as $file) {
     $file->getName(),
     $objectNodeRefs ? $objectNodeRefs[0]->getObjectClass() : '',
     $file->getStoragePath(),
+    array('content' => myDateTools::propelDateToCultureDate($file->getCreatedAt()), 'tdAttributes' => $errorTdAttributes),
     link_to(image_tag('/ttDms/images/icons/diskette_16.gif', array('title' => 'Downloaden')), 'ttDmsBrowser/download?node_id=' . $file->getId()) . '&nbsp;' .
     link_to_function(image_tag('/ttDms/images/icons/document_zoom_16.gif', array('title' => 'Details')), 'showNodeDetails(' . $file->getId().');')
   ));

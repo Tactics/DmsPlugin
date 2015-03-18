@@ -7,13 +7,15 @@
 <table style="width: <?php echo $options['width']; ?>">
 <tr>
   <td style="vertical-align:top; width: <?php echo $options['list_width']; ?>;">
-    <h2 class="pageblock">Folders</h2>
     <div class="pageblock" style="overflow: auto;">
+      <header>
+      <h2 class="pageblock">Folders</h2>
+      </header>
       <?php include_component('ttDmsBrowser', 'nodeTree', array('node' => $node)); ?>
     </div>
 
     <?php if ($options['upload_enabled']): ?>
-      <input type="button" id="upload_button" value="Upload" />
+      <input type="button" id="upload_button" value="Upload" class="<?php echo sfConfig::get('sf_style_smartadmin') ? 'btn btn-primary' : ''?>"/>
       <div id="upload_status"></div>
       
       <script>
@@ -61,10 +63,6 @@
     <?php endif; ?>
   </td>
   <td style="vertical-align:top;">
-    <h2 class="pageblock">
-      <?php //include_partial('ttDmsBrowser/nodeTrail', array('store' => $store, 'node' => isset($node) ? $node : null))?>
-      Bestanden
-    </h2>
     <div class="pageblock" id="nodeList">
       <?php include_component('ttDmsBrowser', 'nodeList', array('node' => $node)); ?>
     </div>

@@ -43,7 +43,7 @@ function filetype_image_path($extensie)
       $fileicons[$filename] = $p['basename'];
     }
   }
-  
+
   if (isset($fileicons[$extensie]))
   {
     $icon = $fileicons[$extensie];
