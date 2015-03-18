@@ -33,6 +33,10 @@
       <th>Laatst gewijzigd op:</th>
       <td><?php echo format_date($node->getUpdatedAt(), 'f'); ?></td>
     </tr>
+    <tr>
+      <th>Laatst gewijzigd door:</th>
+      <td><?php echo $gewijzigd_door ? $gewijzigd_door->getNaam() : 'Onbekend'; ?></td>
+    </tr>
   </table>
 </div>
 

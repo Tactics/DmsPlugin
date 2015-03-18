@@ -299,6 +299,9 @@ class ttDmsBrowserActions extends sfActions
     $this->forward404Unless($this->node);
     $this->mime_type = $this->node->getMimeType();
 
+    $account = AccountPeer::retrieveByPK($this->node->getUpdatedBy());
+    $this->gewijzigd_door = isset($account) ? $account->getPersoon() : null;
+
     $aspect_ids = array();
     foreach($this->node->getDmsNodeAspects() as $nodeAspect)
     {
@@ -348,6 +351,9 @@ class ttDmsBrowserActions extends sfActions
   {
     $node = DmsNodePeer::retrieveByPK($this->getRequestParameter('node_id'));
     $this->forward404Unless($node);
+
+    $node->setUpdatedAt(time());
+    $node->save();
 
     foreach($node->getDmsNodeAspectsJoinDmsAspect() as $nodeAspect)
     {
