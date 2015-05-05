@@ -580,6 +580,11 @@ class ttDmsBrowserActions extends sfActions
       $this->orderBy = $attributeHolder->get("orderby", DmsNodePeer::NAME, $namespace);
     }
 
+    if ($this->hasRequestParameter('dms_aspect_ID'))
+    {
+      $attributeHolder->set('aspect_id', $this->getRequestParameter('dms_aspect_ID'), $namespace);
+    }
+
     $attributeHolder->set("orderasc", $this->orderAsc, $namespace);
     $attributeHolder->set("orderby", $this->orderBy, $namespace);
 

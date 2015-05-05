@@ -5,6 +5,18 @@
   use_javascript('/ttDms/js/ajaxupload.js');
 ?>
 <table style="width: <?php echo $options['width']; ?>">
+  <?php if ($options['filter_enabled']): ?>
+  <tr>
+    <td colspan="2">
+      <div class="pageblock">
+        <header>
+          <h2 class="pageblock">Zoeken in bestanden</h2>
+        </header>
+        <?php include_component('ttDmsBrowser', 'nodeFilter', array('node' => $node, 'options' => $options)); ?>
+      </div>
+    </td>
+  </tr>
+  <?php endif; ?>
 <tr>
   <td style="vertical-align:top; width: <?php echo $options['list_width']; ?>;">
     <div class="pageblock" style="overflow: auto;">

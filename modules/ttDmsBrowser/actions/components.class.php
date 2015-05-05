@@ -38,7 +38,8 @@ class ttDmsBrowserComponents extends sfComponents
       'upload_enabled' => true,
       'list_width' => '250px',
       'showType' => true,
-      'showAnnotations' => false
+      'showAnnotations' => false,
+      'filter_enabled' => false
     );
     
     $this->options = is_array($this->options) ? $this->options : array();
@@ -73,12 +74,18 @@ class ttDmsBrowserComponents extends sfComponents
     $attributeHolder = $this->getUser()->getAttributeHolder();
     $this->orderAsc = $attributeHolder->get("orderasc", true, $namespace);
     $this->orderBy = $attributeHolder->get("orderby", '-', $namespace);
-    
+    $this->aspectId = $attributeHolder->get('aspect_id', '', $namespace);
+
     $c = new Criteria();
     if ($this->orderBy != '-')
     {
       $this->orderAsc ? $c->addAscendingOrderByColumn($this->orderBy) : $c->addDescendingOrderByColumn($this->orderBy);
-    }    
+    }
+    if ($this->aspectId)
+    {
+      $c->addJoin(DmsNodePeer::ID, DmsNodeAspectPeer::NODE_ID, Criteria::JOIN);
+      $c->add(DmsNodeAspectPeer::ASPECT_ID, $this->aspectId);
+    }
     
     $this->nodes = $this->node->getChildNodes($c);    
   }
@@ -102,6 +109,23 @@ class ttDmsBrowserComponents extends sfComponents
     $json_data['state'] = 'open';
     $json_data['data']['title'] = '/';
     $this->json_data = json_encode($json_data);
+  }
+
+  /**
+   * Node filter
+   */
+  public function executeNodeFilter()
+  {
+    if (! $this->node || ! ($this->node instanceof DmsStore || $this->node->getIsFolder()))
+    {
+      throw new sfException('cmsBrowser component verwacht een parameter "node" met een DmsNode (folder!).');
+    }
+
+    $this->options = isset($this->options) ? $this->options : array();
+
+    $namespace = 'ttDmsBrowser';
+    $attributeHolder = $this->getUser()->getAttributeHolder();
+    $this->aspect_id = $attributeHolder->get("aspect_id", '', $namespace);
   }
 }
   

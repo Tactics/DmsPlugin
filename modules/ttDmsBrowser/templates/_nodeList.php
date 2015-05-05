@@ -261,7 +261,7 @@ foreach($nodes as $subnode)
       }
       $row[] = implode(', ', $aspects);
     }
-    
+
     $row = array_merge($row, array(
       format_filesize($subnode->getSize()),
       link_to(sfConfig::get('sf_style_smartadmin') ? '<i class="fa fa-save" title="Downloaden"></i>' : image_tag('/ttDms/images/icons/diskette_16.gif', array('title' => 'Downloaden')), 'ttDmsBrowser/download?node_id=' . $subnode->getId())
