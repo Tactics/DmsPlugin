@@ -64,7 +64,7 @@
   </td>
   <td style="vertical-align:top;">
     <div class="pageblock" id="nodeList">
-      <?php include_component('ttDmsBrowser', 'nodeList', array('node' => $node)); ?>
+      <?php include_component('ttDmsBrowser', 'nodeList', array('node' => $node, 'options' => $options)); ?>
     </div>
   </td>  
 </tr>

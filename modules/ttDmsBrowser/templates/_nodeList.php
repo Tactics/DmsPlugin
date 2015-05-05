@@ -15,7 +15,8 @@ function loadNode(node_id)
 {
   jQuery('#nodeList').load(
     '<?php echo url_for('ttDmsBrowser/ajaxNodeList'); ?>',
-    {node_id: node_id}
+    {node_id: node_id,
+     options: <?php echo json_encode($options); ?>}
   );
 }
 
@@ -154,20 +155,30 @@ function closeNodeDetails()
 </script>
 
 <?php
+
+$headers = array(
+  array('text' => checkbox_tag('multiCheck', '', 0, array('onclick' => 'multiCheck(this);', 'class' => 'multiCheck')), 'width' => 16),
+  array('name' => DmsNodePeer::NAME, 'text' => 'Naam', 'sortable' => true),
+  array('name' => DmsNodePeer::CREATED_AT, 'text' => 'Datum', 'width' => 110, 'sortable' => true));
+
+if ($options['showType'] && ($options['showType'] !== 'false'))
+{
+  $headers[] = array('text' => 'Type', 'width' => 120);
+}
+if ($options['showAnnotations'] && ($options['showAnnotations'] !== 'false'))
+{
+  $headers[] = array('text' => 'Annotaties');
+}
+
+$headers = array_merge($headers, array(array('text' => 'Grootte', 'width' => 80, 'align' => 'right', 'sortable' => true), array('text' => 'Acties', 'width' => 60, 'align' => 'center')));
+
 $table = new myTable(
-  array(
-    array('text' => checkbox_tag('multiCheck', '', 0, array('onclick' => 'multiCheck(this);', 'class' => 'multiCheck')), 'width' => 16),
-    array('name' => DmsNodePeer::NAME, 'text' => 'Naam', 'sortable' => true),
-    array('name' => DmsNodePeer::CREATED_AT, 'text' => 'Datum', 'width' => 110, 'sortable' => true),
-    array('text' => 'Type', 'width' => 120),
-    array('text' => 'Grootte', 'width' => 80, 'align' => 'right'),
-    array('text' => 'Acties', 'width' => 60, 'align' => 'center')
-  ),
+  $headers,
   array(
     'class' => 'ttDmsFileList',
     "sortfield"  => $orderBy,
     "sortorder"  => $orderAsc ? "ASC" : "DESC",
-    "sorturi"    => 'ttDmsBrowser/ajaxNodeList?node_id=' . $node->getId(),
+    "sorturi"    => 'ttDmsBrowser/ajaxNodeList?node_id=' . $node->getId() . '&showType='.$options['showType'].'&showAnnotations='.$options['showAnnotations'],
     "sorttarget" => 'nodeList',
     "smartadmin" => sfConfig::get('sf_style_smartadmin')
   )
@@ -177,14 +188,24 @@ foreach($nodes as $subnode)
 {
   if ($options['showFolders'] && $subnode->getIsFolder())
   {
-    $table->addRow(array(
+    $row = array(
       '',
       link_to(image_tag('/ttDms/images/icons/folder_16.gif', array('valign' => 'middle')) . ' ' . $subnode->getName(), 'ttDmsBrowser/browse?node_id=' . $subnode->getId()),
-      format_date($subnode->getCreatedAt(), 'g'),
-      'Folder',
-      '',
-      ''
-    ));
+      format_date($subnode->getCreatedAt(), 'g')
+    );
+
+    if ($options['showType'] && ($options['showType'] !== 'false'))
+    {
+      $row[] = 'Folder';
+    }
+    if ($options['showAnnotations'] && ($options['showAnnotations'] !== 'false'))
+    {
+      $row[] = '';
+    }
+
+    $row = array_merge($row, array('', ''));
+
+    $table->addRow($row);
   }
 }
 
@@ -195,32 +216,60 @@ foreach($nodes as $subnode)
   if (!$storage->exists($subnode->getStoragePath()))
   {    
     $errorTdAttributes= array('style' => 'color: red; background-color:pink');
-    
-    $table->addRow(array(
+
+    $row = array(
       array('content' => '', 'tdAttributes' => $errorTdAttributes),
       array('content' => $subnode->getName(), 'tdAttributes' => $errorTdAttributes),
-      array('content' => format_date($subnode->getCreatedAt(), 'g'), 'tdAttributes' => $errorTdAttributes),      
+      array('content' => format_date($subnode->getCreatedAt(), 'g'), 'tdAttributes' => $errorTdAttributes));
+
+    if ($options['showType'] && ($options['showType'] !== 'false'))
+    {
+      $row[] = array('content' => '', 'tdAttributes' => $errorTdAttributes);
+    }
+    if ($options['showAnnotations'] && ($options['showAnnotations'] !== 'false'))
+    {
+      $row[] = array('content' => '', 'tdAttributes' => $errorTdAttributes);
+    }
+
+    $row = array_merge($row, array(
       array('content' => '', 'tdAttributes' => $errorTdAttributes),
       array('content' => '', 'tdAttributes' => $errorTdAttributes),
-      array('content' => '', 'tdAttributes' => $errorTdAttributes),
-    ), array('style' => 'white-space: nowrap;')
-    );
+    ));
+
+    $table->addRow($row, array('style' => 'white-space: nowrap;'));
     
     continue;
   }
-  
+
   if (! $subnode->getIsFolder())
-  {  
-    $table->addRow(array(
+  {
+    $row = array(
       checkbox_tag('nodes[]', $subnode->getId(), false),
       image_tag(filetype_image_path($subnode->getExtension()), array('style' => 'width:16px; vertical-align: -20%;', 'title' => $subnode->getMimeType())) . ' ' . $subnode->getName(),
-      format_date($subnode->getCreatedAt(), 'g'),
-      $subnode->getMimeType(),
+      format_date($subnode->getCreatedAt(), 'g'));
+
+    if ($options['showType'] && ($options['showType'] !== 'false'))
+    {
+      $row[] = $subnode->getMimeType();
+    }
+    if ($options['showAnnotations'] && ($options['showAnnotations'] !== 'false'))
+    {
+      $aspects = array();
+      foreach($subnode->getDmsNodeAspectsJoinDmsAspect() as $nodeAspect)
+      {
+        $aspects[] = $nodeAspect->getDmsAspect()->getName();
+      }
+      $row[] = implode(', ', $aspects);
+    }
+    
+    $row = array_merge($row, array(
       format_filesize($subnode->getSize()),
       link_to(sfConfig::get('sf_style_smartadmin') ? '<i class="fa fa-save" title="Downloaden"></i>' : image_tag('/ttDms/images/icons/diskette_16.gif', array('title' => 'Downloaden')), 'ttDmsBrowser/download?node_id=' . $subnode->getId())
-        . link_to_function(sfConfig::get('sf_style_smartadmin') ? '<i class="fa fa-minus-circle" title="Verwijderen"></i>' : image_tag('/ttDms/images/icons/delete_16.gif', array('title' => 'Verwijderen')), 'deleteNode(' . $subnode->getId() . ');')
-        . link_to_function(sfConfig::get('sf_style_smartadmin') ? '<i class="fa fa-search" title="Details"></i>' : image_tag('/ttDms/images/icons/document_zoom_16.gif', array('title' => 'Details')), 'showNodeDetails(' . $subnode->getId() . ');')
-    ), array('style' => 'white-space: nowrap'));
+      . link_to_function(sfConfig::get('sf_style_smartadmin') ? '<i class="fa fa-minus-circle" title="Verwijderen"></i>' : image_tag('/ttDms/images/icons/delete_16.gif', array('title' => 'Verwijderen')), 'deleteNode(' . $subnode->getId() . ');')
+      . link_to_function(sfConfig::get('sf_style_smartadmin') ? '<i class="fa fa-search" title="Details"></i>' : image_tag('/ttDms/images/icons/document_zoom_16.gif', array('title' => 'Details')), 'showNodeDetails(' . $subnode->getId() . ');')
+    ));
+
+    $table->addRow($row, array('style' => 'white-space: nowrap'));
   }
 }
 

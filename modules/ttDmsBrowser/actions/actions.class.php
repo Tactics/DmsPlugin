@@ -585,7 +585,16 @@ class ttDmsBrowserActions extends sfActions
 
     Misc::use_helper('Partial');
 
-    include_component('ttDmsBrowser', 'nodeList', array('node' => $this->node));
+    if ($this->hasRequestParameter('options'))
+    {
+      $options = $this->getRequestParameter('options');
+    }
+    else
+    {
+      $options = array('showType' => $this->getRequestParameter('showType'), 'showAnnotations' => $this->getRequestParameter('showAnnotations'));
+    }
+
+    include_component('ttDmsBrowser', 'nodeList', array('node' => $this->node, 'options' => $options));
 
     exit();
   }

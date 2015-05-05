@@ -36,7 +36,9 @@ class ttDmsBrowserComponents extends sfComponents
     $defaultOptions = array(
       'width' => '900px',
       'upload_enabled' => true,
-      'list_width' => '250px'
+      'list_width' => '250px',
+      'showType' => true,
+      'showAnnotations' => false
     );
     
     $this->options = is_array($this->options) ? $this->options : array();
@@ -64,7 +66,7 @@ class ttDmsBrowserComponents extends sfComponents
     
     $this->options = is_array($this->options) ? $this->options : array();
     $this->options = $this->options + $defaultOptions;
-    
+
     // sorteerbaar maken van ttDmsBrowser
     // deze params worden gezet in ttDmsBrowser/ajaxNodeList
     $namespace = 'ttDmsBrowser';
