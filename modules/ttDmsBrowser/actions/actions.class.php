@@ -585,6 +585,11 @@ class ttDmsBrowserActions extends sfActions
       $attributeHolder->set('aspect_id', $this->getRequestParameter('dms_aspect_ID'), $namespace);
     }
 
+    if ($this->hasRequestParameter('jaar'))
+    {
+      $attributeHolder->set('jaar', $this->getRequestParameter('jaar'), $namespace);
+    }
+
     $attributeHolder->set("orderasc", $this->orderAsc, $namespace);
     $attributeHolder->set("orderby", $this->orderBy, $namespace);
 

@@ -75,6 +75,7 @@ class ttDmsBrowserComponents extends sfComponents
     $this->orderAsc = $attributeHolder->get("orderasc", true, $namespace);
     $this->orderBy = $attributeHolder->get("orderby", '-', $namespace);
     $this->aspectId = $attributeHolder->get('aspect_id', '', $namespace);
+    $this->jaar = $attributeHolder->get('jaar', '', $namespace);
 
     $c = new Criteria();
     if ($this->orderBy != '-')
@@ -85,6 +86,17 @@ class ttDmsBrowserComponents extends sfComponents
     {
       $c->addJoin(DmsNodePeer::ID, DmsNodeAspectPeer::NODE_ID, Criteria::JOIN);
       $c->add(DmsNodeAspectPeer::ASPECT_ID, $this->aspectId);
+    }
+
+    $property = DmsPropertyTypePeer::retrieveBySystemName(PermanentDossier::DMS_PROPERTY_TYPE_PD_SPORTSUBSIDIEJAAR);
+    if ($this->jaar && $property)
+    {
+      $c->addAlias("dnp1", DmsNodePropertyPeer::TABLE_NAME);
+      $c->addJoin(DmsNodePeer::ID, DmsNodePropertyPeer::alias("dnp1", DmsNodePropertyPeer::NODE_ID) . ' AND ' . DmsNodePropertyPeer::alias("dnp1", DmsNodePropertyPeer::TYPE_ID) . ' = ' . $property->getId(), Criteria::LEFT_JOIN);
+      $jaarCton = $c->getNewCriterion(DmsNodePropertyPeer::alias("dnp1", DmsNodePropertyPeer::STRING_VALUE), $this->jaar); // geselecteerde jaar
+      $jaarCton->addOr($c->getNewCriterion(DmsNodePropertyPeer::alias("dnp1", DmsNodePropertyPeer::STRING_VALUE), '')); // of nog niet ingevuld
+      $jaarCton->addOr($c->getNewCriterion(DmsNodePropertyPeer::alias("dnp1", DmsNodePropertyPeer::ID), NULL, Criteria::ISNULL)); // of nog niet ingevuld
+      $c->add($jaarCton);
     }
     
     $this->nodes = $this->node->getChildNodes($c);    
@@ -126,6 +138,7 @@ class ttDmsBrowserComponents extends sfComponents
     $namespace = 'ttDmsBrowser';
     $attributeHolder = $this->getUser()->getAttributeHolder();
     $this->aspect_id = $attributeHolder->get("aspect_id", '', $namespace);
+    $this->jaar = $attributeHolder->get("jaar", '', $namespace);
   }
 }
   

@@ -23,6 +23,14 @@ echo input_hidden_tag('showAnnotations', $options['showAnnotations']);
         </tr>
       </table>
     </td>
+    <td width='50%'>
+      <table>
+        <tr>
+          <th>Subsidiejaar:</th>
+          <td><?php echo select_year_tag('jaar', $jaar ? $jaar : '', array('year_start' => 2014, 'year_end' => date('Y') + 1, 'include_blank' => true)); ?></td>
+        </tr>
+      </table>
+    </td>
   </tr>
   </tbody>
 </table>
