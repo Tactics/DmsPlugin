@@ -305,7 +305,7 @@ class DmsDiskStorage extends DmsStorage
       {
         // Windows: download een magic file en zet MAGIC environment variable
         // Unix: gebruikt default /usr/share/file/magic
-        $fileInfoInstance = finfo_open(FILEINFO_MIME, 'D:\xampp\php\extras\magic.mime');
+        $fileInfoInstance = finfo_open(FILEINFO_MIME);
       }
 
       $info = false !== $fileInfoInstance ? finfo_file($fileInfoInstance, $this->root . $path) : null;
