@@ -1,6 +1,6 @@
 all:
   javascripts: [/ttBase/ui/js/dialog.js]
-  stylesheets: [/ttBase/ui/css/dialog.css, <?php if(!sfConfig::get("sf_style_smartadmin")){echo '/ttBase/css/smartadmin_to_sf1.css'}; ?>]
+  stylesheets: [/ttBase/ui/css/dialog.css, <?php if(!sfConfig::get("sf_style_smartadmin")){echo '/ttBase/css/smartadmin_to_sf1.css';} ?>]
 
 listSuccess:
   javascripts: [jquery.maskedinput.js]
