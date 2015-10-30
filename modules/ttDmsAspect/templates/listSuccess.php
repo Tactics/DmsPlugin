@@ -1,7 +1,10 @@
+<?php if (! $sf_request->isXmlHttpRequest()) : ?>
 <?php echo include_partial('breadcrumb', array('actie' => 'Aspecten')); ?>
-<h2 class="pageblock">Dms Aspecten</h1>
+<h2 class="pageblock">Dms Aspecten</h2>
 <div class="pageblock">
+  <div id="zoekresultaten">
   <?php
+endif; // end XmlHttpRequest
 
   $table = new myTable(array(
     array('name' => DmsAspectPeer::NAME, 'text' => 'Naam'),
@@ -18,6 +21,10 @@
 
   echo $table;
 ?>
-<hr />
-<?php echo button_to ('Nieuw aspect', 'ttDmsAspect/create') ?>
+  <?php echo pager_navigation($pager, 'ttDmsAspect/list', "zoekresultaten") ?>
+  <?php if (! $sf_request->isXmlHttpRequest()) : ?>
+    <hr />
+    <?php echo button_to ('Nieuw aspect', 'ttDmsAspect/create') ?>
+  </div>
 </div>
+<?php endif; ?>
