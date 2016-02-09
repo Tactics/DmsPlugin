@@ -39,7 +39,8 @@ class ttDmsBrowserComponents extends sfComponents
       'list_width' => '250px',
       'showType' => true,
       'showAnnotations' => false,
-      'filter_enabled' => false
+      'filter_enabled' => false,
+      'systemname_for_sportsubsidies' => null
     );
     
     $this->options = is_array($this->options) ? $this->options : array();
@@ -88,7 +89,7 @@ class ttDmsBrowserComponents extends sfComponents
       $c->add(DmsNodeAspectPeer::ASPECT_ID, $this->aspectId);
     }
 
-    $property = DmsPropertyTypePeer::retrieveBySystemName(PermanentDossier::DMS_PROPERTY_TYPE_PD_SPORTSUBSIDIEJAAR);
+    $property = DmsPropertyTypePeer::retrieveBySystemName($this->options['systemname_for_sportsubsidies']);
     if ($this->jaar && $property)
     {
       $c->addAlias("dnp1", DmsNodePropertyPeer::TABLE_NAME);

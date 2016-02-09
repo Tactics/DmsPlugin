@@ -601,7 +601,7 @@ class ttDmsBrowserActions extends sfActions
     }
     else
     {
-      $options = array('showType' => $this->getRequestParameter('showType'), 'showAnnotations' => $this->getRequestParameter('showAnnotations'));
+      $options = array('showType' => $this->getRequestParameter('showType'), 'showAnnotations' => $this->getRequestParameter('showAnnotations'), 'systemname_for_sportsubsidies' => $this->getRequestParameter('systemname_for_sportsubsidies'));
     }
 
     include_component('ttDmsBrowser', 'nodeList', array('node' => $this->node, 'options' => $options));
