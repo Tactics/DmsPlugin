@@ -190,7 +190,7 @@ foreach($nodes as $subnode)
   {
     $row = array(
       '',
-      link_to(image_tag('/ttDms/images/icons/folder_16.gif', array('valign' => 'middle')) . ' ' . $subnode->getName(), 'ttDmsBrowser/browse?node_id=' . $subnode->getId()),
+      image_tag('/ttDms/images/icons/folder_16.gif', array('valign' => 'middle')) . ' ' . $subnode->getName(),
       format_date($subnode->getCreatedAt(), 'g')
     );
 
