@@ -3,7 +3,7 @@
     z-index: 10000;
   }
 </style>
-
+<div class="close"></div>
 <?php use_helper('Dms'); ?>
 <div class="pageblock">
   <header>
@@ -64,20 +64,20 @@
   <?php 
   $aspects = $node->getDmsNodeAspectsJoinDmsAspect();
   
-  if (count($aspects)) : 
-  
+  if (count($aspects)) :
+
   echo form_tag('ttDmsBrowser/saveProperties');
   echo input_hidden_tag('node_id', $node->getId());
   echo input_hidden_tag('redirect_url', $redirect_url);
   ?>
-  
+
     <?php foreach($aspects as $nodeAspect): ?>
     <fieldset>
       <legend>
         <?php echo $nodeAspect->getDmsAspect()->getName(); ?>
         <?php echo link_to('X', 'ttDmsBrowser/removeAspect?nodeaspect_id=' . $nodeAspect->getId(), array('confirm' => 'Dit aspect en bijhorende gegevens verwijderen?')); ?>
       </legend>
-      
+
       <table class="formtable">
         <?php foreach($nodeAspect->getDmsAspect()->getDmsAspectPropertyTypesJoinDmsPropertyType() as $aspectProperyType): ?>
         <tr>
@@ -85,7 +85,7 @@
           <td>
             <?php
               $propertyType = $aspectProperyType->getDmsPropertyType();
-              
+
               switch($propertyType->getDataType())
               {
                 case DmsPropertyTypePeer::TYPE_TEXT:
@@ -117,16 +117,16 @@
         <?php endforeach; ?>
       </table>
     </fieldset>
-    
+
     <?php endforeach; ?>
-  
+
     <?php echo submit_tag('Opslaan');?>
     <?php echo button_to_function('Annuleren', 'closeNodeDetails();'); ?>
   </form>
-  <?php 
+  <?php
   endif;
   ?>
-  
+
 </div>
 <?php endif; ?>
 
