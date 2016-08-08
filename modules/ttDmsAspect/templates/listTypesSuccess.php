@@ -1,7 +1,15 @@
+<?php if (!$sf_request->isXmlHttpRequest()) : ?>
 <?php echo include_partial('breadcrumb', array('actie' => 'Types')); ?>
 
 <h2 class="pageblock">Dms propertytypes</h1>
 <div class="pageblock">
+  <?php endif; ?>
+  <div id="zoekresultaten">
+    <div class="filter">
+      &nbsp;<?php echo $pager->getNbResults() ?> resultaten gevonden,
+      <strong><?php echo $pager->getLastIndice() ? $pager->getFirstIndice() : 0 ?>
+        -<?php echo $pager->getLastIndice() ?></strong> worden weergegeven.
+    </div>
 <?php
 
 $table = new myTable(array(
@@ -20,8 +28,11 @@ foreach ($pager->getResults() as $dms_type)
 echo $table;
 
 ?>
+<?php echo pager_navigation($pager, "ttDmsAspect/listTypes", 'zoekresultaten') ?>
+    <?php if (!$sf_request->isXmlHttpRequest()) : ?>
 </tbody>
 </table>
 <hr />
 <?php echo button_to ('Nieuw type', 'ttDmsAspect/createType') ?>
 </div>
+  <?php endif; ?>
