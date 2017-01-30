@@ -16,7 +16,7 @@ class DmsNodeMetadata
   }
 
   /**
-   * @return mixed
+   * @return int
    */
   public function getId()
   {
@@ -24,7 +24,7 @@ class DmsNodeMetadata
   }
 
   /**
-   * @return mixed
+   * @return string
    */
   public function getName()
   {
@@ -32,7 +32,7 @@ class DmsNodeMetadata
   }
 
   /**
-   * @return mixed
+   * @return string
    */
   public function getPath()
   {
@@ -40,7 +40,7 @@ class DmsNodeMetadata
   }
 
   /**
-   * @return mixed
+   * @return string
    */
   public function getLastUpdatedTimestamp()
   {
