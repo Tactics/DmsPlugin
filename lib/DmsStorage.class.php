@@ -21,68 +21,71 @@ abstract class DmsStorage
     $this->root = $options['root'];
     $this->initialize();
   }
-  
+
   /**
    * Controleert of het opgegeven path een directory is
-   * 
-   * @param string $path
-   * 
-   * @throws sfException indien het path geen directory is 
+   *
+   * @param DmsNodeMetadata $metadata
+   *
+   * @throws sfException indien het path geen directory is
+   *
    */
-  protected function checkIsDir($path)
+  protected function checkIsDir(DmsNodeMetadata $metadata)
   {
-    if (!$this->isDir($path))
+    if (!$this->isDir($metadata))
     {
-      throw new sfException(sprintf('The item "%s" is not a directory.', $path));
+      throw new sfException(sprintf('The item "%s" is not a directory.', $metadata->getPath()));
     }
   }
-  
+
   /**
    * Controleert of het opgegeven path een bestand is
-   * 
-   * @param string $path
-   * 
-   * @throws sfException indien het path geen bestand is 
+   *
+   * @param DmsNodeMetadata $metadata
+   *
+   * @throws sfException indien het path geen bestand is
+   *
    */
-  protected function checkIsFile($path)
+  protected function checkIsFile(DmsNodeMetadata $metadata)
   {
-    if (!$this->isFile($path))
+    if (!$this->isFile($metadata))
     {
-      throw new sfException(sprintf('The item "%s" is not a regular file.', $path));
+      throw new sfException(sprintf('The item "%s" is not a regular file.', $metadata->getPath()));
     }
   }
-  
+
   /**
    * Controleert of het opgegeven path bestaat
-   * 
-   * @param string $path
-   * 
-   * @throws sfException indien het path geen bestand is 
+   *
+   * @param DmsNodeMetadata $metadata
+   *
+   * @throws sfException indien het path geen bestand is
+   *
    */
-  protected function checkExists($path)
+  protected function checkExists(DmsNodeMetadata $metadata)
   {
-    if (!$this->exists($path))
+    if (!$this->exists($metadata))
     {
-      throw new sfException(sprintf('The item "%s" does not exist.', $path));
+      throw new sfException(sprintf('The item "%s" does not exist.', $metadata->getPath()));
     }
   }
   
   abstract function initialize();
-  abstract function copy($fromPath, $toPath);
-  abstract function mkdir($path);
-  abstract function exists($path);
-  abstract function isDir($path);
-  abstract function isFile($path);
-  abstract function getSize($path);
-  abstract function rename($fromPath, $toPath);
-  abstract function listdir($path);
-  abstract function read($path);
-  abstract function output($path);
-  abstract function unlink($path);
-  abstract function write($path, $data);
+  abstract function copy(DmsNodeMetadata $oldMetadata, DmsNodeMetadata $newMetadata);
+  abstract function mkdir(DmsNodeMetadata $metadata);
+  abstract function exists(DmsNodeMetadata $metadata);
+  abstract function isDir(DmsNodeMetadata $metadata);
+  abstract function isFile(DmsNodeMetadata $metadata);
+  abstract function getSize(DmsNodeMetadata $metadata);
+  abstract function rename(DmsNodeMetadata $oldMetadata, DmsNodeMetadata $newMetadata);
+  abstract function listdir(DmsNodeMetadata $metadata);
+  abstract function read(DmsNodeMetadata $metadata);
+  abstract function output(DmsNodeMetadata $metadata);
+  abstract function unlink(DmsNodeMetadata $metadata);
+  abstract function write(DmsNodeMetadata $metadata, $data);
   
-  abstract function moveUploadedFile($requestFileName, $path);
-  abstract function loadFromFile($absoluteFilepath, $storagePath);
-  abstract function saveToFile($storagePath, $absoluteFilepath);
-  abstract function getMimeType($path);
+  abstract function moveUploadedFile($requestFileName, DmsNodeMetadata $metadata);
+  abstract function loadFromFile($absoluteFilepath, DmsNodeMetadata $metadata);
+  abstract function saveToFile(DmsNodeMetadata $metadata, $absoluteFilepath);
+  abstract function getMimeType(DmsNodeMetadata $metadata);
 } 
