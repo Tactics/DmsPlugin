@@ -665,7 +665,7 @@ class DmsNode extends BaseDmsNode
     return new DmsNodeMetadata(
       $this->getId(),
       $this->getName(),
-      $this->getDiskName(),
+      $this->getStoragePath(),
       (new DateTime())->getTimestamp()
     );
   }
