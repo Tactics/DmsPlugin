@@ -655,6 +655,20 @@ class DmsNode extends BaseDmsNode
     }
   }
 
+  /**
+   * Maakt een DmsNodeMetadata object aan op basis van de huidige node.
+   *
+   * @return DmsNodeMetadata
+   */
+  public function getMetadata()
+  {
+    return new DmsNodeMetadata(
+      $this->getId(),
+      $this->getName(),
+      $this->getDiskName(),
+      (new DateTime())->getTimestamp()
+    );
+  }
 }
 
 sfPropelBehavior::add('DmsNode', array('updater_loggable'));
