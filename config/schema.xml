@@ -1,121 +1,129 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <database defaultIdMethod="native" name="propel" package="plugins.ttDmsPlugin.lib.model" noxsd="true">
-  <table name="dms_node">
-    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
-    <column name="store_id" type="INTEGER" required="true"/>
-    <column name="parent_id" type="INTEGER"/>
-    <column name="is_folder" type="BOOLEAN"/>
-    <column name="name" type="VARCHAR" size="255"/>
-    <column name="disk_name" type="VARCHAR" size="255"/>
-    <column name="created_by" type="INTEGER"/>
-    <column name="updated_by" type="INTEGER"/>
-    <column name="created_at" type="TIMESTAMP"/>
-    <column name="updated_at" type="TIMESTAMP"/>
-    <foreign-key name="fk_tt_file_tt_store1" foreignTable="dms_store">
-      <reference local="store_id" foreign="id"/>
-    </foreign-key>
-    <foreign-key name="fk_tt_file_tt_store2" foreignTable="dms_node">
-      <reference local="parent_id" foreign="id"/>
-    </foreign-key>
-  </table>
+    <table name="dms_node">
+        <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+        <column name="store_id" type="INTEGER" required="true"/>
+        <column name="parent_id" type="INTEGER"/>
+        <column name="is_folder" type="BOOLEAN"/>
+        <column name="name" type="VARCHAR" size="255"/>
+        <column name="disk_name" type="VARCHAR" size="255"/>
+        <column name="created_by" type="INTEGER"/>
+        <column name="updated_by" type="INTEGER"/>
+        <column name="created_at" type="TIMESTAMP"/>
+        <column name="updated_at" type="TIMESTAMP"/>
+        <foreign-key name="fk_tt_file_tt_store1" foreignTable="dms_store">
+            <reference local="store_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key name="fk_tt_file_tt_store2" foreignTable="dms_node">
+            <reference local="parent_id" foreign="id"/>
+        </foreign-key>
+    </table>
 
-  <table name="dms_node_property">
-    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
-    <column name="node_id" type="INTEGER" primaryKey="true" required="true"/>
-    <column name="type_id" type="INTEGER" primaryKey="true" required="true"/>
-    <column name="boolean_value" type="BOOLEAN"/>
-    <column name="int_value" type="BOOLEAN"/>
-    <column name="float_value" type="DOUBLE"/>
-    <column name="string_value" type="VARCHAR" size="255"/>
-    <column name="text_value" type="LONGVARCHAR"/>
-    <column name="created_by" type="INTEGER"/>
-    <column name="updated_by" type="INTEGER"/>
-    <column name="created_at" type="TIMESTAMP"/>
-    <column name="updated_at" type="TIMESTAMP"/>
-    <foreign-key name="fk_tt_node_property_tt_node_property_type" foreignTable="dms_property_type" onDelete="cascade">
-      <reference local="type_id" foreign="id"/>
-    </foreign-key>
-    <foreign-key name="fk_tt_node_property_tt_node1" foreignTable="dms_node" onDelete="cascade">
-      <reference local="node_id" foreign="id"/>
-    </foreign-key>
-  </table>
+    <table name="dms_node_property">
+        <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+        <column name="node_id" type="INTEGER" primaryKey="true" required="true"/>
+        <column name="type_id" type="INTEGER" primaryKey="true" required="true"/>
+        <column name="boolean_value" type="BOOLEAN"/>
+        <column name="int_value" type="BOOLEAN"/>
+        <column name="float_value" type="DOUBLE"/>
+        <column name="string_value" type="VARCHAR" size="255"/>
+        <column name="text_value" type="LONGVARCHAR"/>
+        <column name="created_by" type="INTEGER"/>
+        <column name="updated_by" type="INTEGER"/>
+        <column name="created_at" type="TIMESTAMP"/>
+        <column name="updated_at" type="TIMESTAMP"/>
+        <foreign-key name="fk_tt_node_property_tt_node_property_type" foreignTable="dms_property_type"
+                     onDelete="cascade">
+            <reference local="type_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key name="fk_tt_node_property_tt_node1" foreignTable="dms_node" onDelete="cascade">
+            <reference local="node_id" foreign="id"/>
+        </foreign-key>
+    </table>
 
-  <table name="dms_property_type">
-    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
-    <column name="name" type="VARCHAR" size="45"/>
-    <column name="system_name" type="VARCHAR" size="100"/>
-    <column name="data_type" type="VARCHAR" size="20"/>
-    <column name="options" type="LONGVARCHAR"/>
-    <column name="created_by" type="INTEGER"/>
-    <column name="updated_by" type="INTEGER"/>
-    <column name="created_at" type="TIMESTAMP"/>
-    <column name="updated_at" type="TIMESTAMP"/>
-  </table>
+    <table name="dms_property_type">
+        <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+        <column name="name" type="VARCHAR" size="45"/>
+        <column name="system_name" type="VARCHAR" size="100"/>
+        <column name="data_type" type="VARCHAR" size="20"/>
+        <column name="options" type="LONGVARCHAR"/>
+        <column name="created_by" type="INTEGER"/>
+        <column name="updated_by" type="INTEGER"/>
+        <column name="created_at" type="TIMESTAMP"/>
+        <column name="updated_at" type="TIMESTAMP"/>
+    </table>
 
-  <table name="dms_store">
-    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
-    <column name="name" type="VARCHAR" size="45"/>
-    <column name="uri" type="VARCHAR" size="255"/>
-    <column name="created_by" type="INTEGER"/>
-    <column name="updated_by" type="INTEGER"/>
-    <column name="created_at" type="TIMESTAMP"/>
-    <column name="updated_at" type="TIMESTAMP"/>
-  </table>
+    <table name="dms_store">
+        <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+        <column name="name" type="VARCHAR" size="45"/>
+        <column name="uri" type="VARCHAR" size="255"/>
+        <column name="created_by" type="INTEGER"/>
+        <column name="updated_by" type="INTEGER"/>
+        <column name="created_at" type="TIMESTAMP"/>
+        <column name="updated_at" type="TIMESTAMP"/>
+    </table>
 
-  <table name="dms_aspect">
-    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
-    <column name="name" type="VARCHAR" size="45"/>
-    <column name="system_name" type="VARCHAR" size="100"/>
-    <column name="created_by" type="INTEGER"/>
-    <column name="updated_by" type="INTEGER"/>
-    <column name="created_at" type="TIMESTAMP"/>
-    <column name="updated_at" type="TIMESTAMP"/>
-  </table>
+    <table name="dms_aspect">
+        <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+        <column name="name" type="VARCHAR" size="45"/>
+        <column name="system_name" type="VARCHAR" size="100"/>
+        <column name="created_by" type="INTEGER"/>
+        <column name="updated_by" type="INTEGER"/>
+        <column name="created_at" type="TIMESTAMP"/>
+        <column name="updated_at" type="TIMESTAMP"/>
+    </table>
 
-  <table name="dms_aspect_property_type">
-    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
-    <column name="aspect_id" type="INTEGER"/>
-    <column name="type_id" type="INTEGER"/>
-    <column name="volgorde" type="INTEGER"/>
-    <column name="created_by" type="INTEGER"/>
-    <column name="updated_by" type="INTEGER"/>
-    <column name="created_at" type="TIMESTAMP"/>
-    <column name="updated_at" type="TIMESTAMP"/>
-    <foreign-key name="fk_dms_aspect_has_dms_node_property_type_dms_aspect1" foreignTable="dms_aspect" onDelete="cascade">
-      <reference local="aspect_id" foreign="id"/>
-    </foreign-key>
-    <foreign-key name="fk_dms_aspect_has_dms_node_property_type_dms_node_property_ty1" foreignTable="dms_property_type" onDelete="cascade">
-      <reference local="type_id" foreign="id"/>
-    </foreign-key>
-  </table>
+    <table name="dms_aspect_property_type">
+        <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+        <column name="aspect_id" type="INTEGER"/>
+        <column name="type_id" type="INTEGER"/>
+        <column name="volgorde" type="INTEGER"/>
+        <column name="created_by" type="INTEGER"/>
+        <column name="updated_by" type="INTEGER"/>
+        <column name="created_at" type="TIMESTAMP"/>
+        <column name="updated_at" type="TIMESTAMP"/>
+        <foreign-key name="fk_dms_aspect_has_dms_node_property_type_dms_aspect1" foreignTable="dms_aspect"
+                     onDelete="cascade">
+            <reference local="aspect_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key name="fk_dms_aspect_has_dms_node_property_type_dms_node_property_ty1"
+                     foreignTable="dms_property_type" onDelete="cascade">
+            <reference local="type_id" foreign="id"/>
+        </foreign-key>
+    </table>
 
-  <table name="dms_node_aspect">
-    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
-    <column name="node_id" type="INTEGER"/>
-    <column name="aspect_id" type="INTEGER"/>
-    <column name="created_by" type="INTEGER"/>
-    <column name="updated_by" type="INTEGER"/>
-    <column name="created_at" type="TIMESTAMP"/>
-    <column name="updated_at" type="TIMESTAMP"/>
-    <foreign-key name="fk_dms_node_has_dms_aspect_dms_node1" foreignTable="dms_node" onDelete="cascade">
-      <reference local="node_id" foreign="id"/>
-    </foreign-key>
-    <foreign-key name="fk_dms_node_has_dms_aspect_dms_aspect1" foreignTable="dms_aspect" onDelete="cascade">
-      <reference local="aspect_id" foreign="id"/>
-    </foreign-key>
-  </table>
+    <table name="dms_node_aspect">
+        <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+        <column name="node_id" type="INTEGER"/>
+        <column name="aspect_id" type="INTEGER"/>
+        <column name="created_by" type="INTEGER"/>
+        <column name="updated_by" type="INTEGER"/>
+        <column name="created_at" type="TIMESTAMP"/>
+        <column name="updated_at" type="TIMESTAMP"/>
+        <foreign-key name="fk_dms_node_has_dms_aspect_dms_node1" foreignTable="dms_node" onDelete="cascade">
+            <reference local="node_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key name="fk_dms_node_has_dms_aspect_dms_aspect1" foreignTable="dms_aspect" onDelete="cascade">
+            <reference local="aspect_id" foreign="id"/>
+        </foreign-key>
+    </table>
 
-  <table name="dms_object_node_ref">
-    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
-    <column name="node_id" type="INTEGER" required="true"/>
-    <column name="object_class" type="VARCHAR" size="45"/>
-    <column name="object_id" type="INTEGER"/>
-    <column name="created_by" type="INTEGER"/>
-    <column name="updated_by" type="INTEGER"/>
-    <column name="created_at" type="TIMESTAMP"/>
-    <column name="updated_at" type="TIMESTAMP"/>
-    <foreign-key name="fk_dms_object_node_ref_dms_node1" foreignTable="dms_node" onDelete="cascade">
-      <reference local="node_id" foreign="id"/>
-    </foreign-key>
-  </table>
+    <table name="dms_object_node_ref">
+        <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+        <column name="node_id" type="INTEGER" required="true"/>
+        <column name="object_class" type="VARCHAR" size="45"/>
+        <column name="object_id" type="INTEGER"/>
+        <column name="created_by" type="INTEGER"/>
+        <column name="updated_by" type="INTEGER"/>
+        <column name="created_at" type="TIMESTAMP"/>
+        <column name="updated_at" type="TIMESTAMP"/>
+        <foreign-key name="fk_dms_object_node_ref_dms_node1" foreignTable="dms_node" onDelete="cascade">
+            <reference local="node_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+    <table name="dms_ws_updated">
+        <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+        <column name="node_id" type="INTEGER" required="true"/>
+    </table>
 </database>
