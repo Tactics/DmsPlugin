@@ -4,14 +4,14 @@ class DmsNodeMetadata
 {
   private $id;
   private $name;
-  private $diskName;
+  private $path;
   private $lastUpdatedTimestamp;
 
-  public function __construct($id, $name, $diskName, $lastUpdatedTimestamp)
+  public function __construct($id, $name, $path, $lastUpdatedTimestamp)
   {
     $this->id = $id;
     $this->name = $name;
-    $this->diskName = $diskName;
+    $this->path = $path;
     $this->lastUpdatedTimestamp = $lastUpdatedTimestamp;
   }
 
@@ -34,9 +34,9 @@ class DmsNodeMetadata
   /**
    * @return mixed
    */
-  public function getDiskName()
+  public function getPath()
   {
-    return $this->diskName;
+    return $this->path;
   }
 
   /**
