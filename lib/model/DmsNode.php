@@ -3,15 +3,15 @@
 /**
  * Subclass for representing a row from the 'dms_node' table.
  *
- * 
+ *
  *
  * @package plugins.ttDmsPlugin.lib.model
- */ 
+ */
 class DmsNode extends BaseDmsNode
 {
   /**
    * Geeft de parent node
-   * 
+   *
    * @return Node
    */
   public function getParentNode()
@@ -21,14 +21,14 @@ class DmsNode extends BaseDmsNode
   
   /**
    * Geeft de onderliggende nodes, standaard alfabetisch gesorteerd
-   * 
+   *
    * @return array
    */
   public function getChildNodes($c = null)
   {
     if ($c === null)
     {
-      $c = new Criteria();  
+      $c = new Criteria();
     }
     
     if (! $c->getOrderByColumns())
@@ -41,10 +41,10 @@ class DmsNode extends BaseDmsNode
 
   /**
    * Geeft de onderliggende node met de opgegeven naam
-   * 
+   *
    * @param string $name
    * @param Criteria $name optional
-   * 
+   *
    * @return DmsNode
    */
   public function getChildByName($name, Criteria $c = null)
@@ -63,9 +63,9 @@ class DmsNode extends BaseDmsNode
 
   /**
    * Geeft de onderliggende node met de opgegeven naam op schijf
-   * 
+   *
    * @param string $diskname
-   * 
+   *
    * @return DmsNode
    */
   public function getChildByDiskName($diskname)
@@ -81,9 +81,9 @@ class DmsNode extends BaseDmsNode
   
   /**
    * Geeft de node onder dezelfde parent met de opgegeven naam op schijf
-   * 
+   *
    * @param string $diskname
-   * 
+   *
    * @return DmsNode
    */
   public function getSibblingByDiskName($diskname)
@@ -98,9 +98,9 @@ class DmsNode extends BaseDmsNode
   }
    
   /**
-   * Geeft het pad als een array met alle parentobjecten of 
+   * Geeft het pad als een array met alle parentobjecten of
    * als array met het resultaat van een functie op de parentobjecten
-   * 
+   *
    * @return array DmsNode
    */
   public function getPath($classFtie = null)
@@ -112,7 +112,7 @@ class DmsNode extends BaseDmsNode
   
   /**
    * Geeft het volledige storage path van deze node
-   * 
+   *
    * @return string
    */
   public function getStoragePath()
@@ -129,9 +129,9 @@ class DmsNode extends BaseDmsNode
 
   /**
    * Maakt een nieuwe subfolder
-   * 
+   *
    * @param string $name
-   * 
+   *
    * @return DmsNode
    *
    * @throws DmsNodeExistsException
@@ -143,9 +143,9 @@ class DmsNode extends BaseDmsNode
   
   /**
    * Maakt een nieuwe subnode (geen folder)
-   * 
+   *
    * @param string $name
-   * 
+   *
    * @return DmsNode
    *
    * @throws DmsNodeExistsException
@@ -165,9 +165,9 @@ class DmsNode extends BaseDmsNode
     $extension = pathinfo($safeName, PATHINFO_EXTENSION);
     $basename = basename($safeName, $extension ? ('.' . $extension) : '');
     
-    $maxFilenameLength = sfConfig::get('sf_dms_filename_maxlength', 255);    
+    $maxFilenameLength = sfConfig::get('sf_dms_filename_maxlength', 255);
     $basename = substr($basename, 0, min(strlen($basename), $maxFilenameLength - strlen($extension) - 1));
-    $safeName = $basename . ($extension ? ('.' . $extension) : '');    
+    $safeName = $basename . ($extension ? ('.' . $extension) : '');
     
     $c = 1;
     
@@ -179,7 +179,8 @@ class DmsNode extends BaseDmsNode
 
     if ($folder)
     {
-      $this->getDmsStore()->getStorage()->mkdir($this->getStoragePath() . '/' . $safeName);
+      $metadata = new DmsNodeMetadata(null, '', $this->getStoragePath() . '/' . $safeName, null);
+      $this->getDmsStore()->getStorage()->mkdir($metadata);
     }
     
     $node = new DmsNode();
@@ -278,7 +279,7 @@ class DmsNode extends BaseDmsNode
   
   /**
    * Hernoemt de node
-   * 
+   *
    * @param string $newName
    */
   public function rename($newName)
@@ -309,8 +310,8 @@ class DmsNode extends BaseDmsNode
       $extension = pathinfo($safeName, PATHINFO_EXTENSION);
       $basename = basename($safeName, $extension ? ('.' . $extension) : '');
        
-      $basename = substr($basename, 0, min(strlen($basename), $maxFilenameLength - strlen($extension) - 1));   
-      $safeName = $basename . ($extension ? ('.' . $extension) : '');    
+      $basename = substr($basename, 0, min(strlen($basename), $maxFilenameLength - strlen($extension) - 1));
+      $safeName = $basename . ($extension ? ('.' . $extension) : '');
     }
     
     $c = 1;
@@ -324,7 +325,9 @@ class DmsNode extends BaseDmsNode
     $oldPath = $this->getStoragePath();
     $newPath = dirname($oldPath) . '/' . $safeName;
 
-    $this->getDmsStore()->getStorage()->rename($oldPath, $newPath);
+    $oldMetadata = new DmsNodeMetadata(null, '', $oldPath, null);
+    $newMetadata = new DmsNodeMetadata(null, '', $newPath, null);
+    $this->getDmsStore()->getStorage()->rename($oldMetadata, $newMetadata);
 
     $this->setName($newName);
     $this->setDiskName($safeName);
@@ -335,15 +338,16 @@ class DmsNode extends BaseDmsNode
   
   /**
    * Verplaatst de node naar een andere folder
-   * 
+   *
    * @param DmsNode $targetNode
    */
   public function move($targetNode)
   {
-    $oldPath = $this->getStoragePath();
+    $oldMetadata = $this->getMetadata();
     $newPath = $targetNode->getStoragePath() . '/' . $this->getDiskName();
+    $newMetadata = new DmsNodeMetadata(null, '', $newPath, null);
     
-    $this->getDmsStore()->getStorage()->rename($oldPath, $newPath);
+    $this->getDmsStore()->getStorage()->rename($oldMetadata, $newMetadata);
     
     $this->setParentId($targetNode->getId());
     $this->save();
@@ -351,7 +355,7 @@ class DmsNode extends BaseDmsNode
   
   /**
    * Verwijdert deze node (en eventuele onderliggende nodes)
-   * 
+   *
    * @param Connection $con
    */
   public function delete($con = null)
@@ -366,41 +370,41 @@ class DmsNode extends BaseDmsNode
     }
     
     // Dan huidige node
-    $this->getDmsStore()->getStorage()->unlink($this->getStoragePath());
+    $this->getDmsStore()->getStorage()->unlink($this->getMetadata());
     return parent::delete($con);
   }
   
   
   /**
-   * Schrijft data 
-   * 
+   * Schrijft data
+   *
    * @param mixed $data
    */
   public function write($data)
   {
-    $this->getDmsStore()->getStorage()->write($this->getStoragePath(), $data);
+    $this->getDmsStore()->getStorage()->write($this->getMetadata(), $data);
     $this->setContentUpdatedAt((new DateTime())->getTimestamp());
     $this->save();
   }
 
   /**
    * Leest de data uit het bestand
-   * 
+   *
    * @return mixed
    */
   public function read()
   {
-    return $this->getDmsStore()->getStorage()->read($this->getStoragePath());
+    return $this->getDmsStore()->getStorage()->read($this->getMetadata());
   }
   
   /**
    * Verplaatst een geuploaded bestand naar deze node
-   * 
+   *
    * @param string $file_id File upload id
    */
   public function moveUploadedFile($file_id)
   {
-    $this->getDmsStore()->getStorage()->moveUploadedFile($file_id, $this->getStoragePath());
+    $this->getDmsStore()->getStorage()->moveUploadedFile($file_id, $this->getMetadata());
     $this->setContentUpdatedAt((new DateTime())->getTimestamp());
     $this->save();
   }
@@ -412,7 +416,7 @@ class DmsNode extends BaseDmsNode
    */
   public function saveToFile($filePath)
   {
-    $this->getDmsStore()->getStorage()->saveToFile($this->getStoragePath(), $filePath);
+    $this->getDmsStore()->getStorage()->saveToFile($this->getMetadata(), $filePath);
   }
 
   /**
@@ -422,24 +426,24 @@ class DmsNode extends BaseDmsNode
    */
   public function loadFromFile($filePath)
   {
-    $this->getDmsStore()->getStorage()->loadFromFile($filePath, $this->getStoragePath());
+    $this->getDmsStore()->getStorage()->loadFromFile($filePath, $this->getMetadata());
     $this->setContentUpdatedAt((new DateTime())->getTimestamp());
     $this->save();
   }
 
   /**
    * Geeft het mimetype terug
-   * 
+   *
    * @return string
    */
   public function getMimeType()
   {
-    return $this->getDmsStore()->getStorage()->getMimeType($this->getStoragePath());
+    return $this->getDmsStore()->getStorage()->getMimeType($this->getMetadata());
   }
   
   /**
    * Geeft de bestandsextentie
-   * 
+   *
    * @return string
    */
   public function getExtension()
@@ -451,17 +455,17 @@ class DmsNode extends BaseDmsNode
   
   /**
    * Geeft de grootte van de node
-   * 
+   *
    * @return integer (grootte in bytes)
    */
   public function getSize()
   {
-    return $this->getDmsStore()->getStorage()->getSize($this->getStoragePath());
+    return $this->getDmsStore()->getStorage()->getSize($this->getMetadata());
   }
 
   /**
    * Stuur inhoud naar output
-   * 
+   *
    * @param boolean $includeHeaders : default false
    */
   public function output($includeHeaders = false)
@@ -483,15 +487,15 @@ class DmsNode extends BaseDmsNode
       $response->setHttpHeader('Content-Length', (string)($this->getSize()));
       $response->setHttpHeader('Last-modified', gmdate("D, d M Y H:i:s", $this->getUpdatedAt(null)) . " GMT");
       $response->setHttpHeader('Content-Disposition', 'attachment; filename="' . $this->getName() . '"');
-      $response->sendHttpHeaders();      
+      $response->sendHttpHeaders();
     }
     
-    return $this->getDmsStore()->getStorage()->output($this->getStoragePath());
+    return $this->getDmsStore()->getStorage()->output($this->getMetadata());
   }
   
   /**
    * Voegt een aspect toe aan deze node
-   * 
+   *
    * @param DmsAspect $aspect
    */
   public function addAspect($aspect)
@@ -514,7 +518,7 @@ class DmsNode extends BaseDmsNode
   /**
    * Verwijdert een aspect en alle waarden op de huidige node voor propertytypes
    * die enkel aan het te verwijderen aspect gekoppeld zijn
-   * 
+   *
    * @param DmsNodeAspect $aspect Het van deze node te verwijderen aspect
    */
   public function removeAspect($aspect)
@@ -554,7 +558,7 @@ class DmsNode extends BaseDmsNode
   
   /**
    * Zet een property op de node
-   * 
+   *
    * @param DmsPropertyType $propertyType Het te zetten type
    * @param mixed $value De te zetten waarde, null wist de waarde en daarme de tabelrij waarin de waarde wordt opgeslagen
    * @param boolean $îsUserInput Indien true wordt $value nog ge parsed als userinput (culture etc)
@@ -601,9 +605,9 @@ class DmsNode extends BaseDmsNode
 
   /**
    * Geeft de waarde van een property
-   * 
+   *
    * @param DmsPropertyType $propertyType
-   * 
+   *
    * @return mixed
    */
   public function getProperty($propertyType)
@@ -627,7 +631,7 @@ class DmsNode extends BaseDmsNode
    * Voegt deze node toe aan de opgegeven zipfile
    * indien deze node een folder is, wordt de folder met alle inhoud toegevoegd
    * parameter recursive geeft aan of ook de subfolders dan nog toegevoegd moeten worden
-   * 
+   *
    * @param ZipArchive $zip
    * @param string $path (folder in the zip to put this node in)
    * @param boolean $recursive default false
@@ -637,7 +641,7 @@ class DmsNode extends BaseDmsNode
     if (! $this->getIsFolder())
     {
       // if this node is a file: just add it to the zip in the correct folder (path)
-      $zip->addFromString($path . $this->getName(), $this->read());  
+      $zip->addFromString($path . $this->getName(), $this->read());
     }
     else
     {
@@ -672,7 +676,7 @@ class DmsNode extends BaseDmsNode
       $this->getId(),
       $this->getName(),
       $this->getStoragePath(),
-      (new DateTime())->getTimestamp()
+      $this->getContentUpdatedAt(null)
     );
   }
 }
