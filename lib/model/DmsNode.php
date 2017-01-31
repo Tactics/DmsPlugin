@@ -379,6 +379,8 @@ class DmsNode extends BaseDmsNode
   public function write($data)
   {
     $this->getDmsStore()->getStorage()->write($this->getStoragePath(), $data);
+    $this->setContentUpdatedAt((new DateTime())->getTimestamp());
+    $this->save();
   }
 
   /**
@@ -399,6 +401,8 @@ class DmsNode extends BaseDmsNode
   public function moveUploadedFile($file_id)
   {
     $this->getDmsStore()->getStorage()->moveUploadedFile($file_id, $this->getStoragePath());
+    $this->setContentUpdatedAt((new DateTime())->getTimestamp());
+    $this->save();
   }
 
   /**
@@ -419,6 +423,8 @@ class DmsNode extends BaseDmsNode
   public function loadFromFile($filePath)
   {
     $this->getDmsStore()->getStorage()->loadFromFile($filePath, $this->getStoragePath());
+    $this->setContentUpdatedAt((new DateTime())->getTimestamp());
+    $this->save();
   }
 
   /**

@@ -12,3 +12,11 @@ ALTER TABLE `dms_aspect` ADD `system_name` VARCHAR( 100 ) NULL DEFAULT NULL AFTE
 --------------------------------------------------------------------------------
 ALTER TABLE `dms_property_type` ADD `system_name` VARCHAR( 100 ) NULL DEFAULT NULL AFTER `name` ;
 ALTER TABLE `dms_property_type` ADD `options` TEXT NULL DEFAULT NULL AFTER `data_type` ;
+
+--------------------------------------------------------------------------------
+-- Author: Benjamin Boutmans
+-- Date: 31/01/2016
+-- Description: content_update_at toegevoegd aan dmsnode
+--------------------------------------------------------------------------------
+ALTER TABLE `dms_node`
+ADD COLUMN `content_updated_at` DATETIME NULL DEFAULT NULL COMMENT '' AFTER `disk_name`;

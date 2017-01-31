@@ -62,6 +62,13 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 
 
 	/**
+	 * The value for the content_updated_at field.
+	 * @var        int
+	 */
+	protected $content_updated_at;
+
+
+	/**
 	 * The value for the created_by field.
 	 * @var        int
 	 */
@@ -248,6 +255,37 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 	{
 
 		return $this->disk_name;
+	}
+
+	/**
+	 * Get the [optionally formatted] [content_updated_at] column value.
+	 * 
+	 * @param      string $format The date/time format string (either date()-style or strftime()-style).
+	 *							If format is NULL, then the integer unix timestamp will be returned.
+	 * @return     mixed Formatted date/time value as string or integer unix timestamp (if format is NULL).
+	 * @throws     PropelException - if unable to convert the date/time to timestamp.
+	 */
+	public function getContentUpdatedAt($format = 'Y-m-d H:i:s')
+	{
+
+		if ($this->content_updated_at === null || $this->content_updated_at === '') {
+			return null;
+		} elseif (!is_int($this->content_updated_at)) {
+			// a non-timestamp value was set externally, so we convert it
+			$ts = strtotime($this->content_updated_at);
+			if ($ts === -1 || $ts === false) { // in PHP 5.1 return value changes to FALSE
+				throw new PropelException("Unable to parse value of [content_updated_at] as date/time value: " . var_export($this->content_updated_at, true));
+			}
+		} else {
+			$ts = $this->content_updated_at;
+		}
+		if ($format === null) {
+			return $ts;
+		} elseif (strpos($format, '%') !== false) {
+			return strftime($format, $ts);
+		} else {
+			return date($format, $ts);
+		}
 	}
 
 	/**
@@ -469,6 +507,30 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 	} // setDiskName()
 
 	/**
+	 * Set the value of [content_updated_at] column.
+	 * 
+	 * @param      int $v new value
+	 * @return     void
+	 */
+	public function setContentUpdatedAt($v)
+	{
+
+		if ($v !== null && !is_int($v)) {
+			$ts = strtotime($v);
+			if ($ts === -1 || $ts === false) { // in PHP 5.1 return value changes to FALSE
+				throw new PropelException("Unable to parse date/time value for [content_updated_at] from input: " . var_export($v, true));
+			}
+		} else {
+			$ts = $v;
+		}
+		if ($this->content_updated_at !== $ts) {
+			$this->content_updated_at = $ts;
+			$this->modifiedColumns[] = DmsNodePeer::CONTENT_UPDATED_AT;
+		}
+
+	} // setContentUpdatedAt()
+
+	/**
 	 * Set the value of [created_by] column.
 	 * 
 	 * @param      int $v new value
@@ -589,20 +651,22 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 
 			$this->disk_name = $rs->getString($startcol + 5);
 
-			$this->created_by = $rs->getInt($startcol + 6);
+			$this->content_updated_at = $rs->getTimestamp($startcol + 6, null);
 
-			$this->updated_by = $rs->getInt($startcol + 7);
+			$this->created_by = $rs->getInt($startcol + 7);
 
-			$this->created_at = $rs->getTimestamp($startcol + 8, null);
+			$this->updated_by = $rs->getInt($startcol + 8);
 
-			$this->updated_at = $rs->getTimestamp($startcol + 9, null);
+			$this->created_at = $rs->getTimestamp($startcol + 9, null);
+
+			$this->updated_at = $rs->getTimestamp($startcol + 10, null);
 
 			$this->resetModified();
 
 			$this->setNew(false);
 
 			// FIXME - using NUM_COLUMNS may be clearer.
-			return $startcol + 10; // 10 = DmsNodePeer::NUM_COLUMNS - DmsNodePeer::NUM_LAZY_LOAD_COLUMNS).
+			return $startcol + 11; // 11 = DmsNodePeer::NUM_COLUMNS - DmsNodePeer::NUM_LAZY_LOAD_COLUMNS).
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating DmsNode object", $e);
@@ -995,15 +1059,18 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 				return $this->getDiskName();
 				break;
 			case 6:
-				return $this->getCreatedBy();
+				return $this->getContentUpdatedAt();
 				break;
 			case 7:
-				return $this->getUpdatedBy();
+				return $this->getCreatedBy();
 				break;
 			case 8:
-				return $this->getCreatedAt();
+				return $this->getUpdatedBy();
 				break;
 			case 9:
+				return $this->getCreatedAt();
+				break;
+			case 10:
 				return $this->getUpdatedAt();
 				break;
 			default:
@@ -1032,10 +1099,11 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 			$keys[3] => $this->getIsFolder(),
 			$keys[4] => $this->getName(),
 			$keys[5] => $this->getDiskName(),
-			$keys[6] => $this->getCreatedBy(),
-			$keys[7] => $this->getUpdatedBy(),
-			$keys[8] => $this->getCreatedAt(),
-			$keys[9] => $this->getUpdatedAt(),
+			$keys[6] => $this->getContentUpdatedAt(),
+			$keys[7] => $this->getCreatedBy(),
+			$keys[8] => $this->getUpdatedBy(),
+			$keys[9] => $this->getCreatedAt(),
+			$keys[10] => $this->getUpdatedAt(),
 		);
 		return $result;
 	}
@@ -1086,15 +1154,18 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 				$this->setDiskName($value);
 				break;
 			case 6:
-				$this->setCreatedBy($value);
+				$this->setContentUpdatedAt($value);
 				break;
 			case 7:
-				$this->setUpdatedBy($value);
+				$this->setCreatedBy($value);
 				break;
 			case 8:
-				$this->setCreatedAt($value);
+				$this->setUpdatedBy($value);
 				break;
 			case 9:
+				$this->setCreatedAt($value);
+				break;
+			case 10:
 				$this->setUpdatedAt($value);
 				break;
 		} // switch()
@@ -1126,10 +1197,11 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 		if (array_key_exists($keys[3], $arr)) $this->setIsFolder($arr[$keys[3]]);
 		if (array_key_exists($keys[4], $arr)) $this->setName($arr[$keys[4]]);
 		if (array_key_exists($keys[5], $arr)) $this->setDiskName($arr[$keys[5]]);
-		if (array_key_exists($keys[6], $arr)) $this->setCreatedBy($arr[$keys[6]]);
-		if (array_key_exists($keys[7], $arr)) $this->setUpdatedBy($arr[$keys[7]]);
-		if (array_key_exists($keys[8], $arr)) $this->setCreatedAt($arr[$keys[8]]);
-		if (array_key_exists($keys[9], $arr)) $this->setUpdatedAt($arr[$keys[9]]);
+		if (array_key_exists($keys[6], $arr)) $this->setContentUpdatedAt($arr[$keys[6]]);
+		if (array_key_exists($keys[7], $arr)) $this->setCreatedBy($arr[$keys[7]]);
+		if (array_key_exists($keys[8], $arr)) $this->setUpdatedBy($arr[$keys[8]]);
+		if (array_key_exists($keys[9], $arr)) $this->setCreatedAt($arr[$keys[9]]);
+		if (array_key_exists($keys[10], $arr)) $this->setUpdatedAt($arr[$keys[10]]);
 	}
 
 	/**
@@ -1147,6 +1219,7 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 		if ($this->isColumnModified(DmsNodePeer::IS_FOLDER)) $criteria->add(DmsNodePeer::IS_FOLDER, $this->is_folder);
 		if ($this->isColumnModified(DmsNodePeer::NAME)) $criteria->add(DmsNodePeer::NAME, $this->name);
 		if ($this->isColumnModified(DmsNodePeer::DISK_NAME)) $criteria->add(DmsNodePeer::DISK_NAME, $this->disk_name);
+		if ($this->isColumnModified(DmsNodePeer::CONTENT_UPDATED_AT)) $criteria->add(DmsNodePeer::CONTENT_UPDATED_AT, $this->content_updated_at);
 		if ($this->isColumnModified(DmsNodePeer::CREATED_BY)) $criteria->add(DmsNodePeer::CREATED_BY, $this->created_by);
 		if ($this->isColumnModified(DmsNodePeer::UPDATED_BY)) $criteria->add(DmsNodePeer::UPDATED_BY, $this->updated_by);
 		if ($this->isColumnModified(DmsNodePeer::CREATED_AT)) $criteria->add(DmsNodePeer::CREATED_AT, $this->created_at);
@@ -1214,6 +1287,8 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 		$copyObj->setName($this->name);
 
 		$copyObj->setDiskName($this->disk_name);
+
+		$copyObj->setContentUpdatedAt($this->content_updated_at);
 
 		$copyObj->setCreatedBy($this->created_by);
 
