@@ -34,16 +34,16 @@ class DmsStore extends BaseDmsStore
             $this->_storage = new DmsDiskStorage(array('root' => $storageRootFolder));
             break;
             
-          case 'ws_sfdata':
+          case 'wsdata':
             $storageRootFolder = sfConfig::get('sf_data_dir') . '/' . $uri['host'] . $uri['path'];
-            $this->_storage = sfConfig::get('sf_dms_ws_storage_type', 'client') === 'server'
+            $this->_storage = sfConfig::get('app_dms_ws_storage_type', 'client') === 'server'
               ? new DmsWsServerStorage(array('root' => $storageRootFolder))
               : new DmsWsClientStorage(array('root' => $storageRootFolder));
             break;
   
-          case 'ws_sfweb':
+          case 'wsweb':
             $storageRootFolder = sfConfig::get('sf_web_dir') . '/' . $uri['host'] . $uri['path'];
-            $this->_storage = sfConfig::get('sf_dms_ws_storage_type', 'client') === 'server'
+            $this->_storage = sfConfig::get('app_dms_ws_storage_type', 'client') === 'server'
               ? new DmsWsServerStorage(array('root' => $storageRootFolder))
               : new DmsWsClientStorage(array('root' => $storageRootFolder));
             break;
@@ -88,22 +88,23 @@ class DmsStore extends BaseDmsStore
   public function createFolder($name)
   {
     $name = DmsTools::safeFilename($name);
-
-    try
-    {
-      $this->getStorage()->mkdir($name);
-    }
-    catch (DmsFolderExistsException $exception)
-    {
-      // do nothing, folder exists.
-    }
-
+  
     $folder = new DmsNode();
     $folder->setName($name);
     $folder->setDiskName($name);
     $folder->setStoreId($this->getId());
     $folder->setParentId(null);
     $folder->setIsFolder(true);
+    
+    try
+    {
+      $this->getStorage()->mkdir($folder->getMetadata());
+    }
+    catch (DmsFolderExistsException $exception)
+    {
+      // do nothing, folder exists.
+    }
+    
     $folder->save();
 
     return $folder;
