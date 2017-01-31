@@ -26,9 +26,10 @@ ADD COLUMN `content_updated_at` DATETIME NULL DEFAULT NULL COMMENT '' AFTER `dis
 -- Date: 31/01/2016
 -- Description: nieuwe tabel dms_ws_updated added
 --------------------------------------------------------------------------------
-CREATE TABLE `dms_ws_updated`
+CREATE TABLE dms_ws_updated
 (
-	`id` INTEGER  NOT NULL AUTO_INCREMENT,
-	`node_id` INTEGER  NOT NULL,
-	PRIMARY KEY (`id`)
+	id INTEGER  NOT NULL AUTO_INCREMENT,
+	node_id INTEGER  NOT NULL,
+	created_at DATETIME,
+	PRIMARY KEY (id)
 )Engine=MyISAM;
