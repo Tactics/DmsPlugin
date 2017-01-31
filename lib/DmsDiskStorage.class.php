@@ -7,23 +7,8 @@
  * Deels gebaseerd op http://www.symfony-project.org/plugins/cleverFilesystemPlugin
  */
 
-class DmsDiskStorage
+class DmsDiskStorage extends DmsStorage
 {
-  protected $options;
-  protected $root;
-  
-  /**
-   * Constructor
-   *
-   * @param array $options
-   */
-  public function __construct($options = array())
-  {
-    $this->options = $options;
-    $this->root = $options['root'];
-    $this->initialize();
-  }
-  
   /**
    * Initializeert de diskstorage
    *
@@ -45,109 +30,111 @@ class DmsDiskStorage
   /**
    * Maakt de opgegeven folder aan
    *
-   * @param string $path
-   * @throws sfException
+   * @param DmsNodeMetadata $metadata
+   *
    * @throws DmsFolderExistsException
+   * @throws sfException
    */
-  public function mkdir($path)
+  public function mkdir(DmsNodeMetadata $metadata)
   {
     // indien niet in productie maken we de dir recursive aan om exceptions te voorkomen
-    if  (! @mkdir($this->root . '/' . $path, 0777, sfConfig::get('sf_omgeving') != 'productie'))
+    if  (! @mkdir($this->root . '/' . $metadata->getPath(), 0777, sfConfig::get('sf_omgeving') != 'productie'))
     {
-      if (file_exists($this->root . '/' . $path))
+      if (file_exists($this->root . '/' . $metadata->getPath()))
       {
-        throw new DmsFolderExistsException($path);
+        throw new DmsFolderExistsException($metadata->getPath());
       }
 
-      throw new sfException(sprintf('Cannot mkdir "%s".', $path));
+      throw new sfException(sprintf('Cannot mkdir "%s".', $metadata->getPath()));
     }
   }
 
   /**
    * Bestaat het opgegeven path in de storage
    *
-   * @param string $path
+   * @param DmsNodeMetadata $metadata
    *
-   * @return boolean
+   * @return bool
    */
-  public function exists($path)
+  public function exists(DmsNodeMetadata $metadata)
   {
-    return file_exists($this->root . $path);
+    return file_exists($this->root . $metadata->getPath());
   }
 
 
   /**
    * Is het opgegeven path in de een directory
    *
-   * @param string $path
+   * @param DmsNodeMetadata $metadata
    *
-   * @return boolean
+   * @return bool
    */
-  public function isDir($path)
+  public function isDir(DmsNodeMetadata $metadata)
   {
-    return is_dir($this->root . $path);
+    return is_dir($this->root . $metadata->getPath());
   }
 
   /**
    * Is het opgegeven path in de een file
    *
-   * @param string $path
+   * @param DmsNodeMetadata $metadata
    *
-   * @return boolean
+   * @return bool
    */
-  public function isFile($path)
+  public function isFile(DmsNodeMetadata $metadata)
   {
-    return is_file($this->root . $path);
+    return is_file($this->root . $metadata->getPath());
   }
 
   /**
    * Geeft de grootte van het opgegeven bestand
    *
-   * @param string $path
+   * @param DmsNodeMetadata $metadata
    *
-   * @return boolean
+   * @return bool
    */
-  public function getSize($path)
+  public function getSize(DmsNodeMetadata $metadata)
   {
-    $this->checkExists($path);
-    return filesize($this->root . $path);
+    $this->exists($metadata);
+    return filesize($this->root . $metadata->getPath());
   }
 
   /**
    * Hernoemt een bestand of directory
    *
-   * @param string $fromPath
-   * @param string $toPath
+   * @param DmsNodeMetadata $oldMetadata
+   * @param DmsNodeMetadata $newMetadata
    *
-   * @return boolean true indien gelukt
+   * @throws sfException
    */
-  public function rename($fromPath, $toPath)
+  public function rename(DmsNodeMetadata $oldMetadata, DmsNodeMetadata $newMetadata)
   {
-    if  (! @rename($this->root . $fromPath, $this->root . $toPath))
+    if  (! @rename($this->root . $oldMetadata->getPath(), $this->root . $newMetadata->getPath()))
     {
-      throw new sfException(sprintf('Cannot rename "%s" to "%s".', $fromPath, $toPath));
+      throw new sfException(sprintf('Cannot rename "%s" to "%s".', $oldMetadata->getPath(), $newMetadata->getPath()));
     }
   }
 
   /**
    * Kopieert een bestand of directory
    *
-   * @param string $fromPath
-   * @param string $toPath
+   * @param DmsNodeMetadata $oldMetadata
+   * @param DmsNodeMetadata $newMetadata
+   *
    */
-  public function copy($fromPath, $toPath)
+  public function copy(DmsNodeMetadata $oldMetadata, DmsNodeMetadata $newMetadata)
   {
-    if ($this->isDir($fromPath))
+    if ($this->isDir($oldMetadata))
     {
-      $contents = $this->listDir($fromPath, array('checkExistence' => false, 'force' => true));
+      $contents = $this->listDir($oldMetadata);
 
       foreach ($contents as $item_from)
       {
-        $item_to = $to.'/'.$item_from;
+        $item_to = new DmsNodeMetadata(null, '', $newMetadata->getPath().'/'.$item_from, null);
 
-        if ('' != $fromPath)
+        if ('' != $oldMetadata->getPath())
         {
-          $item_from = $fromPath.'/'.$item_from;
+          $item_from = new DmsNodeMetadata(null, '', $oldMetadata->getPath().'/'.$item_from, null);
         }
 
         $this->copy($item_from, $item_to);
@@ -155,12 +142,16 @@ class DmsDiskStorage
     }
     else
     {
-      copy($this->root . $fromPath, $this->root . $toPath);
+      copy($this->root . $oldMetadata->getPath(), $this->root . $newMetadata->getPath());
     }
   }
 
   /**
    * array filter om  . en .. folders uit de lijst te verwijderen
+   *
+   * @param $item
+   *
+   * @return bool
    */
   protected function removeDirsFromList($item)
   {
@@ -170,15 +161,15 @@ class DmsDiskStorage
   /**
    * Geeft de inhoud van de opgegeven directory
    *
-   * @param string $path
+   * @param DmsNodeMetadata $metadata
    *
    * @return array string
    */
-  function listdir($path)
+  function listdir(DmsNodeMetadata $metadata)
   {
-    $this->checkExists($path);
-    $this->checkIsDir($path);
-    $return = scandir($this->root . $path);
+    $this->checkExists($metadata);
+    $this->checkIsDir($metadata);
+    $return = scandir($this->root . $metadata->getPath());
     $return = array_filter($return, array($this, 'removeDirsFromList'));
     sort($return);
     return $return;
@@ -187,11 +178,13 @@ class DmsDiskStorage
   /**
    * Verwijdert heht opgegeven bestand of directory (recursief)
    *
+   * @param DmsNodeMetadata $metadata
+   *
    * @return string $path
    */
-  public function unlink($path)
+  public function unlink(DmsNodeMetadata $metadata)
   {
-    $item = $this->root . $path;
+    $item = $this->root . $metadata->getPath();
 
     if (!file_exists($item))
     {
@@ -203,11 +196,11 @@ class DmsDiskStorage
       foreach (scandir($item) as $entry)
       {
         if ($entry == '.' || $entry == '..') continue;
-
-        if (!$this->unlink($path . $entry))
+        $itemMedata = new DmsNodeMetadata(1, 'item', $metadata->getPath(). $entry, '');
+        if (!$this->unlink($itemMedata))
         {
           chmod($item . $entry, 0777);
-          return $this->unlink($path . $entry);
+          return $this->unlink($itemMedata);
         }
       }
 
@@ -222,15 +215,15 @@ class DmsDiskStorage
   /**
    * Geeft de inhoud van het opgegeven bestand
    *
-   * @param string $path
+   * @param DmsNodeMetadata $metadata
    *
    * @return mixed
    */
-  public function read($path)
+  public function read(DmsNodeMetadata $metadata)
   {
-    if ($this->exists($path) && $this->isFile($path))
+    if ($this->exists($metadata) && $this->isFile($metadata))
     {
-      $return = file_get_contents($this->root . $path);
+      $return = file_get_contents($this->root . $metadata->getPath());
     }
     else
     {
@@ -243,35 +236,36 @@ class DmsDiskStorage
   /**
    * Schrijft de inhoud van het opgegeven bestand naar de output buffer
    *
-   * @param string $path
-   *
-   * @return mixed
+   * @param DmsNodeMetadata $metadata
    */
-  public function output($path)
+  public function output(DmsNodeMetadata $metadata)
   {
-    if ($this->exists($path) && $this->isFile($path))
+    if ($this->exists($metadata) && $this->isFile($metadata))
     {
-      readfile($this->root . $path);
+      readfile($this->root . $metadata->getPath());
     }
   }
 
   /**
    * Schrijft naar het opgegeven bestand
+   *
+   * @param DmsNodeMetadata $metadata
+   * @param $data
    */
-  public function write($path, $data)
+  public function write(DmsNodeMetadata $metadata, $data)
   {
-    file_put_contents($this->root . $path, $data);
+    file_put_contents($this->root . $metadata->getPath(), $data);
   }
 
   /**
    * Verplaatst een geuploaded bestand naar de opgegeven locatie
    *
    * @param string $requestFileName de file name van het request
-   * @param string $path
+   * @param DmsNodeMetadata $metadata
    */
-  public function moveUploadedFile($requestFileName, $path)
+  public function moveUploadedFile($requestFileName, DmsNodeMetadata $metadata)
   {
-    sfContext::getInstance()->getRequest()->moveFile($requestFileName, $this->root . $path);
+    sfContext::getInstance()->getRequest()->moveFile($requestFileName, $this->root . $metadata->getPath());
   }
 
   /**
@@ -280,12 +274,12 @@ class DmsDiskStorage
    *
    * (in geval van DmsDiskStorage staan ze beiden op disk)
    *
-   * @param string $requestFileName de file name van het request
-   * @param string $path
+   * @param $absoluteFilepath
+   * @param DmsNodeMetadata $metadata
    */
-  function loadFromFile($absoluteFilepath, $storagePath)
+  function loadFromFile($absoluteFilepath, DmsNodeMetadata $metadata)
   {
-    copy($absoluteFilepath, $this->root . $storagePath);
+    copy($absoluteFilepath, $this->root . $metadata->getPath());
   }
 
   /**
@@ -294,21 +288,23 @@ class DmsDiskStorage
    *
    * (in geval van DmsDiskStorage staan ze beiden op disk)
    *
-   * @param string $requestFileName de file name van het request
-   * @param string $path
+   * @param DmsNodeMetadata $metadata
+   * @param $absoluteFilepath
    */
-  function saveToFile($storagePath, $absoluteFilepath)
+  function saveToFile(DmsNodeMetadata $metadata, $absoluteFilepath)
   {
-    copy($this->root . $storagePath, $absoluteFilepath);
+    copy($this->root . $metadata->getPath(), $absoluteFilepath);
   }
 
 
   /**
    * Geeft het mimetype van het bestand
    *
-   * @param string $path
+   * @param DmsNodeMetadata $metadata
+   *
+   * @return array|mixed|null|string
    */
-  public function getMimeType($path)
+  public function getMimeType(DmsNodeMetadata $metadata)
   {
     $info = null;
 
@@ -323,18 +319,18 @@ class DmsDiskStorage
         $fileInfoInstance = finfo_open(FILEINFO_MIME);
       }
 
-      $info = false !== $fileInfoInstance ? finfo_file($fileInfoInstance, $this->root . $path) : null;
+      $info = false !== $fileInfoInstance ? finfo_file($fileInfoInstance, $this->root . $metadata->getPath()) : null;
     }
 
     // Only on unix
     if (!$info && (strtoupper (substr(PHP_OS, 0,3)) != 'WIN'))
     {
-      $info = @exec("file -bi '" . $this->root . $path . "'");
+      $info = @exec("file -bi '" . $this->root . $metadata->getPath() . "'");
     }
 
     if (! $info && function_exists('mime_content_type'))
     {
-      $info = mime_content_type($this->root . $path);
+      $info = mime_content_type($this->root . $metadata->getPath());
     }
 
     if (strpos($info, ';') !== false)
@@ -346,7 +342,7 @@ class DmsDiskStorage
     // Hack: Met excel wil het al eens mislopen
     // met powerpoint ook
     // + office 2010 extensions compatible
-    $extension = pathinfo($path, PATHINFO_EXTENSION);
+    $extension = pathinfo($metadata->getPath(), PATHINFO_EXTENSION);
 
     if (in_array($extension, array('xls', 'xla', 'xlc', 'xlm')))
     {

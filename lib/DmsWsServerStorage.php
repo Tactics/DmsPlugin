@@ -13,94 +13,86 @@ class DmsWsServerStorage extends DmsStorage
   
   function copy(DmsNodeMetadata $fromMetadata, DmsNodeMetadata $toMetadata)
   {
-    $result = $this->diskStore->copy($fromMetadata->getPath(), $toMetadata->getPath());
+    $this->diskStore->copy($fromMetadata, $toMetadata);
     $this->addNodeUpdatedEvent($toMetadata);
-    
-    return $result;
   }
   
   function write(DmsNodeMetadata $metadata, $data)
   {
-    $result = $this->diskStore->write($metadata->getPath(), $data);
+    $this->diskStore->write($metadata, $data);
     $this->addNodeUpdatedEvent($metadata);
-    
-    return $result;
   }
   
   function moveUploadedFile($requestFileName, DmsNodeMetadata $metadata)
   {
-    $result = $this->diskStore->moveUploadedFile($requestFileName, $metadata->getPath());
+    $this->diskStore->moveUploadedFile($requestFileName, $metadata);
     $this->addNodeUpdatedEvent($metadata);
-    
-    return $result;
   }
   
   function loadFromFile($absoluteFilepath, DmsNodeMetadata $metadata)
   {
-    $result = $this->diskStore->loadFromFile($absoluteFilepath, $metadata->getPath());
+    $this->diskStore->loadFromFile($absoluteFilepath, $metadata);
     $this->addNodeUpdatedEvent($metadata);
-    
-    return $result;
   }
   
   function mkdir(DmsNodeMetadata $metadata)
   {
-    return $this->diskStore->mkdir($metadata->getPath());
+    $this->diskStore->mkdir($metadata);
   }
   
   function exists(DmsNodeMetadata $metadata)
   {
-    return $this->diskStore->exists($metadata->getPath());
+    return $this->diskStore->exists($metadata);
   }
   
   function isDir(DmsNodeMetadata $metadata)
   {
-    return $this->diskStore->isDir($metadata->getPath());
+    return $this->diskStore->isDir($metadata);
   }
   
   function isFile(DmsNodeMetadata $metadata)
   {
-    return $this->diskStore->isFile($metadata->getPath());
+    return $this->diskStore->isFile($metadata);
   }
   
   function getSize(DmsNodeMetadata $metadata)
   {
-    return $this->diskStore->getSize($metadata->getPath());
+    return $this->diskStore->getSize($metadata);
   }
   
   function rename(DmsNodeMetadata $oldMetadata, DmsNodeMetadata $newMetadata)
   {
-    return $this->diskStore->rename($oldMetadata->getPath(), $newMetadata->getPath());
+    $this->diskStore->rename($oldMetadata, $newMetadata);
   }
   
   function listdir(DmsNodeMetadata $metadata)
   {
-    return $this->diskStore->listdir($metadata->getPath());
+    return $this->diskStore->listdir($metadata);
   }
   
   function read(DmsNodeMetadata $metadata)
   {
-    return $this->diskStore->read($metadata->getPath());
+    return $this->diskStore->read($metadata);
   }
   
   function output(DmsNodeMetadata $metadata)
   {
-    return $this->diskStore->output($metadata->getPath());
+    $this->diskStore->output($metadata);
   }
   
   function unlink(DmsNodeMetadata $metadata)
   {
-    return $this->diskStore->unlink($metadata->getPath());
+    return $this->diskStore->unlink($metadata);
   }
   
   function saveToFile(DmsNodeMetadata $metadata, $absoluteFilepath)
   {
-    return $this->diskStore->saveToFile($metadata->getPath(), $absoluteFilepath);
+    $this->diskStore->saveToFile($metadata, $absoluteFilepath);
   }
   
   function getMimeType(DmsNodeMetadata $metadata)
   {
-    return $this->diskStore->getMimeType($metadata->getPath());
+    return $this->diskStore->getMimeType($metadata);
   }
   
   /**

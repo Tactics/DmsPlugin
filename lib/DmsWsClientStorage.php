@@ -25,17 +25,17 @@ class DmsWsClientStorage extends DmsStorage
       $this->write($metadata, file_get_contents($url));
     }
   
-    return $this->diskStore->output($this->getPathForMetadata($metadata));
+    $this->diskStore->output($this->getWsClientMetadataForMetadata($metadata));
   }
   
   function exists(DmsNodeMetadata $metadata)
   {
-    return $this->diskStore->exists($this->getPathForMetadata($metadata));
+    return $this->diskStore->exists($this->getWsClientMetadataForMetadata($metadata));
   }
   
   function write(DmsNodeMetadata $metadata, $data)
   {
-    $this->diskStore->write($this->getPathForMetadata($metadata), $data);
+    $this->diskStore->write($this->getWsClientMetadataForMetadata($metadata), $data);
   }
   
   
@@ -109,12 +109,16 @@ class DmsWsClientStorage extends DmsStorage
   {
     throw new sfException(sprintf("%s: method %s not implemented yet.", get_class($this), $methodName));
   }
-  
+
   /**
    * @param DmsNodeMetadata $metadata
+   *
+   * @return DmsNodeMetadata
    */
-  private function getPathForMetadata(DmsNodeMetadata $metadata)
+  private function getWsClientMetadataForMetadata(DmsNodeMetadata $metadata)
   {
-    return sprintf("/%u_%s.bin", $metadata->getId(), $metadata->getLastUpdatedTimestamp());
+    $wsPath = sprintf("/%u_%s.bin", $metadata->getId(), $metadata->getLastUpdatedTimestamp());
+
+    return new DmsNodeMetadata($metadata->getId(), $metadata->getName(), $wsPath, $metadata->getLastUpdatedTimestamp());
   }
 }
