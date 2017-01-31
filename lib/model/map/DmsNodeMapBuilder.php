@@ -73,6 +73,8 @@ class DmsNodeMapBuilder {
 
 		$tMap->addColumn('DISK_NAME', 'DiskName', 'string', CreoleTypes::VARCHAR, false, 255);
 
+		$tMap->addColumn('CONTENT_UPDATED_AT', 'ContentUpdatedAt', 'int', CreoleTypes::TIMESTAMP, false, null);
+
 		$tMap->addColumn('CREATED_BY', 'CreatedBy', 'int', CreoleTypes::INTEGER, false, null);
 
 		$tMap->addColumn('UPDATED_BY', 'UpdatedBy', 'int', CreoleTypes::INTEGER, false, null);

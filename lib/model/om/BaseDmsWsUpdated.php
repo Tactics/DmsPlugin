@@ -32,6 +32,13 @@ abstract class BaseDmsWsUpdated extends BaseObject  implements Persistent {
 	 */
 	protected $node_id;
 
+
+	/**
+	 * The value for the created_at field.
+	 * @var        int
+	 */
+	protected $created_at;
+
 	/**
 	 * Flag to prevent endless save loop, if this object is referenced
 	 * by another object which falls in this transaction.
@@ -66,6 +73,37 @@ abstract class BaseDmsWsUpdated extends BaseObject  implements Persistent {
 	{
 
 		return $this->node_id;
+	}
+
+	/**
+	 * Get the [optionally formatted] [created_at] column value.
+	 * 
+	 * @param      string $format The date/time format string (either date()-style or strftime()-style).
+	 *							If format is NULL, then the integer unix timestamp will be returned.
+	 * @return     mixed Formatted date/time value as string or integer unix timestamp (if format is NULL).
+	 * @throws     PropelException - if unable to convert the date/time to timestamp.
+	 */
+	public function getCreatedAt($format = 'Y-m-d H:i:s')
+	{
+
+		if ($this->created_at === null || $this->created_at === '') {
+			return null;
+		} elseif (!is_int($this->created_at)) {
+			// a non-timestamp value was set externally, so we convert it
+			$ts = strtotime($this->created_at);
+			if ($ts === -1 || $ts === false) { // in PHP 5.1 return value changes to FALSE
+				throw new PropelException("Unable to parse value of [created_at] as date/time value: " . var_export($this->created_at, true));
+			}
+		} else {
+			$ts = $this->created_at;
+		}
+		if ($format === null) {
+			return $ts;
+		} elseif (strpos($format, '%') !== false) {
+			return strftime($format, $ts);
+		} else {
+			return date($format, $ts);
+		}
 	}
 
 	/**
@@ -113,6 +151,30 @@ abstract class BaseDmsWsUpdated extends BaseObject  implements Persistent {
 	} // setNodeId()
 
 	/**
+	 * Set the value of [created_at] column.
+	 * 
+	 * @param      int $v new value
+	 * @return     void
+	 */
+	public function setCreatedAt($v)
+	{
+
+		if ($v !== null && !is_int($v)) {
+			$ts = strtotime($v);
+			if ($ts === -1 || $ts === false) { // in PHP 5.1 return value changes to FALSE
+				throw new PropelException("Unable to parse date/time value for [created_at] from input: " . var_export($v, true));
+			}
+		} else {
+			$ts = $v;
+		}
+		if ($this->created_at !== $ts) {
+			$this->created_at = $ts;
+			$this->modifiedColumns[] = DmsWsUpdatedPeer::CREATED_AT;
+		}
+
+	} // setCreatedAt()
+
+	/**
 	 * Hydrates (populates) the object variables with values from the database resultset.
 	 *
 	 * An offset (1-based "start column") is specified so that objects can be hydrated
@@ -133,12 +195,14 @@ abstract class BaseDmsWsUpdated extends BaseObject  implements Persistent {
 
 			$this->node_id = $rs->getInt($startcol + 1);
 
+			$this->created_at = $rs->getTimestamp($startcol + 2, null);
+
 			$this->resetModified();
 
 			$this->setNew(false);
 
 			// FIXME - using NUM_COLUMNS may be clearer.
-			return $startcol + 2; // 2 = DmsWsUpdatedPeer::NUM_COLUMNS - DmsWsUpdatedPeer::NUM_LAZY_LOAD_COLUMNS).
+			return $startcol + 3; // 3 = DmsWsUpdatedPeer::NUM_COLUMNS - DmsWsUpdatedPeer::NUM_LAZY_LOAD_COLUMNS).
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating DmsWsUpdated object", $e);
@@ -214,6 +278,11 @@ abstract class BaseDmsWsUpdated extends BaseObject  implements Persistent {
       }
     }
 
+
+    if ($this->isNew() && !$this->isColumnModified(DmsWsUpdatedPeer::CREATED_AT))
+    {
+      $this->setCreatedAt(time());
+    }
 
 		if ($this->isDeleted()) {
 			throw new PropelException("You cannot save an object that has been deleted.");
@@ -382,6 +451,9 @@ abstract class BaseDmsWsUpdated extends BaseObject  implements Persistent {
 			case 1:
 				return $this->getNodeId();
 				break;
+			case 2:
+				return $this->getCreatedAt();
+				break;
 			default:
 				return null;
 				break;
@@ -404,6 +476,7 @@ abstract class BaseDmsWsUpdated extends BaseObject  implements Persistent {
 		$result = array(
 			$keys[0] => $this->getId(),
 			$keys[1] => $this->getNodeId(),
+			$keys[2] => $this->getCreatedAt(),
 		);
 		return $result;
 	}
@@ -441,6 +514,9 @@ abstract class BaseDmsWsUpdated extends BaseObject  implements Persistent {
 			case 1:
 				$this->setNodeId($value);
 				break;
+			case 2:
+				$this->setCreatedAt($value);
+				break;
 		} // switch()
 	}
 
@@ -466,6 +542,7 @@ abstract class BaseDmsWsUpdated extends BaseObject  implements Persistent {
 
 		if (array_key_exists($keys[0], $arr)) $this->setId($arr[$keys[0]]);
 		if (array_key_exists($keys[1], $arr)) $this->setNodeId($arr[$keys[1]]);
+		if (array_key_exists($keys[2], $arr)) $this->setCreatedAt($arr[$keys[2]]);
 	}
 
 	/**
@@ -479,6 +556,7 @@ abstract class BaseDmsWsUpdated extends BaseObject  implements Persistent {
 
 		if ($this->isColumnModified(DmsWsUpdatedPeer::ID)) $criteria->add(DmsWsUpdatedPeer::ID, $this->id);
 		if ($this->isColumnModified(DmsWsUpdatedPeer::NODE_ID)) $criteria->add(DmsWsUpdatedPeer::NODE_ID, $this->node_id);
+		if ($this->isColumnModified(DmsWsUpdatedPeer::CREATED_AT)) $criteria->add(DmsWsUpdatedPeer::CREATED_AT, $this->created_at);
 
 		return $criteria;
 	}
@@ -534,6 +612,8 @@ abstract class BaseDmsWsUpdated extends BaseObject  implements Persistent {
 	{
 
 		$copyObj->setNodeId($this->node_id);
+
+		$copyObj->setCreatedAt($this->created_at);
 
 
 		$copyObj->setNew(true);

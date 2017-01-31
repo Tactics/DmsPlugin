@@ -19,7 +19,7 @@ abstract class BaseDmsNodePeer {
 	const CLASS_DEFAULT = 'plugins.ttDmsPlugin.lib.model.DmsNode';
 
 	/** The total number of columns. */
-	const NUM_COLUMNS = 10;
+	const NUM_COLUMNS = 11;
 
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
@@ -42,6 +42,9 @@ abstract class BaseDmsNodePeer {
 
 	/** the column name for the DISK_NAME field */
 	const DISK_NAME = 'dms_node.DISK_NAME';
+
+	/** the column name for the CONTENT_UPDATED_AT field */
+	const CONTENT_UPDATED_AT = 'dms_node.CONTENT_UPDATED_AT';
 
 	/** the column name for the CREATED_BY field */
 	const CREATED_BY = 'dms_node.CREATED_BY';
@@ -66,10 +69,10 @@ abstract class BaseDmsNodePeer {
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
 	private static $fieldNames = array (
-		BasePeer::TYPE_PHPNAME => array ('Id', 'StoreId', 'ParentId', 'IsFolder', 'Name', 'DiskName', 'CreatedBy', 'UpdatedBy', 'CreatedAt', 'UpdatedAt', ),
-		BasePeer::TYPE_COLNAME => array (DmsNodePeer::ID, DmsNodePeer::STORE_ID, DmsNodePeer::PARENT_ID, DmsNodePeer::IS_FOLDER, DmsNodePeer::NAME, DmsNodePeer::DISK_NAME, DmsNodePeer::CREATED_BY, DmsNodePeer::UPDATED_BY, DmsNodePeer::CREATED_AT, DmsNodePeer::UPDATED_AT, ),
-		BasePeer::TYPE_FIELDNAME => array ('id', 'store_id', 'parent_id', 'is_folder', 'name', 'disk_name', 'created_by', 'updated_by', 'created_at', 'updated_at', ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
+		BasePeer::TYPE_PHPNAME => array ('Id', 'StoreId', 'ParentId', 'IsFolder', 'Name', 'DiskName', 'ContentUpdatedAt', 'CreatedBy', 'UpdatedBy', 'CreatedAt', 'UpdatedAt', ),
+		BasePeer::TYPE_COLNAME => array (DmsNodePeer::ID, DmsNodePeer::STORE_ID, DmsNodePeer::PARENT_ID, DmsNodePeer::IS_FOLDER, DmsNodePeer::NAME, DmsNodePeer::DISK_NAME, DmsNodePeer::CONTENT_UPDATED_AT, DmsNodePeer::CREATED_BY, DmsNodePeer::UPDATED_BY, DmsNodePeer::CREATED_AT, DmsNodePeer::UPDATED_AT, ),
+		BasePeer::TYPE_FIELDNAME => array ('id', 'store_id', 'parent_id', 'is_folder', 'name', 'disk_name', 'content_updated_at', 'created_by', 'updated_by', 'created_at', 'updated_at', ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, )
 	);
 
 	/**
@@ -79,10 +82,10 @@ abstract class BaseDmsNodePeer {
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
 	private static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'StoreId' => 1, 'ParentId' => 2, 'IsFolder' => 3, 'Name' => 4, 'DiskName' => 5, 'CreatedBy' => 6, 'UpdatedBy' => 7, 'CreatedAt' => 8, 'UpdatedAt' => 9, ),
-		BasePeer::TYPE_COLNAME => array (DmsNodePeer::ID => 0, DmsNodePeer::STORE_ID => 1, DmsNodePeer::PARENT_ID => 2, DmsNodePeer::IS_FOLDER => 3, DmsNodePeer::NAME => 4, DmsNodePeer::DISK_NAME => 5, DmsNodePeer::CREATED_BY => 6, DmsNodePeer::UPDATED_BY => 7, DmsNodePeer::CREATED_AT => 8, DmsNodePeer::UPDATED_AT => 9, ),
-		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'store_id' => 1, 'parent_id' => 2, 'is_folder' => 3, 'name' => 4, 'disk_name' => 5, 'created_by' => 6, 'updated_by' => 7, 'created_at' => 8, 'updated_at' => 9, ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
+		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'StoreId' => 1, 'ParentId' => 2, 'IsFolder' => 3, 'Name' => 4, 'DiskName' => 5, 'ContentUpdatedAt' => 6, 'CreatedBy' => 7, 'UpdatedBy' => 8, 'CreatedAt' => 9, 'UpdatedAt' => 10, ),
+		BasePeer::TYPE_COLNAME => array (DmsNodePeer::ID => 0, DmsNodePeer::STORE_ID => 1, DmsNodePeer::PARENT_ID => 2, DmsNodePeer::IS_FOLDER => 3, DmsNodePeer::NAME => 4, DmsNodePeer::DISK_NAME => 5, DmsNodePeer::CONTENT_UPDATED_AT => 6, DmsNodePeer::CREATED_BY => 7, DmsNodePeer::UPDATED_BY => 8, DmsNodePeer::CREATED_AT => 9, DmsNodePeer::UPDATED_AT => 10, ),
+		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'store_id' => 1, 'parent_id' => 2, 'is_folder' => 3, 'name' => 4, 'disk_name' => 5, 'content_updated_at' => 6, 'created_by' => 7, 'updated_by' => 8, 'created_at' => 9, 'updated_at' => 10, ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, )
 	);
 
 	/**
@@ -194,6 +197,8 @@ abstract class BaseDmsNodePeer {
 		$criteria->addSelectColumn(DmsNodePeer::NAME);
 
 		$criteria->addSelectColumn(DmsNodePeer::DISK_NAME);
+
+		$criteria->addSelectColumn(DmsNodePeer::CONTENT_UPDATED_AT);
 
 		$criteria->addSelectColumn(DmsNodePeer::CREATED_BY);
 

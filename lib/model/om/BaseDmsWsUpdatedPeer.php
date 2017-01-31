@@ -19,7 +19,7 @@ abstract class BaseDmsWsUpdatedPeer {
 	const CLASS_DEFAULT = 'plugins.ttDmsPlugin.lib.model.DmsWsUpdated';
 
 	/** The total number of columns. */
-	const NUM_COLUMNS = 2;
+	const NUM_COLUMNS = 3;
 
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
@@ -30,6 +30,9 @@ abstract class BaseDmsWsUpdatedPeer {
 
 	/** the column name for the NODE_ID field */
 	const NODE_ID = 'dms_ws_updated.NODE_ID';
+
+	/** the column name for the CREATED_AT field */
+	const CREATED_AT = 'dms_ws_updated.CREATED_AT';
 
 	/** The PHP to DB Name Mapping */
 	private static $phpNameMap = null;
@@ -42,10 +45,10 @@ abstract class BaseDmsWsUpdatedPeer {
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
 	private static $fieldNames = array (
-		BasePeer::TYPE_PHPNAME => array ('Id', 'NodeId', ),
-		BasePeer::TYPE_COLNAME => array (DmsWsUpdatedPeer::ID, DmsWsUpdatedPeer::NODE_ID, ),
-		BasePeer::TYPE_FIELDNAME => array ('id', 'node_id', ),
-		BasePeer::TYPE_NUM => array (0, 1, )
+		BasePeer::TYPE_PHPNAME => array ('Id', 'NodeId', 'CreatedAt', ),
+		BasePeer::TYPE_COLNAME => array (DmsWsUpdatedPeer::ID, DmsWsUpdatedPeer::NODE_ID, DmsWsUpdatedPeer::CREATED_AT, ),
+		BasePeer::TYPE_FIELDNAME => array ('id', 'node_id', 'created_at', ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, )
 	);
 
 	/**
@@ -55,10 +58,10 @@ abstract class BaseDmsWsUpdatedPeer {
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
 	private static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'NodeId' => 1, ),
-		BasePeer::TYPE_COLNAME => array (DmsWsUpdatedPeer::ID => 0, DmsWsUpdatedPeer::NODE_ID => 1, ),
-		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'node_id' => 1, ),
-		BasePeer::TYPE_NUM => array (0, 1, )
+		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'NodeId' => 1, 'CreatedAt' => 2, ),
+		BasePeer::TYPE_COLNAME => array (DmsWsUpdatedPeer::ID => 0, DmsWsUpdatedPeer::NODE_ID => 1, DmsWsUpdatedPeer::CREATED_AT => 2, ),
+		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'node_id' => 1, 'created_at' => 2, ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, )
 	);
 
 	/**
@@ -162,6 +165,8 @@ abstract class BaseDmsWsUpdatedPeer {
 		$criteria->addSelectColumn(DmsWsUpdatedPeer::ID);
 
 		$criteria->addSelectColumn(DmsWsUpdatedPeer::NODE_ID);
+
+		$criteria->addSelectColumn(DmsWsUpdatedPeer::CREATED_AT);
 
 	}
 

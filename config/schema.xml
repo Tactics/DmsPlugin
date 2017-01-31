@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <database defaultIdMethod="native" name="propel" package="plugins.ttDmsPlugin.lib.model" noxsd="true">
-    <table name="dms_node">
-        <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
-        <column name="store_id" type="INTEGER" required="true"/>
-        <column name="parent_id" type="INTEGER"/>
-        <column name="is_folder" type="BOOLEAN"/>
-        <column name="name" type="VARCHAR" size="255"/>
-        <column name="disk_name" type="VARCHAR" size="255"/>
-        <column name="created_by" type="INTEGER"/>
-        <column name="updated_by" type="INTEGER"/>
-        <column name="created_at" type="TIMESTAMP"/>
-        <column name="updated_at" type="TIMESTAMP"/>
-        <foreign-key name="fk_tt_file_tt_store1" foreignTable="dms_store">
-            <reference local="store_id" foreign="id"/>
-        </foreign-key>
-        <foreign-key name="fk_tt_file_tt_store2" foreignTable="dms_node">
-            <reference local="parent_id" foreign="id"/>
-        </foreign-key>
-    </table>
+  <table name="dms_node">
+    <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
+    <column name="store_id" type="INTEGER" required="true"/>
+    <column name="parent_id" type="INTEGER"/>
+    <column name="is_folder" type="BOOLEAN"/>
+    <column name="name" type="VARCHAR" size="255"/>
+    <column name="disk_name" type="VARCHAR" size="255"/>
+    <column name="content_updated_at" type="TIMESTAMP"/>
+    <column name="created_by" type="INTEGER"/>
+    <column name="updated_by" type="INTEGER"/>
+    <column name="created_at" type="TIMESTAMP"/>
+    <column name="updated_at" type="TIMESTAMP"/>
+    <foreign-key name="fk_tt_file_tt_store1" foreignTable="dms_store">
+      <reference local="store_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key name="fk_tt_file_tt_store2" foreignTable="dms_node">
+      <reference local="parent_id" foreign="id"/>
+    </foreign-key>
+  </table>
 
     <table name="dms_node_property">
         <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
@@ -125,5 +126,6 @@
     <table name="dms_ws_updated">
         <column name="id" type="INTEGER" primaryKey="true" required="true" autoIncrement="true"/>
         <column name="node_id" type="INTEGER" required="true"/>
+        <column name="created_at" type="TIMESTAMP"/>
     </table>
 </database>

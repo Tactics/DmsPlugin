@@ -65,6 +65,8 @@ class DmsWsUpdatedMapBuilder {
 
 		$tMap->addColumn('NODE_ID', 'NodeId', 'int', CreoleTypes::INTEGER, true, null);
 
+		$tMap->addColumn('CREATED_AT', 'CreatedAt', 'int', CreoleTypes::TIMESTAMP, false, null);
+
 	} // doBuild()
 
 } // DmsWsUpdatedMapBuilder
