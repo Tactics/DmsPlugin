@@ -7,8 +7,23 @@
  * Deels gebaseerd op http://www.symfony-project.org/plugins/cleverFilesystemPlugin
  */
 
-class DmsDiskStorage extends DmsStorage
+class DmsDiskStorage
 {
+  protected $options;
+  protected $root;
+  
+  /**
+   * Constructor
+   *
+   * @param array $options
+   */
+  public function __construct($options = array())
+  {
+    $this->options = $options;
+    $this->root = $options['root'];
+    $this->initialize();
+  }
+  
   /**
    * Initializeert de diskstorage
    *
