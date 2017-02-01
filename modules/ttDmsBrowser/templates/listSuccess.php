@@ -143,7 +143,7 @@ foreach ($pager->getResults() as $file) {
   $object = !empty($objectNodeRefs) ? Misc::getObject($objectNodeRefs[0]->getObjectClass(), $objectNodeRefs[0]->getObjectId()) : null;
 
   $storage = $file->getDmsStore()->getStorage();
-  if (!$storage->exists($file->getStoragePath()))
+  if (!$storage->exists($file->getMetadata()))
   {
     $errorTdAttributes= array('style' => 'color: red; background-color:pink');
 

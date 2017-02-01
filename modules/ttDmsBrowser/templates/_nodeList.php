@@ -213,7 +213,7 @@ foreach($nodes as $subnode)
 {
   // controle of bestand gevonden kan worden in de storage
   $storage = $subnode->getDmsStore()->getStorage();
-  if (!$storage->exists($subnode->getStoragePath()))
+  if (!$storage->exists($subnode->getMetadata()))
   {    
     $errorTdAttributes= array('style' => 'color: red; background-color:pink');
 
