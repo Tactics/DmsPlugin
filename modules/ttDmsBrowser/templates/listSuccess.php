@@ -194,6 +194,11 @@ echo $table;
     showNodeDetail.tt_window({width: '750px', top: 100});
   }
 
+  function closeNodeDetails()
+  {
+    $('#showNodeDetail').tt_window().close();
+  }
+
 // Juiste properties laten zien om op te filteren
   jQuery(function($)
   {

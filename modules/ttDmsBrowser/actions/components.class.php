@@ -89,7 +89,7 @@ class ttDmsBrowserComponents extends sfComponents
       $c->add(DmsNodeAspectPeer::ASPECT_ID, $this->aspectId);
     }
 
-    $property = isset($this->options['systemname_for_subsidies']) ? DmsPropertyTypePeer::retrieveBySystemName($this->options['systemname_for_subsidies']) : null;
+    $property = isset($this->options['systemname_for_sportsubsidies']) ? DmsPropertyTypePeer::retrieveBySystemName($this->options['systemname_for_sportsubsidies']) : null;
     if ($this->jaar && $property)
     {
       $c->addAlias("dnp1", DmsNodePropertyPeer::TABLE_NAME);

@@ -120,12 +120,12 @@
 
     <?php endforeach; ?>
 
-    <?php echo submit_tag('Opslaan');?>
-    <?php echo button_to_function('Annuleren', 'closeNodeDetails();'); ?>
+    <?php echo submit_tag('Opslaan', array('style' => 'float:left;'));?>&nbsp;
   </form>
   <?php
   endif;
   ?>
+  <?php echo button_to_function('Annuleren', 'closeNodeDetails();'); ?>
 
 </div>
 <?php endif; ?>
