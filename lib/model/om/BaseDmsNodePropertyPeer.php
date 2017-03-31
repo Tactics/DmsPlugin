@@ -858,16 +858,7 @@ abstract class BaseDmsNodePropertyPeer {
 
 		}
 
-		$res =  BasePeer::doValidate(DmsNodePropertyPeer::DATABASE_NAME, DmsNodePropertyPeer::TABLE_NAME, $columns);
-    if ($res !== true) {
-        $request = sfContext::getInstance()->getRequest();
-        foreach ($res as $failed) {
-            $col = DmsNodePropertyPeer::translateFieldname($failed->getColumn(), BasePeer::TYPE_COLNAME, BasePeer::TYPE_PHPNAME);
-            $request->setError($col, $failed->getMessage());
-        }
-    }
-
-    return $res;
+		return BasePeer::doValidate(DmsNodePropertyPeer::DATABASE_NAME, DmsNodePropertyPeer::TABLE_NAME, $columns);
 	}
 
 	

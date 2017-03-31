@@ -78,6 +78,24 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 	protected $lastDmsObjectNodeRefCriteria = null;
 
 	
+	protected $collDossiersRelatedByMandaatNodeId;
+
+	
+	protected $lastDossierRelatedByMandaatNodeIdCriteria = null;
+
+	
+	protected $collDossiersRelatedByMachtigingNodeId;
+
+	
+	protected $lastDossierRelatedByMachtigingNodeIdCriteria = null;
+
+	
+	protected $collDocuments;
+
+	
+	protected $lastDocumentCriteria = null;
+
+	
 	protected $alreadyInSave = false;
 
 	
@@ -521,6 +539,30 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 				}
 			}
 
+			if ($this->collDossiersRelatedByMandaatNodeId !== null) {
+				foreach($this->collDossiersRelatedByMandaatNodeId as $referrerFK) {
+					if (!$referrerFK->isDeleted()) {
+						$affectedRows += $referrerFK->save($con);
+					}
+				}
+			}
+
+			if ($this->collDossiersRelatedByMachtigingNodeId !== null) {
+				foreach($this->collDossiersRelatedByMachtigingNodeId as $referrerFK) {
+					if (!$referrerFK->isDeleted()) {
+						$affectedRows += $referrerFK->save($con);
+					}
+				}
+			}
+
+			if ($this->collDocuments !== null) {
+				foreach($this->collDocuments as $referrerFK) {
+					if (!$referrerFK->isDeleted()) {
+						$affectedRows += $referrerFK->save($con);
+					}
+				}
+			}
+
 			$this->alreadyInSave = false;
 		}
 		return $affectedRows;
@@ -594,6 +636,30 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 
 				if ($this->collDmsObjectNodeRefs !== null) {
 					foreach($this->collDmsObjectNodeRefs as $referrerFK) {
+						if (!$referrerFK->validate($columns)) {
+							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+						}
+					}
+				}
+
+				if ($this->collDossiersRelatedByMandaatNodeId !== null) {
+					foreach($this->collDossiersRelatedByMandaatNodeId as $referrerFK) {
+						if (!$referrerFK->validate($columns)) {
+							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+						}
+					}
+				}
+
+				if ($this->collDossiersRelatedByMachtigingNodeId !== null) {
+					foreach($this->collDossiersRelatedByMachtigingNodeId as $referrerFK) {
+						if (!$referrerFK->validate($columns)) {
+							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+						}
+					}
+				}
+
+				if ($this->collDocuments !== null) {
+					foreach($this->collDocuments as $referrerFK) {
 						if (!$referrerFK->validate($columns)) {
 							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
 						}
@@ -817,6 +883,18 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 
 			foreach($this->getDmsObjectNodeRefs() as $relObj) {
 				$copyObj->addDmsObjectNodeRef($relObj->copy($deepCopy));
+			}
+
+			foreach($this->getDossiersRelatedByMandaatNodeId() as $relObj) {
+				$copyObj->addDossierRelatedByMandaatNodeId($relObj->copy($deepCopy));
+			}
+
+			foreach($this->getDossiersRelatedByMachtigingNodeId() as $relObj) {
+				$copyObj->addDossierRelatedByMachtigingNodeId($relObj->copy($deepCopy));
+			}
+
+			foreach($this->getDocuments() as $relObj) {
+				$copyObj->addDocument($relObj->copy($deepCopy));
 			}
 
 		} 
@@ -1285,6 +1363,601 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 	{
 		$this->collDmsObjectNodeRefs[] = $l;
 		$l->setDmsNode($this);
+	}
+
+	
+	public function initDossiersRelatedByMandaatNodeId()
+	{
+		if ($this->collDossiersRelatedByMandaatNodeId === null) {
+			$this->collDossiersRelatedByMandaatNodeId = array();
+		}
+	}
+
+	
+	public function getDossiersRelatedByMandaatNodeId($criteria = null, $con = null)
+	{
+				include_once 'lib/model/om/BaseDossierPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collDossiersRelatedByMandaatNodeId === null) {
+			if ($this->isNew()) {
+			   $this->collDossiersRelatedByMandaatNodeId = array();
+			} else {
+
+				$criteria->add(DossierPeer::MANDAAT_NODE_ID, $this->getId());
+
+				DossierPeer::addSelectColumns($criteria);
+				$this->collDossiersRelatedByMandaatNodeId = DossierPeer::doSelect($criteria, $con);
+			}
+		} else {
+						if (!$this->isNew()) {
+												
+
+				$criteria->add(DossierPeer::MANDAAT_NODE_ID, $this->getId());
+
+				DossierPeer::addSelectColumns($criteria);
+				if (!isset($this->lastDossierRelatedByMandaatNodeIdCriteria) || !$this->lastDossierRelatedByMandaatNodeIdCriteria->equals($criteria)) {
+					$this->collDossiersRelatedByMandaatNodeId = DossierPeer::doSelect($criteria, $con);
+				}
+			}
+		}
+		$this->lastDossierRelatedByMandaatNodeIdCriteria = $criteria;
+		return $this->collDossiersRelatedByMandaatNodeId;
+	}
+
+	
+	public function countDossiersRelatedByMandaatNodeId($criteria = null, $distinct = false, $con = null)
+	{
+				include_once 'lib/model/om/BaseDossierPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		$criteria->add(DossierPeer::MANDAAT_NODE_ID, $this->getId());
+
+		return DossierPeer::doCount($criteria, $distinct, $con);
+	}
+
+	
+	public function addDossierRelatedByMandaatNodeId(Dossier $l)
+	{
+		$this->collDossiersRelatedByMandaatNodeId[] = $l;
+		$l->setDmsNodeRelatedByMandaatNodeId($this);
+	}
+
+
+	
+	public function getDossiersRelatedByMandaatNodeIdJoinAccountRelatedByCreatedBy($criteria = null, $con = null)
+	{
+				include_once 'lib/model/om/BaseDossierPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collDossiersRelatedByMandaatNodeId === null) {
+			if ($this->isNew()) {
+				$this->collDossiersRelatedByMandaatNodeId = array();
+			} else {
+
+				$criteria->add(DossierPeer::MANDAAT_NODE_ID, $this->getId());
+
+				$this->collDossiersRelatedByMandaatNodeId = DossierPeer::doSelectJoinAccountRelatedByCreatedBy($criteria, $con);
+			}
+		} else {
+									
+			$criteria->add(DossierPeer::MANDAAT_NODE_ID, $this->getId());
+
+			if (!isset($this->lastDossierRelatedByMandaatNodeIdCriteria) || !$this->lastDossierRelatedByMandaatNodeIdCriteria->equals($criteria)) {
+				$this->collDossiersRelatedByMandaatNodeId = DossierPeer::doSelectJoinAccountRelatedByCreatedBy($criteria, $con);
+			}
+		}
+		$this->lastDossierRelatedByMandaatNodeIdCriteria = $criteria;
+
+		return $this->collDossiersRelatedByMandaatNodeId;
+	}
+
+
+	
+	public function getDossiersRelatedByMandaatNodeIdJoinAccountRelatedByUpdatedBy($criteria = null, $con = null)
+	{
+				include_once 'lib/model/om/BaseDossierPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collDossiersRelatedByMandaatNodeId === null) {
+			if ($this->isNew()) {
+				$this->collDossiersRelatedByMandaatNodeId = array();
+			} else {
+
+				$criteria->add(DossierPeer::MANDAAT_NODE_ID, $this->getId());
+
+				$this->collDossiersRelatedByMandaatNodeId = DossierPeer::doSelectJoinAccountRelatedByUpdatedBy($criteria, $con);
+			}
+		} else {
+									
+			$criteria->add(DossierPeer::MANDAAT_NODE_ID, $this->getId());
+
+			if (!isset($this->lastDossierRelatedByMandaatNodeIdCriteria) || !$this->lastDossierRelatedByMandaatNodeIdCriteria->equals($criteria)) {
+				$this->collDossiersRelatedByMandaatNodeId = DossierPeer::doSelectJoinAccountRelatedByUpdatedBy($criteria, $con);
+			}
+		}
+		$this->lastDossierRelatedByMandaatNodeIdCriteria = $criteria;
+
+		return $this->collDossiersRelatedByMandaatNodeId;
+	}
+
+
+	
+	public function getDossiersRelatedByMandaatNodeIdJoinDossierType($criteria = null, $con = null)
+	{
+				include_once 'lib/model/om/BaseDossierPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collDossiersRelatedByMandaatNodeId === null) {
+			if ($this->isNew()) {
+				$this->collDossiersRelatedByMandaatNodeId = array();
+			} else {
+
+				$criteria->add(DossierPeer::MANDAAT_NODE_ID, $this->getId());
+
+				$this->collDossiersRelatedByMandaatNodeId = DossierPeer::doSelectJoinDossierType($criteria, $con);
+			}
+		} else {
+									
+			$criteria->add(DossierPeer::MANDAAT_NODE_ID, $this->getId());
+
+			if (!isset($this->lastDossierRelatedByMandaatNodeIdCriteria) || !$this->lastDossierRelatedByMandaatNodeIdCriteria->equals($criteria)) {
+				$this->collDossiersRelatedByMandaatNodeId = DossierPeer::doSelectJoinDossierType($criteria, $con);
+			}
+		}
+		$this->lastDossierRelatedByMandaatNodeIdCriteria = $criteria;
+
+		return $this->collDossiersRelatedByMandaatNodeId;
+	}
+
+
+	
+	public function getDossiersRelatedByMandaatNodeIdJoinPersoonRelatedByVerantwoordelijkeId($criteria = null, $con = null)
+	{
+				include_once 'lib/model/om/BaseDossierPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collDossiersRelatedByMandaatNodeId === null) {
+			if ($this->isNew()) {
+				$this->collDossiersRelatedByMandaatNodeId = array();
+			} else {
+
+				$criteria->add(DossierPeer::MANDAAT_NODE_ID, $this->getId());
+
+				$this->collDossiersRelatedByMandaatNodeId = DossierPeer::doSelectJoinPersoonRelatedByVerantwoordelijkeId($criteria, $con);
+			}
+		} else {
+									
+			$criteria->add(DossierPeer::MANDAAT_NODE_ID, $this->getId());
+
+			if (!isset($this->lastDossierRelatedByMandaatNodeIdCriteria) || !$this->lastDossierRelatedByMandaatNodeIdCriteria->equals($criteria)) {
+				$this->collDossiersRelatedByMandaatNodeId = DossierPeer::doSelectJoinPersoonRelatedByVerantwoordelijkeId($criteria, $con);
+			}
+		}
+		$this->lastDossierRelatedByMandaatNodeIdCriteria = $criteria;
+
+		return $this->collDossiersRelatedByMandaatNodeId;
+	}
+
+
+	
+	public function getDossiersRelatedByMandaatNodeIdJoinPersoonRelatedByContactpersoonId($criteria = null, $con = null)
+	{
+				include_once 'lib/model/om/BaseDossierPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collDossiersRelatedByMandaatNodeId === null) {
+			if ($this->isNew()) {
+				$this->collDossiersRelatedByMandaatNodeId = array();
+			} else {
+
+				$criteria->add(DossierPeer::MANDAAT_NODE_ID, $this->getId());
+
+				$this->collDossiersRelatedByMandaatNodeId = DossierPeer::doSelectJoinPersoonRelatedByContactpersoonId($criteria, $con);
+			}
+		} else {
+									
+			$criteria->add(DossierPeer::MANDAAT_NODE_ID, $this->getId());
+
+			if (!isset($this->lastDossierRelatedByMandaatNodeIdCriteria) || !$this->lastDossierRelatedByMandaatNodeIdCriteria->equals($criteria)) {
+				$this->collDossiersRelatedByMandaatNodeId = DossierPeer::doSelectJoinPersoonRelatedByContactpersoonId($criteria, $con);
+			}
+		}
+		$this->lastDossierRelatedByMandaatNodeIdCriteria = $criteria;
+
+		return $this->collDossiersRelatedByMandaatNodeId;
+	}
+
+	
+	public function initDossiersRelatedByMachtigingNodeId()
+	{
+		if ($this->collDossiersRelatedByMachtigingNodeId === null) {
+			$this->collDossiersRelatedByMachtigingNodeId = array();
+		}
+	}
+
+	
+	public function getDossiersRelatedByMachtigingNodeId($criteria = null, $con = null)
+	{
+				include_once 'lib/model/om/BaseDossierPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collDossiersRelatedByMachtigingNodeId === null) {
+			if ($this->isNew()) {
+			   $this->collDossiersRelatedByMachtigingNodeId = array();
+			} else {
+
+				$criteria->add(DossierPeer::MACHTIGING_NODE_ID, $this->getId());
+
+				DossierPeer::addSelectColumns($criteria);
+				$this->collDossiersRelatedByMachtigingNodeId = DossierPeer::doSelect($criteria, $con);
+			}
+		} else {
+						if (!$this->isNew()) {
+												
+
+				$criteria->add(DossierPeer::MACHTIGING_NODE_ID, $this->getId());
+
+				DossierPeer::addSelectColumns($criteria);
+				if (!isset($this->lastDossierRelatedByMachtigingNodeIdCriteria) || !$this->lastDossierRelatedByMachtigingNodeIdCriteria->equals($criteria)) {
+					$this->collDossiersRelatedByMachtigingNodeId = DossierPeer::doSelect($criteria, $con);
+				}
+			}
+		}
+		$this->lastDossierRelatedByMachtigingNodeIdCriteria = $criteria;
+		return $this->collDossiersRelatedByMachtigingNodeId;
+	}
+
+	
+	public function countDossiersRelatedByMachtigingNodeId($criteria = null, $distinct = false, $con = null)
+	{
+				include_once 'lib/model/om/BaseDossierPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		$criteria->add(DossierPeer::MACHTIGING_NODE_ID, $this->getId());
+
+		return DossierPeer::doCount($criteria, $distinct, $con);
+	}
+
+	
+	public function addDossierRelatedByMachtigingNodeId(Dossier $l)
+	{
+		$this->collDossiersRelatedByMachtigingNodeId[] = $l;
+		$l->setDmsNodeRelatedByMachtigingNodeId($this);
+	}
+
+
+	
+	public function getDossiersRelatedByMachtigingNodeIdJoinAccountRelatedByCreatedBy($criteria = null, $con = null)
+	{
+				include_once 'lib/model/om/BaseDossierPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collDossiersRelatedByMachtigingNodeId === null) {
+			if ($this->isNew()) {
+				$this->collDossiersRelatedByMachtigingNodeId = array();
+			} else {
+
+				$criteria->add(DossierPeer::MACHTIGING_NODE_ID, $this->getId());
+
+				$this->collDossiersRelatedByMachtigingNodeId = DossierPeer::doSelectJoinAccountRelatedByCreatedBy($criteria, $con);
+			}
+		} else {
+									
+			$criteria->add(DossierPeer::MACHTIGING_NODE_ID, $this->getId());
+
+			if (!isset($this->lastDossierRelatedByMachtigingNodeIdCriteria) || !$this->lastDossierRelatedByMachtigingNodeIdCriteria->equals($criteria)) {
+				$this->collDossiersRelatedByMachtigingNodeId = DossierPeer::doSelectJoinAccountRelatedByCreatedBy($criteria, $con);
+			}
+		}
+		$this->lastDossierRelatedByMachtigingNodeIdCriteria = $criteria;
+
+		return $this->collDossiersRelatedByMachtigingNodeId;
+	}
+
+
+	
+	public function getDossiersRelatedByMachtigingNodeIdJoinAccountRelatedByUpdatedBy($criteria = null, $con = null)
+	{
+				include_once 'lib/model/om/BaseDossierPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collDossiersRelatedByMachtigingNodeId === null) {
+			if ($this->isNew()) {
+				$this->collDossiersRelatedByMachtigingNodeId = array();
+			} else {
+
+				$criteria->add(DossierPeer::MACHTIGING_NODE_ID, $this->getId());
+
+				$this->collDossiersRelatedByMachtigingNodeId = DossierPeer::doSelectJoinAccountRelatedByUpdatedBy($criteria, $con);
+			}
+		} else {
+									
+			$criteria->add(DossierPeer::MACHTIGING_NODE_ID, $this->getId());
+
+			if (!isset($this->lastDossierRelatedByMachtigingNodeIdCriteria) || !$this->lastDossierRelatedByMachtigingNodeIdCriteria->equals($criteria)) {
+				$this->collDossiersRelatedByMachtigingNodeId = DossierPeer::doSelectJoinAccountRelatedByUpdatedBy($criteria, $con);
+			}
+		}
+		$this->lastDossierRelatedByMachtigingNodeIdCriteria = $criteria;
+
+		return $this->collDossiersRelatedByMachtigingNodeId;
+	}
+
+
+	
+	public function getDossiersRelatedByMachtigingNodeIdJoinDossierType($criteria = null, $con = null)
+	{
+				include_once 'lib/model/om/BaseDossierPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collDossiersRelatedByMachtigingNodeId === null) {
+			if ($this->isNew()) {
+				$this->collDossiersRelatedByMachtigingNodeId = array();
+			} else {
+
+				$criteria->add(DossierPeer::MACHTIGING_NODE_ID, $this->getId());
+
+				$this->collDossiersRelatedByMachtigingNodeId = DossierPeer::doSelectJoinDossierType($criteria, $con);
+			}
+		} else {
+									
+			$criteria->add(DossierPeer::MACHTIGING_NODE_ID, $this->getId());
+
+			if (!isset($this->lastDossierRelatedByMachtigingNodeIdCriteria) || !$this->lastDossierRelatedByMachtigingNodeIdCriteria->equals($criteria)) {
+				$this->collDossiersRelatedByMachtigingNodeId = DossierPeer::doSelectJoinDossierType($criteria, $con);
+			}
+		}
+		$this->lastDossierRelatedByMachtigingNodeIdCriteria = $criteria;
+
+		return $this->collDossiersRelatedByMachtigingNodeId;
+	}
+
+
+	
+	public function getDossiersRelatedByMachtigingNodeIdJoinPersoonRelatedByVerantwoordelijkeId($criteria = null, $con = null)
+	{
+				include_once 'lib/model/om/BaseDossierPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collDossiersRelatedByMachtigingNodeId === null) {
+			if ($this->isNew()) {
+				$this->collDossiersRelatedByMachtigingNodeId = array();
+			} else {
+
+				$criteria->add(DossierPeer::MACHTIGING_NODE_ID, $this->getId());
+
+				$this->collDossiersRelatedByMachtigingNodeId = DossierPeer::doSelectJoinPersoonRelatedByVerantwoordelijkeId($criteria, $con);
+			}
+		} else {
+									
+			$criteria->add(DossierPeer::MACHTIGING_NODE_ID, $this->getId());
+
+			if (!isset($this->lastDossierRelatedByMachtigingNodeIdCriteria) || !$this->lastDossierRelatedByMachtigingNodeIdCriteria->equals($criteria)) {
+				$this->collDossiersRelatedByMachtigingNodeId = DossierPeer::doSelectJoinPersoonRelatedByVerantwoordelijkeId($criteria, $con);
+			}
+		}
+		$this->lastDossierRelatedByMachtigingNodeIdCriteria = $criteria;
+
+		return $this->collDossiersRelatedByMachtigingNodeId;
+	}
+
+
+	
+	public function getDossiersRelatedByMachtigingNodeIdJoinPersoonRelatedByContactpersoonId($criteria = null, $con = null)
+	{
+				include_once 'lib/model/om/BaseDossierPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collDossiersRelatedByMachtigingNodeId === null) {
+			if ($this->isNew()) {
+				$this->collDossiersRelatedByMachtigingNodeId = array();
+			} else {
+
+				$criteria->add(DossierPeer::MACHTIGING_NODE_ID, $this->getId());
+
+				$this->collDossiersRelatedByMachtigingNodeId = DossierPeer::doSelectJoinPersoonRelatedByContactpersoonId($criteria, $con);
+			}
+		} else {
+									
+			$criteria->add(DossierPeer::MACHTIGING_NODE_ID, $this->getId());
+
+			if (!isset($this->lastDossierRelatedByMachtigingNodeIdCriteria) || !$this->lastDossierRelatedByMachtigingNodeIdCriteria->equals($criteria)) {
+				$this->collDossiersRelatedByMachtigingNodeId = DossierPeer::doSelectJoinPersoonRelatedByContactpersoonId($criteria, $con);
+			}
+		}
+		$this->lastDossierRelatedByMachtigingNodeIdCriteria = $criteria;
+
+		return $this->collDossiersRelatedByMachtigingNodeId;
+	}
+
+	
+	public function initDocuments()
+	{
+		if ($this->collDocuments === null) {
+			$this->collDocuments = array();
+		}
+	}
+
+	
+	public function getDocuments($criteria = null, $con = null)
+	{
+				include_once 'lib/model/om/BaseDocumentPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collDocuments === null) {
+			if ($this->isNew()) {
+			   $this->collDocuments = array();
+			} else {
+
+				$criteria->add(DocumentPeer::DMS_NODE_ID, $this->getId());
+
+				DocumentPeer::addSelectColumns($criteria);
+				$this->collDocuments = DocumentPeer::doSelect($criteria, $con);
+			}
+		} else {
+						if (!$this->isNew()) {
+												
+
+				$criteria->add(DocumentPeer::DMS_NODE_ID, $this->getId());
+
+				DocumentPeer::addSelectColumns($criteria);
+				if (!isset($this->lastDocumentCriteria) || !$this->lastDocumentCriteria->equals($criteria)) {
+					$this->collDocuments = DocumentPeer::doSelect($criteria, $con);
+				}
+			}
+		}
+		$this->lastDocumentCriteria = $criteria;
+		return $this->collDocuments;
+	}
+
+	
+	public function countDocuments($criteria = null, $distinct = false, $con = null)
+	{
+				include_once 'lib/model/om/BaseDocumentPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		$criteria->add(DocumentPeer::DMS_NODE_ID, $this->getId());
+
+		return DocumentPeer::doCount($criteria, $distinct, $con);
+	}
+
+	
+	public function addDocument(Document $l)
+	{
+		$this->collDocuments[] = $l;
+		$l->setDmsNode($this);
+	}
+
+
+	
+	public function getDocumentsJoinDossier($criteria = null, $con = null)
+	{
+				include_once 'lib/model/om/BaseDocumentPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collDocuments === null) {
+			if ($this->isNew()) {
+				$this->collDocuments = array();
+			} else {
+
+				$criteria->add(DocumentPeer::DMS_NODE_ID, $this->getId());
+
+				$this->collDocuments = DocumentPeer::doSelectJoinDossier($criteria, $con);
+			}
+		} else {
+									
+			$criteria->add(DocumentPeer::DMS_NODE_ID, $this->getId());
+
+			if (!isset($this->lastDocumentCriteria) || !$this->lastDocumentCriteria->equals($criteria)) {
+				$this->collDocuments = DocumentPeer::doSelectJoinDossier($criteria, $con);
+			}
+		}
+		$this->lastDocumentCriteria = $criteria;
+
+		return $this->collDocuments;
 	}
 
 

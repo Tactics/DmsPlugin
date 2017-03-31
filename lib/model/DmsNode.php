@@ -455,10 +455,12 @@ class DmsNode extends BaseDmsNode
 
   /**
    * Stuur inhoud naar output
-   * 
+   *
    * @param boolean $includeHeaders : default false
+   * @param string $contentDisposition : default attachement
+   * @return
    */
-  public function output($includeHeaders = false)
+  public function output($includeHeaders = false, $contentDisposition = 'attachment')
   {
     if ($includeHeaders)
     {
@@ -476,7 +478,7 @@ class DmsNode extends BaseDmsNode
 
       $response->setHttpHeader('Content-Length', (string)($this->getSize()));
       $response->setHttpHeader('Last-modified', gmdate("D, d M Y H:i:s", $this->getUpdatedAt(null)) . " GMT");
-      $response->setHttpHeader('Content-Disposition', 'attachment; filename="' . $this->getName() . '"');
+      $response->setHttpHeader('Content-Disposition', $contentDisposition . '; filename="' . $this->getName() . '"');
       $response->sendHttpHeaders();      
     }
     
