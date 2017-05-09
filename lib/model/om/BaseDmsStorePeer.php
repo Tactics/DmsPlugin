@@ -115,6 +115,7 @@ abstract class BaseDmsStorePeer {
 	 *                         TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM
 	 * @param      string $toType   One of the class type constants
 	 * @return     string translated name of the field.
+	 * @throws     PropelException
 	 */
 	static public function translateFieldName($name, $fromType, $toType)
 	{
@@ -127,12 +128,13 @@ abstract class BaseDmsStorePeer {
 	}
 
 	/**
-	 * Returns an array of of field names.
+	 * Returns an array of field names.
 	 *
 	 * @param      string $type The type of fieldnames to return:
 	 *                      One of the class type constants TYPE_PHPNAME,
 	 *                      TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM
-	 * @return     array A list of field names
+	 * @return     mixed[string] A list of field names
+	 * @throws     PropelException
 	 */
 
 	static public function getFieldNames($type = BasePeer::TYPE_PHPNAME)
@@ -167,26 +169,48 @@ abstract class BaseDmsStorePeer {
 	 * XML schema will not be added to the select list and only loaded
 	 * on demand.
 	 *
-	 * @param      criteria object containing the columns to add.
+	 * @param      Criteria $criteria object containing the columns to add.
+	 * @param      string $alias
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
-	public static function addSelectColumns(Criteria $criteria)
+	public static function addSelectColumns(Criteria $criteria, $alias = null)
 	{
 
-		$criteria->addSelectColumn(DmsStorePeer::ID);
+		$columnToSelect = $alias
+		  ? DmsStorePeer::alias($alias, DmsStorePeer::ID)
+		  : DmsStorePeer::ID;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsStorePeer::NAME);
+		$columnToSelect = $alias
+		  ? DmsStorePeer::alias($alias, DmsStorePeer::NAME)
+		  : DmsStorePeer::NAME;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsStorePeer::URI);
+		$columnToSelect = $alias
+		  ? DmsStorePeer::alias($alias, DmsStorePeer::URI)
+		  : DmsStorePeer::URI;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsStorePeer::CREATED_BY);
+		$columnToSelect = $alias
+		  ? DmsStorePeer::alias($alias, DmsStorePeer::CREATED_BY)
+		  : DmsStorePeer::CREATED_BY;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsStorePeer::UPDATED_BY);
+		$columnToSelect = $alias
+		  ? DmsStorePeer::alias($alias, DmsStorePeer::UPDATED_BY)
+		  : DmsStorePeer::UPDATED_BY;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsStorePeer::CREATED_AT);
+		$columnToSelect = $alias
+		  ? DmsStorePeer::alias($alias, DmsStorePeer::CREATED_AT)
+		  : DmsStorePeer::CREATED_AT;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsStorePeer::UPDATED_AT);
+		$columnToSelect = $alias
+		  ? DmsStorePeer::alias($alias, DmsStorePeer::UPDATED_AT)
+		  : DmsStorePeer::UPDATED_AT;
+		$criteria->addSelectColumn($columnToSelect);
 
 	}
 
@@ -252,7 +276,7 @@ abstract class BaseDmsStorePeer {
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      Connection $con
-	 * @return     array Array of selected Objects
+	 * @return     DmsStore[] Array of selected Objects
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -303,6 +327,8 @@ abstract class BaseDmsStorePeer {
 	 * The returned array will contain objects of the default type or
 	 * objects that inherit from the default.
 	 *
+	 * @param      Resultset $rs
+	 * @return     DmsStore[]
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -316,6 +342,7 @@ abstract class BaseDmsStorePeer {
 		// populate the object(s)
 		while($rs->next()) {
 		
+			/** @var DmsStore $obj */
 			$obj = new $cls();
 			$obj->hydrate($rs);
 			$results[] = $obj;
@@ -463,7 +490,9 @@ abstract class BaseDmsStorePeer {
 	/**
 	 * Method to DELETE all rows from the dms_store table.
 	 *
+	 * @param      Connection $con
 	 * @return     int The number of affected rows (if supported by underlying database driver).
+	 * @throws     PropelException
 	 */
 	public static function doDeleteAll($con = null)
 	{
@@ -538,12 +567,12 @@ abstract class BaseDmsStorePeer {
 	 *
 	 * NOTICE: This does not apply to primary or foreign keys for now.
 	 *
-	 * @param      DmsStore $obj The object to validate.
+	 * @param      BaseDmsStore $obj The object to validate.
 	 * @param      mixed $cols Column name or array of column names.
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(DmsStore $obj, $cols = null)
+	public static function doValidate(BaseDmsStore $obj, $cols = null)
 	{
 		$columns = array();
 
@@ -596,6 +625,7 @@ abstract class BaseDmsStorePeer {
 	 *
 	 * @param      array $pks List of primary keys
 	 * @param      Connection $con the connection to use
+	 * @return     DmsStore[]
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */

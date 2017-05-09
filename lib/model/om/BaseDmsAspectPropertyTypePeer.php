@@ -118,6 +118,7 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	 *                         TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM
 	 * @param      string $toType   One of the class type constants
 	 * @return     string translated name of the field.
+	 * @throws     PropelException
 	 */
 	static public function translateFieldName($name, $fromType, $toType)
 	{
@@ -130,12 +131,13 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	}
 
 	/**
-	 * Returns an array of of field names.
+	 * Returns an array of field names.
 	 *
 	 * @param      string $type The type of fieldnames to return:
 	 *                      One of the class type constants TYPE_PHPNAME,
 	 *                      TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM
-	 * @return     array A list of field names
+	 * @return     mixed[string] A list of field names
+	 * @throws     PropelException
 	 */
 
 	static public function getFieldNames($type = BasePeer::TYPE_PHPNAME)
@@ -170,28 +172,53 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	 * XML schema will not be added to the select list and only loaded
 	 * on demand.
 	 *
-	 * @param      criteria object containing the columns to add.
+	 * @param      Criteria $criteria object containing the columns to add.
+	 * @param      string $alias
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
-	public static function addSelectColumns(Criteria $criteria)
+	public static function addSelectColumns(Criteria $criteria, $alias = null)
 	{
 
-		$criteria->addSelectColumn(DmsAspectPropertyTypePeer::ID);
+		$columnToSelect = $alias
+		  ? DmsAspectPropertyTypePeer::alias($alias, DmsAspectPropertyTypePeer::ID)
+		  : DmsAspectPropertyTypePeer::ID;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsAspectPropertyTypePeer::ASPECT_ID);
+		$columnToSelect = $alias
+		  ? DmsAspectPropertyTypePeer::alias($alias, DmsAspectPropertyTypePeer::ASPECT_ID)
+		  : DmsAspectPropertyTypePeer::ASPECT_ID;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsAspectPropertyTypePeer::TYPE_ID);
+		$columnToSelect = $alias
+		  ? DmsAspectPropertyTypePeer::alias($alias, DmsAspectPropertyTypePeer::TYPE_ID)
+		  : DmsAspectPropertyTypePeer::TYPE_ID;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsAspectPropertyTypePeer::VOLGORDE);
+		$columnToSelect = $alias
+		  ? DmsAspectPropertyTypePeer::alias($alias, DmsAspectPropertyTypePeer::VOLGORDE)
+		  : DmsAspectPropertyTypePeer::VOLGORDE;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsAspectPropertyTypePeer::CREATED_BY);
+		$columnToSelect = $alias
+		  ? DmsAspectPropertyTypePeer::alias($alias, DmsAspectPropertyTypePeer::CREATED_BY)
+		  : DmsAspectPropertyTypePeer::CREATED_BY;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsAspectPropertyTypePeer::UPDATED_BY);
+		$columnToSelect = $alias
+		  ? DmsAspectPropertyTypePeer::alias($alias, DmsAspectPropertyTypePeer::UPDATED_BY)
+		  : DmsAspectPropertyTypePeer::UPDATED_BY;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsAspectPropertyTypePeer::CREATED_AT);
+		$columnToSelect = $alias
+		  ? DmsAspectPropertyTypePeer::alias($alias, DmsAspectPropertyTypePeer::CREATED_AT)
+		  : DmsAspectPropertyTypePeer::CREATED_AT;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsAspectPropertyTypePeer::UPDATED_AT);
+		$columnToSelect = $alias
+		  ? DmsAspectPropertyTypePeer::alias($alias, DmsAspectPropertyTypePeer::UPDATED_AT)
+		  : DmsAspectPropertyTypePeer::UPDATED_AT;
+		$criteria->addSelectColumn($columnToSelect);
 
 	}
 
@@ -257,7 +284,7 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      Connection $con
-	 * @return     array Array of selected Objects
+	 * @return     DmsAspectPropertyType[] Array of selected Objects
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -308,6 +335,8 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	 * The returned array will contain objects of the default type or
 	 * objects that inherit from the default.
 	 *
+	 * @param      Resultset $rs
+	 * @return     DmsAspectPropertyType[]
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -321,6 +350,7 @@ abstract class BaseDmsAspectPropertyTypePeer {
 		// populate the object(s)
 		while($rs->next()) {
 		
+			/** @var DmsAspectPropertyType $obj */
 			$obj = new $cls();
 			$obj->hydrate($rs);
 			$results[] = $obj;
@@ -332,7 +362,7 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	/**
 	 * Returns the number of rows matching criteria, joining the related DmsAspect table
 	 *
-	 * @param      Criteria $c
+	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns (You can also set DISTINCT modifier in Criteria).
 	 * @param      Connection $con
 	 * @return     int Number of matching rows.
@@ -371,7 +401,7 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	/**
 	 * Returns the number of rows matching criteria, joining the related DmsPropertyType table
 	 *
-	 * @param      Criteria $c
+	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns (You can also set DISTINCT modifier in Criteria).
 	 * @param      Connection $con
 	 * @return     int Number of matching rows.
@@ -410,7 +440,9 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	/**
 	 * Selects a collection of DmsAspectPropertyType objects pre-filled with their DmsAspect objects.
 	 *
-	 * @return     array Array of DmsAspectPropertyType objects.
+	 * @param      Criteria $c
+	 * @param      Connection $con
+	 * @return     DmsAspectPropertyType[] array Array of DmsAspectPropertyType objects.
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -425,9 +457,10 @@ abstract class BaseDmsAspectPropertyTypePeer {
 
 		DmsAspectPropertyTypePeer::addSelectColumns($c);
 		$startcol = (DmsAspectPropertyTypePeer::NUM_COLUMNS - DmsAspectPropertyTypePeer::NUM_LAZY_LOAD_COLUMNS) + 1;
+
 		DmsAspectPeer::addSelectColumns($c);
 
-		$c->addJoin(DmsAspectPropertyTypePeer::ASPECT_ID, DmsAspectPeer::ID);
+		$c->addJoin(DmsAspectPropertyTypePeer::ASPECT_ID, DmsAspectPeer::ID, Criteria::JOIN);
 		$rs = BasePeer::doSelect($c, $con);
 		$results = array();
 
@@ -435,17 +468,20 @@ abstract class BaseDmsAspectPropertyTypePeer {
 
 			$omClass = DmsAspectPropertyTypePeer::getOMClass();
 
+			/** @var DmsAspectPropertyType $obj1 */
 			$cls = Propel::import($omClass);
 			$obj1 = new $cls();
 			$obj1->hydrate($rs);
 
 			$omClass = DmsAspectPeer::getOMClass();
 
+			/** @var DmsAspect $obj2 */
 			$cls = Propel::import($omClass);
 			$obj2 = new $cls();
 			$obj2->hydrate($rs, $startcol);
 
 			$newObject = true;
+			/** @var DmsAspectPropertyType $temp_obj1 */
 			foreach($results as $temp_obj1) {
 				$temp_obj2 = $temp_obj1->getDmsAspect(); //CHECKME
 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
@@ -468,7 +504,9 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	/**
 	 * Selects a collection of DmsAspectPropertyType objects pre-filled with their DmsPropertyType objects.
 	 *
-	 * @return     array Array of DmsAspectPropertyType objects.
+	 * @param      Criteria $c
+	 * @param      Connection $con
+	 * @return     DmsAspectPropertyType[] array Array of DmsAspectPropertyType objects.
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -483,9 +521,10 @@ abstract class BaseDmsAspectPropertyTypePeer {
 
 		DmsAspectPropertyTypePeer::addSelectColumns($c);
 		$startcol = (DmsAspectPropertyTypePeer::NUM_COLUMNS - DmsAspectPropertyTypePeer::NUM_LAZY_LOAD_COLUMNS) + 1;
+
 		DmsPropertyTypePeer::addSelectColumns($c);
 
-		$c->addJoin(DmsAspectPropertyTypePeer::TYPE_ID, DmsPropertyTypePeer::ID);
+		$c->addJoin(DmsAspectPropertyTypePeer::TYPE_ID, DmsPropertyTypePeer::ID, Criteria::JOIN);
 		$rs = BasePeer::doSelect($c, $con);
 		$results = array();
 
@@ -493,17 +532,20 @@ abstract class BaseDmsAspectPropertyTypePeer {
 
 			$omClass = DmsAspectPropertyTypePeer::getOMClass();
 
+			/** @var DmsAspectPropertyType $obj1 */
 			$cls = Propel::import($omClass);
 			$obj1 = new $cls();
 			$obj1->hydrate($rs);
 
 			$omClass = DmsPropertyTypePeer::getOMClass();
 
+			/** @var DmsPropertyType $obj2 */
 			$cls = Propel::import($omClass);
 			$obj2 = new $cls();
 			$obj2->hydrate($rs, $startcol);
 
 			$newObject = true;
+			/** @var DmsAspectPropertyType $temp_obj1 */
 			foreach($results as $temp_obj1) {
 				$temp_obj2 = $temp_obj1->getDmsPropertyType(); //CHECKME
 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
@@ -526,7 +568,7 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	/**
 	 * Returns the number of rows matching criteria, joining all related tables
 	 *
-	 * @param      Criteria $c
+	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns (You can also set DISTINCT modifier in Criteria).
 	 * @param      Connection $con
 	 * @return     int Number of matching rows.
@@ -566,7 +608,9 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	/**
 	 * Selects a collection of DmsAspectPropertyType objects pre-filled with all related objects.
 	 *
-	 * @return     array Array of DmsAspectPropertyType objects.
+	 * @param      Criteria $c
+	 * @param      Connection $con
+	 * @return     DmsAspectPropertyType[] array Array of DmsAspectPropertyType objects.
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -599,7 +643,7 @@ abstract class BaseDmsAspectPropertyTypePeer {
 
 			$omClass = DmsAspectPropertyTypePeer::getOMClass();
 
-
+            /** @var DmsAspectPropertyType $obj1 */
 			$cls = Propel::import($omClass);
 			$obj1 = new $cls();
 			$obj1->hydrate($rs);
@@ -609,13 +653,14 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	
 			$omClass = DmsAspectPeer::getOMClass();
 
-
+            /** @var DmsAspect $obj2 */
 			$cls = Propel::import($omClass);
 			$obj2 = new $cls();
 			$obj2->hydrate($rs, $startcol2);
 
 			$newObject = true;
 			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
+			    /** @var DmsAspectPropertyType $temp_obj1 */
 				$temp_obj1 = $results[$j];
 				$temp_obj2 = $temp_obj1->getDmsAspect(); // CHECKME
 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
@@ -635,13 +680,14 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	
 			$omClass = DmsPropertyTypePeer::getOMClass();
 
-
+            /** @var DmsPropertyType $obj3 */
 			$cls = Propel::import($omClass);
 			$obj3 = new $cls();
 			$obj3->hydrate($rs, $startcol3);
 
 			$newObject = true;
 			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
+			    /** @var DmsAspectPropertyType $temp_obj1 */
 				$temp_obj1 = $results[$j];
 				$temp_obj3 = $temp_obj1->getDmsPropertyType(); // CHECKME
 				if ($temp_obj3->getPrimaryKey() === $obj3->getPrimaryKey()) {
@@ -665,7 +711,7 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	/**
 	 * Returns the number of rows matching criteria, joining the related DmsAspect table
 	 *
-	 * @param      Criteria $c
+	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns (You can also set DISTINCT modifier in Criteria).
 	 * @param      Connection $con
 	 * @return     int Number of matching rows.
@@ -704,7 +750,7 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	/**
 	 * Returns the number of rows matching criteria, joining the related DmsPropertyType table
 	 *
-	 * @param      Criteria $c
+	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns (You can also set DISTINCT modifier in Criteria).
 	 * @param      Connection $con
 	 * @return     int Number of matching rows.
@@ -743,6 +789,8 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	/**
 	 * Selects a collection of DmsAspectPropertyType objects pre-filled with all related objects except DmsAspect.
 	 *
+	 * @param      Criteria $c
+	 * @param      Connection $con
 	 * @return     array Array of DmsAspectPropertyType objects.
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
@@ -774,19 +822,21 @@ abstract class BaseDmsAspectPropertyTypePeer {
 
 			$omClass = DmsAspectPropertyTypePeer::getOMClass();
 
+			/** @var DmsAspectPropertyType $obj1 */
 			$cls = Propel::import($omClass);
 			$obj1 = new $cls();
 			$obj1->hydrate($rs);
 
 			$omClass = DmsPropertyTypePeer::getOMClass();
 
-
+            /** @var DmsPropertyType $obj2 */
 			$cls = Propel::import($omClass);
 			$obj2  = new $cls();
 			$obj2->hydrate($rs, $startcol2);
 
 			$newObject = true;
 			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
+			    /** @var DmsAspectPropertyType $temp_obj1 */
 				$temp_obj1 = $results[$j];
 				$temp_obj2 = $temp_obj1->getDmsPropertyType(); //CHECKME
 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
@@ -810,6 +860,8 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	/**
 	 * Selects a collection of DmsAspectPropertyType objects pre-filled with all related objects except DmsPropertyType.
 	 *
+	 * @param      Criteria $c
+	 * @param      Connection $con
 	 * @return     array Array of DmsAspectPropertyType objects.
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
@@ -841,19 +893,21 @@ abstract class BaseDmsAspectPropertyTypePeer {
 
 			$omClass = DmsAspectPropertyTypePeer::getOMClass();
 
+			/** @var DmsAspectPropertyType $obj1 */
 			$cls = Propel::import($omClass);
 			$obj1 = new $cls();
 			$obj1->hydrate($rs);
 
 			$omClass = DmsAspectPeer::getOMClass();
 
-
+            /** @var DmsAspect $obj2 */
 			$cls = Propel::import($omClass);
 			$obj2  = new $cls();
 			$obj2->hydrate($rs, $startcol2);
 
 			$newObject = true;
 			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
+			    /** @var DmsAspectPropertyType $temp_obj1 */
 				$temp_obj1 = $results[$j];
 				$temp_obj2 = $temp_obj1->getDmsAspect(); //CHECKME
 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
@@ -1013,7 +1067,9 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	/**
 	 * Method to DELETE all rows from the dms_aspect_property_type table.
 	 *
+	 * @param      Connection $con
 	 * @return     int The number of affected rows (if supported by underlying database driver).
+	 * @throws     PropelException
 	 */
 	public static function doDeleteAll($con = null)
 	{
@@ -1088,12 +1144,12 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	 *
 	 * NOTICE: This does not apply to primary or foreign keys for now.
 	 *
-	 * @param      DmsAspectPropertyType $obj The object to validate.
+	 * @param      BaseDmsAspectPropertyType $obj The object to validate.
 	 * @param      mixed $cols Column name or array of column names.
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(DmsAspectPropertyType $obj, $cols = null)
+	public static function doValidate(BaseDmsAspectPropertyType $obj, $cols = null)
 	{
 		$columns = array();
 
@@ -1146,6 +1202,7 @@ abstract class BaseDmsAspectPropertyTypePeer {
 	 *
 	 * @param      array $pks List of primary keys
 	 * @param      Connection $con the connection to use
+	 * @return     DmsAspectPropertyType[]
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */

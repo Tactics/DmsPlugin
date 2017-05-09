@@ -115,6 +115,7 @@ abstract class BaseDmsAspectPeer {
 	 *                         TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM
 	 * @param      string $toType   One of the class type constants
 	 * @return     string translated name of the field.
+	 * @throws     PropelException
 	 */
 	static public function translateFieldName($name, $fromType, $toType)
 	{
@@ -127,12 +128,13 @@ abstract class BaseDmsAspectPeer {
 	}
 
 	/**
-	 * Returns an array of of field names.
+	 * Returns an array of field names.
 	 *
 	 * @param      string $type The type of fieldnames to return:
 	 *                      One of the class type constants TYPE_PHPNAME,
 	 *                      TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM
-	 * @return     array A list of field names
+	 * @return     mixed[string] A list of field names
+	 * @throws     PropelException
 	 */
 
 	static public function getFieldNames($type = BasePeer::TYPE_PHPNAME)
@@ -167,26 +169,48 @@ abstract class BaseDmsAspectPeer {
 	 * XML schema will not be added to the select list and only loaded
 	 * on demand.
 	 *
-	 * @param      criteria object containing the columns to add.
+	 * @param      Criteria $criteria object containing the columns to add.
+	 * @param      string $alias
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
-	public static function addSelectColumns(Criteria $criteria)
+	public static function addSelectColumns(Criteria $criteria, $alias = null)
 	{
 
-		$criteria->addSelectColumn(DmsAspectPeer::ID);
+		$columnToSelect = $alias
+		  ? DmsAspectPeer::alias($alias, DmsAspectPeer::ID)
+		  : DmsAspectPeer::ID;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsAspectPeer::NAME);
+		$columnToSelect = $alias
+		  ? DmsAspectPeer::alias($alias, DmsAspectPeer::NAME)
+		  : DmsAspectPeer::NAME;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsAspectPeer::SYSTEM_NAME);
+		$columnToSelect = $alias
+		  ? DmsAspectPeer::alias($alias, DmsAspectPeer::SYSTEM_NAME)
+		  : DmsAspectPeer::SYSTEM_NAME;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsAspectPeer::CREATED_BY);
+		$columnToSelect = $alias
+		  ? DmsAspectPeer::alias($alias, DmsAspectPeer::CREATED_BY)
+		  : DmsAspectPeer::CREATED_BY;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsAspectPeer::UPDATED_BY);
+		$columnToSelect = $alias
+		  ? DmsAspectPeer::alias($alias, DmsAspectPeer::UPDATED_BY)
+		  : DmsAspectPeer::UPDATED_BY;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsAspectPeer::CREATED_AT);
+		$columnToSelect = $alias
+		  ? DmsAspectPeer::alias($alias, DmsAspectPeer::CREATED_AT)
+		  : DmsAspectPeer::CREATED_AT;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsAspectPeer::UPDATED_AT);
+		$columnToSelect = $alias
+		  ? DmsAspectPeer::alias($alias, DmsAspectPeer::UPDATED_AT)
+		  : DmsAspectPeer::UPDATED_AT;
+		$criteria->addSelectColumn($columnToSelect);
 
 	}
 
@@ -252,7 +276,7 @@ abstract class BaseDmsAspectPeer {
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      Connection $con
-	 * @return     array Array of selected Objects
+	 * @return     DmsAspect[] Array of selected Objects
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -303,6 +327,8 @@ abstract class BaseDmsAspectPeer {
 	 * The returned array will contain objects of the default type or
 	 * objects that inherit from the default.
 	 *
+	 * @param      Resultset $rs
+	 * @return     DmsAspect[]
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -316,6 +342,7 @@ abstract class BaseDmsAspectPeer {
 		// populate the object(s)
 		while($rs->next()) {
 		
+			/** @var DmsAspect $obj */
 			$obj = new $cls();
 			$obj->hydrate($rs);
 			$results[] = $obj;
@@ -463,7 +490,9 @@ abstract class BaseDmsAspectPeer {
 	/**
 	 * Method to DELETE all rows from the dms_aspect table.
 	 *
+	 * @param      Connection $con
 	 * @return     int The number of affected rows (if supported by underlying database driver).
+	 * @throws     PropelException
 	 */
 	public static function doDeleteAll($con = null)
 	{
@@ -581,12 +610,12 @@ abstract class BaseDmsAspectPeer {
 	 *
 	 * NOTICE: This does not apply to primary or foreign keys for now.
 	 *
-	 * @param      DmsAspect $obj The object to validate.
+	 * @param      BaseDmsAspect $obj The object to validate.
 	 * @param      mixed $cols Column name or array of column names.
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(DmsAspect $obj, $cols = null)
+	public static function doValidate(BaseDmsAspect $obj, $cols = null)
 	{
 		$columns = array();
 
@@ -639,6 +668,7 @@ abstract class BaseDmsAspectPeer {
 	 *
 	 * @param      array $pks List of primary keys
 	 * @param      Connection $con the connection to use
+	 * @return     DmsAspect[]
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */

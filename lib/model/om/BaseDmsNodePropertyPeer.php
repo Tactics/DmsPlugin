@@ -130,6 +130,7 @@ abstract class BaseDmsNodePropertyPeer {
 	 *                         TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM
 	 * @param      string $toType   One of the class type constants
 	 * @return     string translated name of the field.
+	 * @throws     PropelException
 	 */
 	static public function translateFieldName($name, $fromType, $toType)
 	{
@@ -142,12 +143,13 @@ abstract class BaseDmsNodePropertyPeer {
 	}
 
 	/**
-	 * Returns an array of of field names.
+	 * Returns an array of field names.
 	 *
 	 * @param      string $type The type of fieldnames to return:
 	 *                      One of the class type constants TYPE_PHPNAME,
 	 *                      TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM
-	 * @return     array A list of field names
+	 * @return     mixed[string] A list of field names
+	 * @throws     PropelException
 	 */
 
 	static public function getFieldNames($type = BasePeer::TYPE_PHPNAME)
@@ -182,36 +184,73 @@ abstract class BaseDmsNodePropertyPeer {
 	 * XML schema will not be added to the select list and only loaded
 	 * on demand.
 	 *
-	 * @param      criteria object containing the columns to add.
+	 * @param      Criteria $criteria object containing the columns to add.
+	 * @param      string $alias
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
-	public static function addSelectColumns(Criteria $criteria)
+	public static function addSelectColumns(Criteria $criteria, $alias = null)
 	{
 
-		$criteria->addSelectColumn(DmsNodePropertyPeer::ID);
+		$columnToSelect = $alias
+		  ? DmsNodePropertyPeer::alias($alias, DmsNodePropertyPeer::ID)
+		  : DmsNodePropertyPeer::ID;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePropertyPeer::NODE_ID);
+		$columnToSelect = $alias
+		  ? DmsNodePropertyPeer::alias($alias, DmsNodePropertyPeer::NODE_ID)
+		  : DmsNodePropertyPeer::NODE_ID;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePropertyPeer::TYPE_ID);
+		$columnToSelect = $alias
+		  ? DmsNodePropertyPeer::alias($alias, DmsNodePropertyPeer::TYPE_ID)
+		  : DmsNodePropertyPeer::TYPE_ID;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePropertyPeer::BOOLEAN_VALUE);
+		$columnToSelect = $alias
+		  ? DmsNodePropertyPeer::alias($alias, DmsNodePropertyPeer::BOOLEAN_VALUE)
+		  : DmsNodePropertyPeer::BOOLEAN_VALUE;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePropertyPeer::INT_VALUE);
+		$columnToSelect = $alias
+		  ? DmsNodePropertyPeer::alias($alias, DmsNodePropertyPeer::INT_VALUE)
+		  : DmsNodePropertyPeer::INT_VALUE;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePropertyPeer::FLOAT_VALUE);
+		$columnToSelect = $alias
+		  ? DmsNodePropertyPeer::alias($alias, DmsNodePropertyPeer::FLOAT_VALUE)
+		  : DmsNodePropertyPeer::FLOAT_VALUE;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePropertyPeer::STRING_VALUE);
+		$columnToSelect = $alias
+		  ? DmsNodePropertyPeer::alias($alias, DmsNodePropertyPeer::STRING_VALUE)
+		  : DmsNodePropertyPeer::STRING_VALUE;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePropertyPeer::TEXT_VALUE);
+		$columnToSelect = $alias
+		  ? DmsNodePropertyPeer::alias($alias, DmsNodePropertyPeer::TEXT_VALUE)
+		  : DmsNodePropertyPeer::TEXT_VALUE;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePropertyPeer::CREATED_BY);
+		$columnToSelect = $alias
+		  ? DmsNodePropertyPeer::alias($alias, DmsNodePropertyPeer::CREATED_BY)
+		  : DmsNodePropertyPeer::CREATED_BY;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePropertyPeer::UPDATED_BY);
+		$columnToSelect = $alias
+		  ? DmsNodePropertyPeer::alias($alias, DmsNodePropertyPeer::UPDATED_BY)
+		  : DmsNodePropertyPeer::UPDATED_BY;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePropertyPeer::CREATED_AT);
+		$columnToSelect = $alias
+		  ? DmsNodePropertyPeer::alias($alias, DmsNodePropertyPeer::CREATED_AT)
+		  : DmsNodePropertyPeer::CREATED_AT;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePropertyPeer::UPDATED_AT);
+		$columnToSelect = $alias
+		  ? DmsNodePropertyPeer::alias($alias, DmsNodePropertyPeer::UPDATED_AT)
+		  : DmsNodePropertyPeer::UPDATED_AT;
+		$criteria->addSelectColumn($columnToSelect);
 
 	}
 
@@ -277,7 +316,7 @@ abstract class BaseDmsNodePropertyPeer {
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      Connection $con
-	 * @return     array Array of selected Objects
+	 * @return     DmsNodeProperty[] Array of selected Objects
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -328,6 +367,8 @@ abstract class BaseDmsNodePropertyPeer {
 	 * The returned array will contain objects of the default type or
 	 * objects that inherit from the default.
 	 *
+	 * @param      Resultset $rs
+	 * @return     DmsNodeProperty[]
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -341,6 +382,7 @@ abstract class BaseDmsNodePropertyPeer {
 		// populate the object(s)
 		while($rs->next()) {
 		
+			/** @var DmsNodeProperty $obj */
 			$obj = new $cls();
 			$obj->hydrate($rs);
 			$results[] = $obj;
@@ -352,7 +394,7 @@ abstract class BaseDmsNodePropertyPeer {
 	/**
 	 * Returns the number of rows matching criteria, joining the related DmsPropertyType table
 	 *
-	 * @param      Criteria $c
+	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns (You can also set DISTINCT modifier in Criteria).
 	 * @param      Connection $con
 	 * @return     int Number of matching rows.
@@ -391,7 +433,7 @@ abstract class BaseDmsNodePropertyPeer {
 	/**
 	 * Returns the number of rows matching criteria, joining the related DmsNode table
 	 *
-	 * @param      Criteria $c
+	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns (You can also set DISTINCT modifier in Criteria).
 	 * @param      Connection $con
 	 * @return     int Number of matching rows.
@@ -430,7 +472,9 @@ abstract class BaseDmsNodePropertyPeer {
 	/**
 	 * Selects a collection of DmsNodeProperty objects pre-filled with their DmsPropertyType objects.
 	 *
-	 * @return     array Array of DmsNodeProperty objects.
+	 * @param      Criteria $c
+	 * @param      Connection $con
+	 * @return     DmsNodeProperty[] array Array of DmsNodeProperty objects.
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -445,9 +489,10 @@ abstract class BaseDmsNodePropertyPeer {
 
 		DmsNodePropertyPeer::addSelectColumns($c);
 		$startcol = (DmsNodePropertyPeer::NUM_COLUMNS - DmsNodePropertyPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
+
 		DmsPropertyTypePeer::addSelectColumns($c);
 
-		$c->addJoin(DmsNodePropertyPeer::TYPE_ID, DmsPropertyTypePeer::ID);
+		$c->addJoin(DmsNodePropertyPeer::TYPE_ID, DmsPropertyTypePeer::ID, Criteria::JOIN);
 		$rs = BasePeer::doSelect($c, $con);
 		$results = array();
 
@@ -455,17 +500,20 @@ abstract class BaseDmsNodePropertyPeer {
 
 			$omClass = DmsNodePropertyPeer::getOMClass();
 
+			/** @var DmsNodeProperty $obj1 */
 			$cls = Propel::import($omClass);
 			$obj1 = new $cls();
 			$obj1->hydrate($rs);
 
 			$omClass = DmsPropertyTypePeer::getOMClass();
 
+			/** @var DmsPropertyType $obj2 */
 			$cls = Propel::import($omClass);
 			$obj2 = new $cls();
 			$obj2->hydrate($rs, $startcol);
 
 			$newObject = true;
+			/** @var DmsNodeProperty $temp_obj1 */
 			foreach($results as $temp_obj1) {
 				$temp_obj2 = $temp_obj1->getDmsPropertyType(); //CHECKME
 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
@@ -488,7 +536,9 @@ abstract class BaseDmsNodePropertyPeer {
 	/**
 	 * Selects a collection of DmsNodeProperty objects pre-filled with their DmsNode objects.
 	 *
-	 * @return     array Array of DmsNodeProperty objects.
+	 * @param      Criteria $c
+	 * @param      Connection $con
+	 * @return     DmsNodeProperty[] array Array of DmsNodeProperty objects.
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -503,9 +553,10 @@ abstract class BaseDmsNodePropertyPeer {
 
 		DmsNodePropertyPeer::addSelectColumns($c);
 		$startcol = (DmsNodePropertyPeer::NUM_COLUMNS - DmsNodePropertyPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
+
 		DmsNodePeer::addSelectColumns($c);
 
-		$c->addJoin(DmsNodePropertyPeer::NODE_ID, DmsNodePeer::ID);
+		$c->addJoin(DmsNodePropertyPeer::NODE_ID, DmsNodePeer::ID, Criteria::JOIN);
 		$rs = BasePeer::doSelect($c, $con);
 		$results = array();
 
@@ -513,17 +564,20 @@ abstract class BaseDmsNodePropertyPeer {
 
 			$omClass = DmsNodePropertyPeer::getOMClass();
 
+			/** @var DmsNodeProperty $obj1 */
 			$cls = Propel::import($omClass);
 			$obj1 = new $cls();
 			$obj1->hydrate($rs);
 
 			$omClass = DmsNodePeer::getOMClass();
 
+			/** @var DmsNode $obj2 */
 			$cls = Propel::import($omClass);
 			$obj2 = new $cls();
 			$obj2->hydrate($rs, $startcol);
 
 			$newObject = true;
+			/** @var DmsNodeProperty $temp_obj1 */
 			foreach($results as $temp_obj1) {
 				$temp_obj2 = $temp_obj1->getDmsNode(); //CHECKME
 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
@@ -546,7 +600,7 @@ abstract class BaseDmsNodePropertyPeer {
 	/**
 	 * Returns the number of rows matching criteria, joining all related tables
 	 *
-	 * @param      Criteria $c
+	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns (You can also set DISTINCT modifier in Criteria).
 	 * @param      Connection $con
 	 * @return     int Number of matching rows.
@@ -586,7 +640,9 @@ abstract class BaseDmsNodePropertyPeer {
 	/**
 	 * Selects a collection of DmsNodeProperty objects pre-filled with all related objects.
 	 *
-	 * @return     array Array of DmsNodeProperty objects.
+	 * @param      Criteria $c
+	 * @param      Connection $con
+	 * @return     DmsNodeProperty[] array Array of DmsNodeProperty objects.
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -619,7 +675,7 @@ abstract class BaseDmsNodePropertyPeer {
 
 			$omClass = DmsNodePropertyPeer::getOMClass();
 
-
+            /** @var DmsNodeProperty $obj1 */
 			$cls = Propel::import($omClass);
 			$obj1 = new $cls();
 			$obj1->hydrate($rs);
@@ -629,13 +685,14 @@ abstract class BaseDmsNodePropertyPeer {
 	
 			$omClass = DmsPropertyTypePeer::getOMClass();
 
-
+            /** @var DmsPropertyType $obj2 */
 			$cls = Propel::import($omClass);
 			$obj2 = new $cls();
 			$obj2->hydrate($rs, $startcol2);
 
 			$newObject = true;
 			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
+			    /** @var DmsNodeProperty $temp_obj1 */
 				$temp_obj1 = $results[$j];
 				$temp_obj2 = $temp_obj1->getDmsPropertyType(); // CHECKME
 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
@@ -655,13 +712,14 @@ abstract class BaseDmsNodePropertyPeer {
 	
 			$omClass = DmsNodePeer::getOMClass();
 
-
+            /** @var DmsNode $obj3 */
 			$cls = Propel::import($omClass);
 			$obj3 = new $cls();
 			$obj3->hydrate($rs, $startcol3);
 
 			$newObject = true;
 			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
+			    /** @var DmsNodeProperty $temp_obj1 */
 				$temp_obj1 = $results[$j];
 				$temp_obj3 = $temp_obj1->getDmsNode(); // CHECKME
 				if ($temp_obj3->getPrimaryKey() === $obj3->getPrimaryKey()) {
@@ -685,7 +743,7 @@ abstract class BaseDmsNodePropertyPeer {
 	/**
 	 * Returns the number of rows matching criteria, joining the related DmsPropertyType table
 	 *
-	 * @param      Criteria $c
+	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns (You can also set DISTINCT modifier in Criteria).
 	 * @param      Connection $con
 	 * @return     int Number of matching rows.
@@ -724,7 +782,7 @@ abstract class BaseDmsNodePropertyPeer {
 	/**
 	 * Returns the number of rows matching criteria, joining the related DmsNode table
 	 *
-	 * @param      Criteria $c
+	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns (You can also set DISTINCT modifier in Criteria).
 	 * @param      Connection $con
 	 * @return     int Number of matching rows.
@@ -763,6 +821,8 @@ abstract class BaseDmsNodePropertyPeer {
 	/**
 	 * Selects a collection of DmsNodeProperty objects pre-filled with all related objects except DmsPropertyType.
 	 *
+	 * @param      Criteria $c
+	 * @param      Connection $con
 	 * @return     array Array of DmsNodeProperty objects.
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
@@ -794,19 +854,21 @@ abstract class BaseDmsNodePropertyPeer {
 
 			$omClass = DmsNodePropertyPeer::getOMClass();
 
+			/** @var DmsNodeProperty $obj1 */
 			$cls = Propel::import($omClass);
 			$obj1 = new $cls();
 			$obj1->hydrate($rs);
 
 			$omClass = DmsNodePeer::getOMClass();
 
-
+            /** @var DmsNode $obj2 */
 			$cls = Propel::import($omClass);
 			$obj2  = new $cls();
 			$obj2->hydrate($rs, $startcol2);
 
 			$newObject = true;
 			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
+			    /** @var DmsNodeProperty $temp_obj1 */
 				$temp_obj1 = $results[$j];
 				$temp_obj2 = $temp_obj1->getDmsNode(); //CHECKME
 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
@@ -830,6 +892,8 @@ abstract class BaseDmsNodePropertyPeer {
 	/**
 	 * Selects a collection of DmsNodeProperty objects pre-filled with all related objects except DmsNode.
 	 *
+	 * @param      Criteria $c
+	 * @param      Connection $con
 	 * @return     array Array of DmsNodeProperty objects.
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
@@ -861,19 +925,21 @@ abstract class BaseDmsNodePropertyPeer {
 
 			$omClass = DmsNodePropertyPeer::getOMClass();
 
+			/** @var DmsNodeProperty $obj1 */
 			$cls = Propel::import($omClass);
 			$obj1 = new $cls();
 			$obj1->hydrate($rs);
 
 			$omClass = DmsPropertyTypePeer::getOMClass();
 
-
+            /** @var DmsPropertyType $obj2 */
 			$cls = Propel::import($omClass);
 			$obj2  = new $cls();
 			$obj2->hydrate($rs, $startcol2);
 
 			$newObject = true;
 			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
+			    /** @var DmsNodeProperty $temp_obj1 */
 				$temp_obj1 = $results[$j];
 				$temp_obj2 = $temp_obj1->getDmsPropertyType(); //CHECKME
 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
@@ -1039,7 +1105,9 @@ abstract class BaseDmsNodePropertyPeer {
 	/**
 	 * Method to DELETE all rows from the dms_node_property table.
 	 *
+	 * @param      Connection $con
 	 * @return     int The number of affected rows (if supported by underlying database driver).
+	 * @throws     PropelException
 	 */
 	public static function doDeleteAll($con = null)
 	{
@@ -1133,12 +1201,12 @@ abstract class BaseDmsNodePropertyPeer {
 	 *
 	 * NOTICE: This does not apply to primary or foreign keys for now.
 	 *
-	 * @param      DmsNodeProperty $obj The object to validate.
+	 * @param      BaseDmsNodeProperty $obj The object to validate.
 	 * @param      mixed $cols Column name or array of column names.
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(DmsNodeProperty $obj, $cols = null)
+	public static function doValidate(BaseDmsNodeProperty $obj, $cols = null)
 	{
 		$columns = array();
 

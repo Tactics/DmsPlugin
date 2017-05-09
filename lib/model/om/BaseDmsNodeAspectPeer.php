@@ -115,6 +115,7 @@ abstract class BaseDmsNodeAspectPeer {
 	 *                         TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM
 	 * @param      string $toType   One of the class type constants
 	 * @return     string translated name of the field.
+	 * @throws     PropelException
 	 */
 	static public function translateFieldName($name, $fromType, $toType)
 	{
@@ -127,12 +128,13 @@ abstract class BaseDmsNodeAspectPeer {
 	}
 
 	/**
-	 * Returns an array of of field names.
+	 * Returns an array of field names.
 	 *
 	 * @param      string $type The type of fieldnames to return:
 	 *                      One of the class type constants TYPE_PHPNAME,
 	 *                      TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM
-	 * @return     array A list of field names
+	 * @return     mixed[string] A list of field names
+	 * @throws     PropelException
 	 */
 
 	static public function getFieldNames($type = BasePeer::TYPE_PHPNAME)
@@ -167,26 +169,48 @@ abstract class BaseDmsNodeAspectPeer {
 	 * XML schema will not be added to the select list and only loaded
 	 * on demand.
 	 *
-	 * @param      criteria object containing the columns to add.
+	 * @param      Criteria $criteria object containing the columns to add.
+	 * @param      string $alias
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
-	public static function addSelectColumns(Criteria $criteria)
+	public static function addSelectColumns(Criteria $criteria, $alias = null)
 	{
 
-		$criteria->addSelectColumn(DmsNodeAspectPeer::ID);
+		$columnToSelect = $alias
+		  ? DmsNodeAspectPeer::alias($alias, DmsNodeAspectPeer::ID)
+		  : DmsNodeAspectPeer::ID;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodeAspectPeer::NODE_ID);
+		$columnToSelect = $alias
+		  ? DmsNodeAspectPeer::alias($alias, DmsNodeAspectPeer::NODE_ID)
+		  : DmsNodeAspectPeer::NODE_ID;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodeAspectPeer::ASPECT_ID);
+		$columnToSelect = $alias
+		  ? DmsNodeAspectPeer::alias($alias, DmsNodeAspectPeer::ASPECT_ID)
+		  : DmsNodeAspectPeer::ASPECT_ID;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodeAspectPeer::CREATED_BY);
+		$columnToSelect = $alias
+		  ? DmsNodeAspectPeer::alias($alias, DmsNodeAspectPeer::CREATED_BY)
+		  : DmsNodeAspectPeer::CREATED_BY;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodeAspectPeer::UPDATED_BY);
+		$columnToSelect = $alias
+		  ? DmsNodeAspectPeer::alias($alias, DmsNodeAspectPeer::UPDATED_BY)
+		  : DmsNodeAspectPeer::UPDATED_BY;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodeAspectPeer::CREATED_AT);
+		$columnToSelect = $alias
+		  ? DmsNodeAspectPeer::alias($alias, DmsNodeAspectPeer::CREATED_AT)
+		  : DmsNodeAspectPeer::CREATED_AT;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodeAspectPeer::UPDATED_AT);
+		$columnToSelect = $alias
+		  ? DmsNodeAspectPeer::alias($alias, DmsNodeAspectPeer::UPDATED_AT)
+		  : DmsNodeAspectPeer::UPDATED_AT;
+		$criteria->addSelectColumn($columnToSelect);
 
 	}
 
@@ -252,7 +276,7 @@ abstract class BaseDmsNodeAspectPeer {
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      Connection $con
-	 * @return     array Array of selected Objects
+	 * @return     DmsNodeAspect[] Array of selected Objects
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -303,6 +327,8 @@ abstract class BaseDmsNodeAspectPeer {
 	 * The returned array will contain objects of the default type or
 	 * objects that inherit from the default.
 	 *
+	 * @param      Resultset $rs
+	 * @return     DmsNodeAspect[]
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -316,6 +342,7 @@ abstract class BaseDmsNodeAspectPeer {
 		// populate the object(s)
 		while($rs->next()) {
 		
+			/** @var DmsNodeAspect $obj */
 			$obj = new $cls();
 			$obj->hydrate($rs);
 			$results[] = $obj;
@@ -327,7 +354,7 @@ abstract class BaseDmsNodeAspectPeer {
 	/**
 	 * Returns the number of rows matching criteria, joining the related DmsNode table
 	 *
-	 * @param      Criteria $c
+	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns (You can also set DISTINCT modifier in Criteria).
 	 * @param      Connection $con
 	 * @return     int Number of matching rows.
@@ -366,7 +393,7 @@ abstract class BaseDmsNodeAspectPeer {
 	/**
 	 * Returns the number of rows matching criteria, joining the related DmsAspect table
 	 *
-	 * @param      Criteria $c
+	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns (You can also set DISTINCT modifier in Criteria).
 	 * @param      Connection $con
 	 * @return     int Number of matching rows.
@@ -405,7 +432,9 @@ abstract class BaseDmsNodeAspectPeer {
 	/**
 	 * Selects a collection of DmsNodeAspect objects pre-filled with their DmsNode objects.
 	 *
-	 * @return     array Array of DmsNodeAspect objects.
+	 * @param      Criteria $c
+	 * @param      Connection $con
+	 * @return     DmsNodeAspect[] array Array of DmsNodeAspect objects.
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -420,9 +449,10 @@ abstract class BaseDmsNodeAspectPeer {
 
 		DmsNodeAspectPeer::addSelectColumns($c);
 		$startcol = (DmsNodeAspectPeer::NUM_COLUMNS - DmsNodeAspectPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
+
 		DmsNodePeer::addSelectColumns($c);
 
-		$c->addJoin(DmsNodeAspectPeer::NODE_ID, DmsNodePeer::ID);
+		$c->addJoin(DmsNodeAspectPeer::NODE_ID, DmsNodePeer::ID, Criteria::JOIN);
 		$rs = BasePeer::doSelect($c, $con);
 		$results = array();
 
@@ -430,17 +460,20 @@ abstract class BaseDmsNodeAspectPeer {
 
 			$omClass = DmsNodeAspectPeer::getOMClass();
 
+			/** @var DmsNodeAspect $obj1 */
 			$cls = Propel::import($omClass);
 			$obj1 = new $cls();
 			$obj1->hydrate($rs);
 
 			$omClass = DmsNodePeer::getOMClass();
 
+			/** @var DmsNode $obj2 */
 			$cls = Propel::import($omClass);
 			$obj2 = new $cls();
 			$obj2->hydrate($rs, $startcol);
 
 			$newObject = true;
+			/** @var DmsNodeAspect $temp_obj1 */
 			foreach($results as $temp_obj1) {
 				$temp_obj2 = $temp_obj1->getDmsNode(); //CHECKME
 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
@@ -463,7 +496,9 @@ abstract class BaseDmsNodeAspectPeer {
 	/**
 	 * Selects a collection of DmsNodeAspect objects pre-filled with their DmsAspect objects.
 	 *
-	 * @return     array Array of DmsNodeAspect objects.
+	 * @param      Criteria $c
+	 * @param      Connection $con
+	 * @return     DmsNodeAspect[] array Array of DmsNodeAspect objects.
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -478,9 +513,10 @@ abstract class BaseDmsNodeAspectPeer {
 
 		DmsNodeAspectPeer::addSelectColumns($c);
 		$startcol = (DmsNodeAspectPeer::NUM_COLUMNS - DmsNodeAspectPeer::NUM_LAZY_LOAD_COLUMNS) + 1;
+
 		DmsAspectPeer::addSelectColumns($c);
 
-		$c->addJoin(DmsNodeAspectPeer::ASPECT_ID, DmsAspectPeer::ID);
+		$c->addJoin(DmsNodeAspectPeer::ASPECT_ID, DmsAspectPeer::ID, Criteria::JOIN);
 		$rs = BasePeer::doSelect($c, $con);
 		$results = array();
 
@@ -488,17 +524,20 @@ abstract class BaseDmsNodeAspectPeer {
 
 			$omClass = DmsNodeAspectPeer::getOMClass();
 
+			/** @var DmsNodeAspect $obj1 */
 			$cls = Propel::import($omClass);
 			$obj1 = new $cls();
 			$obj1->hydrate($rs);
 
 			$omClass = DmsAspectPeer::getOMClass();
 
+			/** @var DmsAspect $obj2 */
 			$cls = Propel::import($omClass);
 			$obj2 = new $cls();
 			$obj2->hydrate($rs, $startcol);
 
 			$newObject = true;
+			/** @var DmsNodeAspect $temp_obj1 */
 			foreach($results as $temp_obj1) {
 				$temp_obj2 = $temp_obj1->getDmsAspect(); //CHECKME
 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
@@ -521,7 +560,7 @@ abstract class BaseDmsNodeAspectPeer {
 	/**
 	 * Returns the number of rows matching criteria, joining all related tables
 	 *
-	 * @param      Criteria $c
+	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns (You can also set DISTINCT modifier in Criteria).
 	 * @param      Connection $con
 	 * @return     int Number of matching rows.
@@ -561,7 +600,9 @@ abstract class BaseDmsNodeAspectPeer {
 	/**
 	 * Selects a collection of DmsNodeAspect objects pre-filled with all related objects.
 	 *
-	 * @return     array Array of DmsNodeAspect objects.
+	 * @param      Criteria $c
+	 * @param      Connection $con
+	 * @return     DmsNodeAspect[] array Array of DmsNodeAspect objects.
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -594,7 +635,7 @@ abstract class BaseDmsNodeAspectPeer {
 
 			$omClass = DmsNodeAspectPeer::getOMClass();
 
-
+            /** @var DmsNodeAspect $obj1 */
 			$cls = Propel::import($omClass);
 			$obj1 = new $cls();
 			$obj1->hydrate($rs);
@@ -604,13 +645,14 @@ abstract class BaseDmsNodeAspectPeer {
 	
 			$omClass = DmsNodePeer::getOMClass();
 
-
+            /** @var DmsNode $obj2 */
 			$cls = Propel::import($omClass);
 			$obj2 = new $cls();
 			$obj2->hydrate($rs, $startcol2);
 
 			$newObject = true;
 			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
+			    /** @var DmsNodeAspect $temp_obj1 */
 				$temp_obj1 = $results[$j];
 				$temp_obj2 = $temp_obj1->getDmsNode(); // CHECKME
 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
@@ -630,13 +672,14 @@ abstract class BaseDmsNodeAspectPeer {
 	
 			$omClass = DmsAspectPeer::getOMClass();
 
-
+            /** @var DmsAspect $obj3 */
 			$cls = Propel::import($omClass);
 			$obj3 = new $cls();
 			$obj3->hydrate($rs, $startcol3);
 
 			$newObject = true;
 			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
+			    /** @var DmsNodeAspect $temp_obj1 */
 				$temp_obj1 = $results[$j];
 				$temp_obj3 = $temp_obj1->getDmsAspect(); // CHECKME
 				if ($temp_obj3->getPrimaryKey() === $obj3->getPrimaryKey()) {
@@ -660,7 +703,7 @@ abstract class BaseDmsNodeAspectPeer {
 	/**
 	 * Returns the number of rows matching criteria, joining the related DmsNode table
 	 *
-	 * @param      Criteria $c
+	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns (You can also set DISTINCT modifier in Criteria).
 	 * @param      Connection $con
 	 * @return     int Number of matching rows.
@@ -699,7 +742,7 @@ abstract class BaseDmsNodeAspectPeer {
 	/**
 	 * Returns the number of rows matching criteria, joining the related DmsAspect table
 	 *
-	 * @param      Criteria $c
+	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns (You can also set DISTINCT modifier in Criteria).
 	 * @param      Connection $con
 	 * @return     int Number of matching rows.
@@ -738,6 +781,8 @@ abstract class BaseDmsNodeAspectPeer {
 	/**
 	 * Selects a collection of DmsNodeAspect objects pre-filled with all related objects except DmsNode.
 	 *
+	 * @param      Criteria $c
+	 * @param      Connection $con
 	 * @return     array Array of DmsNodeAspect objects.
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
@@ -769,19 +814,21 @@ abstract class BaseDmsNodeAspectPeer {
 
 			$omClass = DmsNodeAspectPeer::getOMClass();
 
+			/** @var DmsNodeAspect $obj1 */
 			$cls = Propel::import($omClass);
 			$obj1 = new $cls();
 			$obj1->hydrate($rs);
 
 			$omClass = DmsAspectPeer::getOMClass();
 
-
+            /** @var DmsAspect $obj2 */
 			$cls = Propel::import($omClass);
 			$obj2  = new $cls();
 			$obj2->hydrate($rs, $startcol2);
 
 			$newObject = true;
 			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
+			    /** @var DmsNodeAspect $temp_obj1 */
 				$temp_obj1 = $results[$j];
 				$temp_obj2 = $temp_obj1->getDmsAspect(); //CHECKME
 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
@@ -805,6 +852,8 @@ abstract class BaseDmsNodeAspectPeer {
 	/**
 	 * Selects a collection of DmsNodeAspect objects pre-filled with all related objects except DmsAspect.
 	 *
+	 * @param      Criteria $c
+	 * @param      Connection $con
 	 * @return     array Array of DmsNodeAspect objects.
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
@@ -836,19 +885,21 @@ abstract class BaseDmsNodeAspectPeer {
 
 			$omClass = DmsNodeAspectPeer::getOMClass();
 
+			/** @var DmsNodeAspect $obj1 */
 			$cls = Propel::import($omClass);
 			$obj1 = new $cls();
 			$obj1->hydrate($rs);
 
 			$omClass = DmsNodePeer::getOMClass();
 
-
+            /** @var DmsNode $obj2 */
 			$cls = Propel::import($omClass);
 			$obj2  = new $cls();
 			$obj2->hydrate($rs, $startcol2);
 
 			$newObject = true;
 			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
+			    /** @var DmsNodeAspect $temp_obj1 */
 				$temp_obj1 = $results[$j];
 				$temp_obj2 = $temp_obj1->getDmsNode(); //CHECKME
 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
@@ -1008,7 +1059,9 @@ abstract class BaseDmsNodeAspectPeer {
 	/**
 	 * Method to DELETE all rows from the dms_node_aspect table.
 	 *
+	 * @param      Connection $con
 	 * @return     int The number of affected rows (if supported by underlying database driver).
+	 * @throws     PropelException
 	 */
 	public static function doDeleteAll($con = null)
 	{
@@ -1083,12 +1136,12 @@ abstract class BaseDmsNodeAspectPeer {
 	 *
 	 * NOTICE: This does not apply to primary or foreign keys for now.
 	 *
-	 * @param      DmsNodeAspect $obj The object to validate.
+	 * @param      BaseDmsNodeAspect $obj The object to validate.
 	 * @param      mixed $cols Column name or array of column names.
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(DmsNodeAspect $obj, $cols = null)
+	public static function doValidate(BaseDmsNodeAspect $obj, $cols = null)
 	{
 		$columns = array();
 
@@ -1141,6 +1194,7 @@ abstract class BaseDmsNodeAspectPeer {
 	 *
 	 * @param      array $pks List of primary keys
 	 * @param      Connection $con the connection to use
+	 * @return     DmsNodeAspect[]
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */

@@ -121,6 +121,7 @@ abstract class BaseDmsPropertyTypePeer {
 	 *                         TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM
 	 * @param      string $toType   One of the class type constants
 	 * @return     string translated name of the field.
+	 * @throws     PropelException
 	 */
 	static public function translateFieldName($name, $fromType, $toType)
 	{
@@ -133,12 +134,13 @@ abstract class BaseDmsPropertyTypePeer {
 	}
 
 	/**
-	 * Returns an array of of field names.
+	 * Returns an array of field names.
 	 *
 	 * @param      string $type The type of fieldnames to return:
 	 *                      One of the class type constants TYPE_PHPNAME,
 	 *                      TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM
-	 * @return     array A list of field names
+	 * @return     mixed[string] A list of field names
+	 * @throws     PropelException
 	 */
 
 	static public function getFieldNames($type = BasePeer::TYPE_PHPNAME)
@@ -173,30 +175,58 @@ abstract class BaseDmsPropertyTypePeer {
 	 * XML schema will not be added to the select list and only loaded
 	 * on demand.
 	 *
-	 * @param      criteria object containing the columns to add.
+	 * @param      Criteria $criteria object containing the columns to add.
+	 * @param      string $alias
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
-	public static function addSelectColumns(Criteria $criteria)
+	public static function addSelectColumns(Criteria $criteria, $alias = null)
 	{
 
-		$criteria->addSelectColumn(DmsPropertyTypePeer::ID);
+		$columnToSelect = $alias
+		  ? DmsPropertyTypePeer::alias($alias, DmsPropertyTypePeer::ID)
+		  : DmsPropertyTypePeer::ID;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsPropertyTypePeer::NAME);
+		$columnToSelect = $alias
+		  ? DmsPropertyTypePeer::alias($alias, DmsPropertyTypePeer::NAME)
+		  : DmsPropertyTypePeer::NAME;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsPropertyTypePeer::SYSTEM_NAME);
+		$columnToSelect = $alias
+		  ? DmsPropertyTypePeer::alias($alias, DmsPropertyTypePeer::SYSTEM_NAME)
+		  : DmsPropertyTypePeer::SYSTEM_NAME;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsPropertyTypePeer::DATA_TYPE);
+		$columnToSelect = $alias
+		  ? DmsPropertyTypePeer::alias($alias, DmsPropertyTypePeer::DATA_TYPE)
+		  : DmsPropertyTypePeer::DATA_TYPE;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsPropertyTypePeer::OPTIONS);
+		$columnToSelect = $alias
+		  ? DmsPropertyTypePeer::alias($alias, DmsPropertyTypePeer::OPTIONS)
+		  : DmsPropertyTypePeer::OPTIONS;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsPropertyTypePeer::CREATED_BY);
+		$columnToSelect = $alias
+		  ? DmsPropertyTypePeer::alias($alias, DmsPropertyTypePeer::CREATED_BY)
+		  : DmsPropertyTypePeer::CREATED_BY;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsPropertyTypePeer::UPDATED_BY);
+		$columnToSelect = $alias
+		  ? DmsPropertyTypePeer::alias($alias, DmsPropertyTypePeer::UPDATED_BY)
+		  : DmsPropertyTypePeer::UPDATED_BY;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsPropertyTypePeer::CREATED_AT);
+		$columnToSelect = $alias
+		  ? DmsPropertyTypePeer::alias($alias, DmsPropertyTypePeer::CREATED_AT)
+		  : DmsPropertyTypePeer::CREATED_AT;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsPropertyTypePeer::UPDATED_AT);
+		$columnToSelect = $alias
+		  ? DmsPropertyTypePeer::alias($alias, DmsPropertyTypePeer::UPDATED_AT)
+		  : DmsPropertyTypePeer::UPDATED_AT;
+		$criteria->addSelectColumn($columnToSelect);
 
 	}
 
@@ -262,7 +292,7 @@ abstract class BaseDmsPropertyTypePeer {
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      Connection $con
-	 * @return     array Array of selected Objects
+	 * @return     DmsPropertyType[] Array of selected Objects
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -313,6 +343,8 @@ abstract class BaseDmsPropertyTypePeer {
 	 * The returned array will contain objects of the default type or
 	 * objects that inherit from the default.
 	 *
+	 * @param      Resultset $rs
+	 * @return     DmsPropertyType[]
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -326,6 +358,7 @@ abstract class BaseDmsPropertyTypePeer {
 		// populate the object(s)
 		while($rs->next()) {
 		
+			/** @var DmsPropertyType $obj */
 			$obj = new $cls();
 			$obj->hydrate($rs);
 			$results[] = $obj;
@@ -473,7 +506,9 @@ abstract class BaseDmsPropertyTypePeer {
 	/**
 	 * Method to DELETE all rows from the dms_property_type table.
 	 *
+	 * @param      Connection $con
 	 * @return     int The number of affected rows (if supported by underlying database driver).
+	 * @throws     PropelException
 	 */
 	public static function doDeleteAll($con = null)
 	{
@@ -591,12 +626,12 @@ abstract class BaseDmsPropertyTypePeer {
 	 *
 	 * NOTICE: This does not apply to primary or foreign keys for now.
 	 *
-	 * @param      DmsPropertyType $obj The object to validate.
+	 * @param      BaseDmsPropertyType $obj The object to validate.
 	 * @param      mixed $cols Column name or array of column names.
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(DmsPropertyType $obj, $cols = null)
+	public static function doValidate(BaseDmsPropertyType $obj, $cols = null)
 	{
 		$columns = array();
 
@@ -649,6 +684,7 @@ abstract class BaseDmsPropertyTypePeer {
 	 *
 	 * @param      array $pks List of primary keys
 	 * @param      Connection $con the connection to use
+	 * @return     DmsPropertyType[]
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */

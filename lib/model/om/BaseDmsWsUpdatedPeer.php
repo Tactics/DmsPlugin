@@ -103,6 +103,7 @@ abstract class BaseDmsWsUpdatedPeer {
 	 *                         TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM
 	 * @param      string $toType   One of the class type constants
 	 * @return     string translated name of the field.
+	 * @throws     PropelException
 	 */
 	static public function translateFieldName($name, $fromType, $toType)
 	{
@@ -115,12 +116,13 @@ abstract class BaseDmsWsUpdatedPeer {
 	}
 
 	/**
-	 * Returns an array of of field names.
+	 * Returns an array of field names.
 	 *
 	 * @param      string $type The type of fieldnames to return:
 	 *                      One of the class type constants TYPE_PHPNAME,
 	 *                      TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM
-	 * @return     array A list of field names
+	 * @return     mixed[string] A list of field names
+	 * @throws     PropelException
 	 */
 
 	static public function getFieldNames($type = BasePeer::TYPE_PHPNAME)
@@ -155,18 +157,28 @@ abstract class BaseDmsWsUpdatedPeer {
 	 * XML schema will not be added to the select list and only loaded
 	 * on demand.
 	 *
-	 * @param      criteria object containing the columns to add.
+	 * @param      Criteria $criteria object containing the columns to add.
+	 * @param      string $alias
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
-	public static function addSelectColumns(Criteria $criteria)
+	public static function addSelectColumns(Criteria $criteria, $alias = null)
 	{
 
-		$criteria->addSelectColumn(DmsWsUpdatedPeer::ID);
+		$columnToSelect = $alias
+		  ? DmsWsUpdatedPeer::alias($alias, DmsWsUpdatedPeer::ID)
+		  : DmsWsUpdatedPeer::ID;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsWsUpdatedPeer::NODE_ID);
+		$columnToSelect = $alias
+		  ? DmsWsUpdatedPeer::alias($alias, DmsWsUpdatedPeer::NODE_ID)
+		  : DmsWsUpdatedPeer::NODE_ID;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsWsUpdatedPeer::CREATED_AT);
+		$columnToSelect = $alias
+		  ? DmsWsUpdatedPeer::alias($alias, DmsWsUpdatedPeer::CREATED_AT)
+		  : DmsWsUpdatedPeer::CREATED_AT;
+		$criteria->addSelectColumn($columnToSelect);
 
 	}
 
@@ -232,7 +244,7 @@ abstract class BaseDmsWsUpdatedPeer {
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      Connection $con
-	 * @return     array Array of selected Objects
+	 * @return     DmsWsUpdated[] Array of selected Objects
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -283,6 +295,8 @@ abstract class BaseDmsWsUpdatedPeer {
 	 * The returned array will contain objects of the default type or
 	 * objects that inherit from the default.
 	 *
+	 * @param      Resultset $rs
+	 * @return     DmsWsUpdated[]
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -296,6 +310,7 @@ abstract class BaseDmsWsUpdatedPeer {
 		// populate the object(s)
 		while($rs->next()) {
 		
+			/** @var DmsWsUpdated $obj */
 			$obj = new $cls();
 			$obj->hydrate($rs);
 			$results[] = $obj;
@@ -443,7 +458,9 @@ abstract class BaseDmsWsUpdatedPeer {
 	/**
 	 * Method to DELETE all rows from the dms_ws_updated table.
 	 *
+	 * @param      Connection $con
 	 * @return     int The number of affected rows (if supported by underlying database driver).
+	 * @throws     PropelException
 	 */
 	public static function doDeleteAll($con = null)
 	{
@@ -518,12 +535,12 @@ abstract class BaseDmsWsUpdatedPeer {
 	 *
 	 * NOTICE: This does not apply to primary or foreign keys for now.
 	 *
-	 * @param      DmsWsUpdated $obj The object to validate.
+	 * @param      BaseDmsWsUpdated $obj The object to validate.
 	 * @param      mixed $cols Column name or array of column names.
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(DmsWsUpdated $obj, $cols = null)
+	public static function doValidate(BaseDmsWsUpdated $obj, $cols = null)
 	{
 		$columns = array();
 
@@ -576,6 +593,7 @@ abstract class BaseDmsWsUpdatedPeer {
 	 *
 	 * @param      array $pks List of primary keys
 	 * @param      Connection $con the connection to use
+	 * @return     DmsWsUpdated[]
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */

@@ -371,6 +371,7 @@ abstract class BaseDmsAspectPropertyType extends BaseObject  implements Persiste
 	 * 
 	 * @param      int $v new value
 	 * @return     void
+     * @throws     PropelException
 	 */
 	public function setCreatedAt($v)
 	{
@@ -395,6 +396,7 @@ abstract class BaseDmsAspectPropertyType extends BaseObject  implements Persiste
 	 * 
 	 * @param      int $v new value
 	 * @return     void
+     * @throws     PropelException
 	 */
 	public function setUpdatedAt($v)
 	{
@@ -451,8 +453,7 @@ abstract class BaseDmsAspectPropertyType extends BaseObject  implements Persiste
 
 			$this->setNew(false);
 
-			// FIXME - using NUM_COLUMNS may be clearer.
-			return $startcol + 8; // 8 = DmsAspectPropertyTypePeer::NUM_COLUMNS - DmsAspectPropertyTypePeer::NUM_LAZY_LOAD_COLUMNS).
+			return $startcol + DmsAspectPropertyTypePeer::NUM_COLUMNS - DmsAspectPropertyTypePeer::NUM_LAZY_LOAD_COLUMNS;
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating DmsAspectPropertyType object", $e);
@@ -776,7 +777,7 @@ abstract class BaseDmsAspectPropertyType extends BaseObject  implements Persiste
 	 *
 	 * @param      string $keyType One of the class type constants TYPE_PHPNAME,
 	 *                        TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM
-	 * @return     an associative array containing the field names (as keys) and field values
+	 * @return     mixed[string] an associative array containing the field names (as keys) and field values
 	 */
 	public function toArray($keyType = BasePeer::TYPE_PHPNAME)
 	{
@@ -807,7 +808,7 @@ abstract class BaseDmsAspectPropertyType extends BaseObject  implements Persiste
 	public function setByName($name, $value, $type = BasePeer::TYPE_PHPNAME)
 	{
 		$pos = DmsAspectPropertyTypePeer::translateFieldName($name, $type, BasePeer::TYPE_NUM);
-		return $this->setByPosition($pos, $value);
+		$this->setByPosition($pos, $value);
 	}
 
 	/**
@@ -1011,7 +1012,7 @@ abstract class BaseDmsAspectPropertyType extends BaseObject  implements Persiste
 	/**
 	 * Declares an association between this object and a DmsAspect object.
 	 *
-	 * @param      DmsAspect $v
+	 * @param      BaseDmsAspect $v
 	 * @return     void
 	 * @throws     PropelException
 	 */
@@ -1033,7 +1034,7 @@ abstract class BaseDmsAspectPropertyType extends BaseObject  implements Persiste
 	/**
 	 * Get the associated DmsAspect object
 	 *
-	 * @param      Connection Optional Connection object.
+	 * @param      Connection $con Optional Connection object.
 	 * @return     DmsAspect The associated DmsAspect object.
 	 * @throws     PropelException
 	 */
@@ -1061,7 +1062,7 @@ abstract class BaseDmsAspectPropertyType extends BaseObject  implements Persiste
 	/**
 	 * Declares an association between this object and a DmsPropertyType object.
 	 *
-	 * @param      DmsPropertyType $v
+	 * @param      BaseDmsPropertyType $v
 	 * @return     void
 	 * @throws     PropelException
 	 */
@@ -1083,7 +1084,7 @@ abstract class BaseDmsAspectPropertyType extends BaseObject  implements Persiste
 	/**
 	 * Get the associated DmsPropertyType object
 	 *
-	 * @param      Connection Optional Connection object.
+	 * @param      Connection $con Optional Connection object.
 	 * @return     DmsPropertyType The associated DmsPropertyType object.
 	 * @throws     PropelException
 	 */

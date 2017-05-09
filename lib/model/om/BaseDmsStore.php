@@ -244,7 +244,7 @@ abstract class BaseDmsStore extends BaseObject  implements Persistent {
 		// Since the native PHP type for this column is string,
 		// we will cast the input to a string (if it is not).
 		if ($v !== null && !is_string($v)) {
-			$v = (string) $v; 
+			$v = (string) $v;
 		}
 
 		if ($this->name !== $v) {
@@ -266,7 +266,7 @@ abstract class BaseDmsStore extends BaseObject  implements Persistent {
 		// Since the native PHP type for this column is string,
 		// we will cast the input to a string (if it is not).
 		if ($v !== null && !is_string($v)) {
-			$v = (string) $v; 
+			$v = (string) $v;
 		}
 
 		if ($this->uri !== $v) {
@@ -325,6 +325,7 @@ abstract class BaseDmsStore extends BaseObject  implements Persistent {
 	 * 
 	 * @param      int $v new value
 	 * @return     void
+     * @throws     PropelException
 	 */
 	public function setCreatedAt($v)
 	{
@@ -349,6 +350,7 @@ abstract class BaseDmsStore extends BaseObject  implements Persistent {
 	 * 
 	 * @param      int $v new value
 	 * @return     void
+     * @throws     PropelException
 	 */
 	public function setUpdatedAt($v)
 	{
@@ -403,8 +405,7 @@ abstract class BaseDmsStore extends BaseObject  implements Persistent {
 
 			$this->setNew(false);
 
-			// FIXME - using NUM_COLUMNS may be clearer.
-			return $startcol + 7; // 7 = DmsStorePeer::NUM_COLUMNS - DmsStorePeer::NUM_LAZY_LOAD_COLUMNS).
+			return $startcol + DmsStorePeer::NUM_COLUMNS - DmsStorePeer::NUM_LAZY_LOAD_COLUMNS;
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating DmsStore object", $e);
@@ -703,7 +704,7 @@ abstract class BaseDmsStore extends BaseObject  implements Persistent {
 	 *
 	 * @param      string $keyType One of the class type constants TYPE_PHPNAME,
 	 *                        TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM
-	 * @return     an associative array containing the field names (as keys) and field values
+	 * @return     mixed[string] an associative array containing the field names (as keys) and field values
 	 */
 	public function toArray($keyType = BasePeer::TYPE_PHPNAME)
 	{
@@ -733,7 +734,7 @@ abstract class BaseDmsStore extends BaseObject  implements Persistent {
 	public function setByName($name, $value, $type = BasePeer::TYPE_PHPNAME)
 	{
 		$pos = DmsStorePeer::translateFieldName($name, $type, BasePeer::TYPE_NUM);
-		return $this->setByPosition($pos, $value);
+		$this->setByPosition($pos, $value);
 	}
 
 	/**
@@ -964,6 +965,7 @@ abstract class BaseDmsStore extends BaseObject  implements Persistent {
 	 * @param      Connection $con
 	 * @param      Criteria $criteria
 	 * @throws     PropelException
+	 * @return     DmsNode[] DmsNodes
 	 */
 	public function getDmsNodes($criteria = null, $con = null)
 	{
@@ -1013,6 +1015,7 @@ abstract class BaseDmsStore extends BaseObject  implements Persistent {
 	 * @param      Criteria $criteria
 	 * @param      boolean $distinct
 	 * @param      Connection $con
+	 * @return     int The number of DmsNodes
 	 * @throws     PropelException
 	 */
 	public function countDmsNodes($criteria = null, $distinct = false, $con = null)
@@ -1057,8 +1060,12 @@ abstract class BaseDmsStore extends BaseObject  implements Persistent {
 	 * This method is protected by default in order to keep the public
 	 * api reasonable.  You can provide public methods for those you
 	 * actually need in DmsStore.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return DmsNode[] DmsNodes joined with DmsNodeRelatedByParentId
 	 */
-	public function getDmsNodesJoinDmsNodeRelatedByParentId($criteria = null, $con = null)
+	public function getDmsNodesJoinDmsNodeRelatedByParentId(Criteria $criteria = null, Connection $con = null)
 	{
 		// include the Peer class
 		include_once 'plugins/ttDmsPlugin/lib/model/om/BaseDmsNodePeer.php';

@@ -155,6 +155,7 @@ abstract class BaseDmsWsUpdated extends BaseObject  implements Persistent {
 	 * 
 	 * @param      int $v new value
 	 * @return     void
+     * @throws     PropelException
 	 */
 	public function setCreatedAt($v)
 	{
@@ -201,8 +202,7 @@ abstract class BaseDmsWsUpdated extends BaseObject  implements Persistent {
 
 			$this->setNew(false);
 
-			// FIXME - using NUM_COLUMNS may be clearer.
-			return $startcol + 3; // 3 = DmsWsUpdatedPeer::NUM_COLUMNS - DmsWsUpdatedPeer::NUM_LAZY_LOAD_COLUMNS).
+			return $startcol + DmsWsUpdatedPeer::NUM_COLUMNS - DmsWsUpdatedPeer::NUM_LAZY_LOAD_COLUMNS;
 
 		} catch (Exception $e) {
 			throw new PropelException("Error populating DmsWsUpdated object", $e);
@@ -468,7 +468,7 @@ abstract class BaseDmsWsUpdated extends BaseObject  implements Persistent {
 	 *
 	 * @param      string $keyType One of the class type constants TYPE_PHPNAME,
 	 *                        TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM
-	 * @return     an associative array containing the field names (as keys) and field values
+	 * @return     mixed[string] an associative array containing the field names (as keys) and field values
 	 */
 	public function toArray($keyType = BasePeer::TYPE_PHPNAME)
 	{
@@ -494,7 +494,7 @@ abstract class BaseDmsWsUpdated extends BaseObject  implements Persistent {
 	public function setByName($name, $value, $type = BasePeer::TYPE_PHPNAME)
 	{
 		$pos = DmsWsUpdatedPeer::translateFieldName($name, $type, BasePeer::TYPE_NUM);
-		return $this->setByPosition($pos, $value);
+		$this->setByPosition($pos, $value);
 	}
 
 	/**

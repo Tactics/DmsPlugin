@@ -127,6 +127,7 @@ abstract class BaseDmsNodePeer {
 	 *                         TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM
 	 * @param      string $toType   One of the class type constants
 	 * @return     string translated name of the field.
+	 * @throws     PropelException
 	 */
 	static public function translateFieldName($name, $fromType, $toType)
 	{
@@ -139,12 +140,13 @@ abstract class BaseDmsNodePeer {
 	}
 
 	/**
-	 * Returns an array of of field names.
+	 * Returns an array of field names.
 	 *
 	 * @param      string $type The type of fieldnames to return:
 	 *                      One of the class type constants TYPE_PHPNAME,
 	 *                      TYPE_COLNAME, TYPE_FIELDNAME, TYPE_NUM
-	 * @return     array A list of field names
+	 * @return     mixed[string] A list of field names
+	 * @throws     PropelException
 	 */
 
 	static public function getFieldNames($type = BasePeer::TYPE_PHPNAME)
@@ -179,34 +181,68 @@ abstract class BaseDmsNodePeer {
 	 * XML schema will not be added to the select list and only loaded
 	 * on demand.
 	 *
-	 * @param      criteria object containing the columns to add.
+	 * @param      Criteria $criteria object containing the columns to add.
+	 * @param      string $alias
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
-	public static function addSelectColumns(Criteria $criteria)
+	public static function addSelectColumns(Criteria $criteria, $alias = null)
 	{
 
-		$criteria->addSelectColumn(DmsNodePeer::ID);
+		$columnToSelect = $alias
+		  ? DmsNodePeer::alias($alias, DmsNodePeer::ID)
+		  : DmsNodePeer::ID;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePeer::STORE_ID);
+		$columnToSelect = $alias
+		  ? DmsNodePeer::alias($alias, DmsNodePeer::STORE_ID)
+		  : DmsNodePeer::STORE_ID;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePeer::PARENT_ID);
+		$columnToSelect = $alias
+		  ? DmsNodePeer::alias($alias, DmsNodePeer::PARENT_ID)
+		  : DmsNodePeer::PARENT_ID;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePeer::IS_FOLDER);
+		$columnToSelect = $alias
+		  ? DmsNodePeer::alias($alias, DmsNodePeer::IS_FOLDER)
+		  : DmsNodePeer::IS_FOLDER;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePeer::NAME);
+		$columnToSelect = $alias
+		  ? DmsNodePeer::alias($alias, DmsNodePeer::NAME)
+		  : DmsNodePeer::NAME;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePeer::DISK_NAME);
+		$columnToSelect = $alias
+		  ? DmsNodePeer::alias($alias, DmsNodePeer::DISK_NAME)
+		  : DmsNodePeer::DISK_NAME;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePeer::CONTENT_UPDATED_AT);
+		$columnToSelect = $alias
+		  ? DmsNodePeer::alias($alias, DmsNodePeer::CONTENT_UPDATED_AT)
+		  : DmsNodePeer::CONTENT_UPDATED_AT;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePeer::CREATED_BY);
+		$columnToSelect = $alias
+		  ? DmsNodePeer::alias($alias, DmsNodePeer::CREATED_BY)
+		  : DmsNodePeer::CREATED_BY;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePeer::UPDATED_BY);
+		$columnToSelect = $alias
+		  ? DmsNodePeer::alias($alias, DmsNodePeer::UPDATED_BY)
+		  : DmsNodePeer::UPDATED_BY;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePeer::CREATED_AT);
+		$columnToSelect = $alias
+		  ? DmsNodePeer::alias($alias, DmsNodePeer::CREATED_AT)
+		  : DmsNodePeer::CREATED_AT;
+		$criteria->addSelectColumn($columnToSelect);
 
-		$criteria->addSelectColumn(DmsNodePeer::UPDATED_AT);
+		$columnToSelect = $alias
+		  ? DmsNodePeer::alias($alias, DmsNodePeer::UPDATED_AT)
+		  : DmsNodePeer::UPDATED_AT;
+		$criteria->addSelectColumn($columnToSelect);
 
 	}
 
@@ -272,7 +308,7 @@ abstract class BaseDmsNodePeer {
 	 *
 	 * @param      Criteria $criteria The Criteria object used to build the SELECT statement.
 	 * @param      Connection $con
-	 * @return     array Array of selected Objects
+	 * @return     DmsNode[] Array of selected Objects
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -323,6 +359,8 @@ abstract class BaseDmsNodePeer {
 	 * The returned array will contain objects of the default type or
 	 * objects that inherit from the default.
 	 *
+	 * @param      Resultset $rs
+	 * @return     DmsNode[]
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -336,6 +374,7 @@ abstract class BaseDmsNodePeer {
 		// populate the object(s)
 		while($rs->next()) {
 		
+			/** @var DmsNode $obj */
 			$obj = new $cls();
 			$obj->hydrate($rs);
 			$results[] = $obj;
@@ -347,7 +386,7 @@ abstract class BaseDmsNodePeer {
 	/**
 	 * Returns the number of rows matching criteria, joining the related DmsStore table
 	 *
-	 * @param      Criteria $c
+	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns (You can also set DISTINCT modifier in Criteria).
 	 * @param      Connection $con
 	 * @return     int Number of matching rows.
@@ -386,7 +425,9 @@ abstract class BaseDmsNodePeer {
 	/**
 	 * Selects a collection of DmsNode objects pre-filled with their DmsStore objects.
 	 *
-	 * @return     array Array of DmsNode objects.
+	 * @param      Criteria $c
+	 * @param      Connection $con
+	 * @return     DmsNode[] array Array of DmsNode objects.
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -401,9 +442,10 @@ abstract class BaseDmsNodePeer {
 
 		DmsNodePeer::addSelectColumns($c);
 		$startcol = (DmsNodePeer::NUM_COLUMNS - DmsNodePeer::NUM_LAZY_LOAD_COLUMNS) + 1;
+
 		DmsStorePeer::addSelectColumns($c);
 
-		$c->addJoin(DmsNodePeer::STORE_ID, DmsStorePeer::ID);
+		$c->addJoin(DmsNodePeer::STORE_ID, DmsStorePeer::ID, Criteria::JOIN);
 		$rs = BasePeer::doSelect($c, $con);
 		$results = array();
 
@@ -411,17 +453,20 @@ abstract class BaseDmsNodePeer {
 
 			$omClass = DmsNodePeer::getOMClass();
 
+			/** @var DmsNode $obj1 */
 			$cls = Propel::import($omClass);
 			$obj1 = new $cls();
 			$obj1->hydrate($rs);
 
 			$omClass = DmsStorePeer::getOMClass();
 
+			/** @var DmsStore $obj2 */
 			$cls = Propel::import($omClass);
 			$obj2 = new $cls();
 			$obj2->hydrate($rs, $startcol);
 
 			$newObject = true;
+			/** @var DmsNode $temp_obj1 */
 			foreach($results as $temp_obj1) {
 				$temp_obj2 = $temp_obj1->getDmsStore(); //CHECKME
 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
@@ -442,9 +487,75 @@ abstract class BaseDmsNodePeer {
 
 
 	/**
-	 * Returns the number of rows matching criteria, joining all related tables
+	 * Selects a collection of DmsNode objects pre-filled with their DmsNode objects.
 	 *
 	 * @param      Criteria $c
+	 * @param      Connection $con
+	 * @return     DmsNode[] array Array of DmsNode objects.
+	 * @throws     PropelException Any exceptions caught during processing will be
+	 *		 rethrown wrapped into a PropelException.
+	 */
+	public static function doSelectJoinDmsNodeRelatedByParentId(Criteria $c, $con = null)
+	{
+		$c = clone $c;
+
+		// Set the correct dbName if it has not been overridden
+		if ($c->getDbName() == Propel::getDefaultDB()) {
+			$c->setDbName(self::DATABASE_NAME);
+		}
+
+		DmsNodePeer::addSelectColumns($c);
+		$startcol = (DmsNodePeer::NUM_COLUMNS - DmsNodePeer::NUM_LAZY_LOAD_COLUMNS) + 1;
+
+        $c->addAlias('alias', DmsNodePeer::TABLE_NAME);
+
+		DmsNodePeer::addSelectColumns($c, 'alias');
+
+		$c->addJoin(DmsNodePeer::PARENT_ID, DmsNodePeer::alias('alias', DmsNodePeer::ID), Criteria::JOIN);
+		$rs = BasePeer::doSelect($c, $con);
+		$results = array();
+
+		while($rs->next()) {
+
+			$omClass = DmsNodePeer::getOMClass();
+
+			/** @var DmsNode $obj1 */
+			$cls = Propel::import($omClass);
+			$obj1 = new $cls();
+			$obj1->hydrate($rs);
+
+			$omClass = DmsNodePeer::getOMClass();
+
+			/** @var DmsNode $obj2 */
+			$cls = Propel::import($omClass);
+			$obj2 = new $cls();
+			$obj2->hydrate($rs, $startcol);
+
+			$newObject = true;
+			/** @var DmsNode $temp_obj1 */
+			foreach($results as $temp_obj1) {
+				$temp_obj2 = $temp_obj1->getDmsNodeRelatedByParentId(); //CHECKME
+				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
+					$newObject = false;
+					// e.g. $author->addBookRelatedByBookId()
+					$temp_obj2->addDmsNodeRelatedByParentId($obj1); //CHECKME
+					break;
+				}
+			}
+			if ($newObject) {
+				$obj2->initDmsNodesRelatedByParentId();
+				$obj2->addDmsNodeRelatedByParentId($obj1); //CHECKME
+			}
+			$results[] = $obj1;
+		}
+		return $results;
+	}
+
+
+	/**
+	 * Returns the number of rows matching criteria, joining all related tables
+	 *
+	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns (You can also set DISTINCT modifier in Criteria).
 	 * @param      Connection $con
 	 * @return     int Number of matching rows.
@@ -482,7 +593,9 @@ abstract class BaseDmsNodePeer {
 	/**
 	 * Selects a collection of DmsNode objects pre-filled with all related objects.
 	 *
-	 * @return     array Array of DmsNode objects.
+	 * @param      Criteria $c
+	 * @param      Connection $con
+	 * @return     DmsNode[] array Array of DmsNode objects.
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
@@ -510,7 +623,7 @@ abstract class BaseDmsNodePeer {
 
 			$omClass = DmsNodePeer::getOMClass();
 
-
+            /** @var DmsNode $obj1 */
 			$cls = Propel::import($omClass);
 			$obj1 = new $cls();
 			$obj1->hydrate($rs);
@@ -520,13 +633,14 @@ abstract class BaseDmsNodePeer {
 	
 			$omClass = DmsStorePeer::getOMClass();
 
-
+            /** @var DmsStore $obj2 */
 			$cls = Propel::import($omClass);
 			$obj2 = new $cls();
 			$obj2->hydrate($rs, $startcol2);
 
 			$newObject = true;
 			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
+			    /** @var DmsNode $temp_obj1 */
 				$temp_obj1 = $results[$j];
 				$temp_obj2 = $temp_obj1->getDmsStore(); // CHECKME
 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
@@ -550,7 +664,7 @@ abstract class BaseDmsNodePeer {
 	/**
 	 * Returns the number of rows matching criteria, joining the related DmsStore table
 	 *
-	 * @param      Criteria $c
+	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns (You can also set DISTINCT modifier in Criteria).
 	 * @param      Connection $con
 	 * @return     int Number of matching rows.
@@ -587,7 +701,7 @@ abstract class BaseDmsNodePeer {
 	/**
 	 * Returns the number of rows matching criteria, joining the related DmsNodeRelatedByParentId table
 	 *
-	 * @param      Criteria $c
+	 * @param      Criteria $criteria
 	 * @param      boolean $distinct Whether to select only distinct columns (You can also set DISTINCT modifier in Criteria).
 	 * @param      Connection $con
 	 * @return     int Number of matching rows.
@@ -626,6 +740,8 @@ abstract class BaseDmsNodePeer {
 	/**
 	 * Selects a collection of DmsNode objects pre-filled with all related objects except DmsStore.
 	 *
+	 * @param      Criteria $c
+	 * @param      Connection $con
 	 * @return     array Array of DmsNode objects.
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
@@ -652,6 +768,7 @@ abstract class BaseDmsNodePeer {
 
 			$omClass = DmsNodePeer::getOMClass();
 
+			/** @var DmsNode $obj1 */
 			$cls = Propel::import($omClass);
 			$obj1 = new $cls();
 			$obj1->hydrate($rs);
@@ -665,6 +782,8 @@ abstract class BaseDmsNodePeer {
 	/**
 	 * Selects a collection of DmsNode objects pre-filled with all related objects except DmsNodeRelatedByParentId.
 	 *
+	 * @param      Criteria $c
+	 * @param      Connection $con
 	 * @return     array Array of DmsNode objects.
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
@@ -696,19 +815,21 @@ abstract class BaseDmsNodePeer {
 
 			$omClass = DmsNodePeer::getOMClass();
 
+			/** @var DmsNode $obj1 */
 			$cls = Propel::import($omClass);
 			$obj1 = new $cls();
 			$obj1->hydrate($rs);
 
 			$omClass = DmsStorePeer::getOMClass();
 
-
+            /** @var DmsStore $obj2 */
 			$cls = Propel::import($omClass);
 			$obj2  = new $cls();
 			$obj2->hydrate($rs, $startcol2);
 
 			$newObject = true;
 			for ($j=0, $resCount=count($results); $j < $resCount; $j++) {
+			    /** @var DmsNode $temp_obj1 */
 				$temp_obj1 = $results[$j];
 				$temp_obj2 = $temp_obj1->getDmsStore(); //CHECKME
 				if ($temp_obj2->getPrimaryKey() === $obj2->getPrimaryKey()) {
@@ -868,7 +989,9 @@ abstract class BaseDmsNodePeer {
 	/**
 	 * Method to DELETE all rows from the dms_node table.
 	 *
+	 * @param      Connection $con
 	 * @return     int The number of affected rows (if supported by underlying database driver).
+	 * @throws     PropelException
 	 */
 	public static function doDeleteAll($con = null)
 	{
@@ -1002,12 +1125,12 @@ abstract class BaseDmsNodePeer {
 	 *
 	 * NOTICE: This does not apply to primary or foreign keys for now.
 	 *
-	 * @param      DmsNode $obj The object to validate.
+	 * @param      BaseDmsNode $obj The object to validate.
 	 * @param      mixed $cols Column name or array of column names.
 	 *
 	 * @return     mixed TRUE if all columns are valid or the error message of the first invalid column.
 	 */
-	public static function doValidate(DmsNode $obj, $cols = null)
+	public static function doValidate(BaseDmsNode $obj, $cols = null)
 	{
 		$columns = array();
 
@@ -1060,6 +1183,7 @@ abstract class BaseDmsNodePeer {
 	 *
 	 * @param      array $pks List of primary keys
 	 * @param      Connection $con the connection to use
+	 * @return     DmsNode[]
 	 * @throws     PropelException Any exceptions caught during processing will be
 	 *		 rethrown wrapped into a PropelException.
 	 */
