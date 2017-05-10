@@ -46,6 +46,15 @@ class DmsWsClient
   
   /**
    * @param DmsNodeMetadata $metadata
+   * @param string $fileId
+   */
+  public function moveUploadedFile(DmsNodeMetadata $metadata, $fileId)
+  {
+    $this->postFile($this->generateUri($metadata, 'moveUploadedFile'), $fileId);
+  }
+  
+  /**
+   * @param DmsNodeMetadata $metadata
    */
   public function unlink(DmsNodeMetadata $metadata)
   {
@@ -123,6 +132,20 @@ class DmsWsClient
   private function delete($uri)
   {
     $request = $this->client->delete($uri);
+    
+    return $this->send($request);
+  }
+  
+  /**
+   * @param string $uri
+   * @param string $fileId
+   * @return DmsWsResponse
+   */
+  private function postFile($uri, $fileId)
+  {
+    $tmpFilename = $_FILES[$fileId]['tmp_name'];
+    
+    $request = $this->client->post($uri, null, ['file' => '@' . $tmpFilename]);
     
     return $this->send($request);
   }

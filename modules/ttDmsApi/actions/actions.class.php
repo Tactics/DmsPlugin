@@ -13,7 +13,7 @@ class ttDmsApiActions extends sfActions
   
   /**
    * Uitvoeren van de preExecute actie
-   * @return string sfView::NONE|void
+   * @return string|void sfView::NONE
    */
   public function preExecute()
   {
@@ -29,6 +29,7 @@ class ttDmsApiActions extends sfActions
   
   /**
    * Uitvoeren van Output actie
+   * @return string sfView::NONE
    * @throws DmsWsException
    */
   public function executeOutput()
@@ -42,6 +43,7 @@ class ttDmsApiActions extends sfActions
   
   /**
    * Uitvoeren van write actie
+   * @return string sfView::NONE
    * @throws DmsWsException
    */
   public function executeWrite()
@@ -55,8 +57,23 @@ class ttDmsApiActions extends sfActions
   }
   
   /**
+   * Uitvoeren van moveUploadedFile actie
+   * @return string sfView::NONE
+   * @throws DmsWsException
+   */
+  public function executeMoveUploadedFile()
+  {
+    $this->validateHttpMethodIs(sfRequest::POST);
+    
+    $this->node->moveUploadedFile('file');
+  
+    return $this->createJsonSuccessResponse();
+  }
+  
+  /**
    * Uitvoeren van de mkdir actie
    * @return string sfView::NONE
+   * @throws DmsWsException
    */
   public function executeMkdir()
   {

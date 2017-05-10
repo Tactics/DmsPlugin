@@ -50,15 +50,12 @@ class DmsWsClientStorage extends DmsStorage
   }
   
   /**
-   * @param string $requestFileName
+   * @param string $fileId
    * @param DmsNodeMetadata $metadata
    */
-  function moveUploadedFile($requestFileName, DmsNodeMetadata $metadata)
+  function moveUploadedFile($fileId, DmsNodeMetadata $metadata)
   {
-    $tmpFilename = $_FILES[$requestFileName]['tmp_name'];
-    $data = file_get_contents($tmpFilename);
-    
-    $this->wsClient->write($metadata, $data);
+    $this->wsClient->moveUploadedFile($metadata, $fileId);
   }
   
   /**
