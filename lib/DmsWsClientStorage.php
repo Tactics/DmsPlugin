@@ -5,125 +5,154 @@ class DmsWsClientStorage extends DmsStorage
 {
   /** @var DmsDiskStorage */
   private $diskStore;
-  private $wsUrl;
+  
   /** @var  DmsDiskCache */
   private $cache;
-
+  
+  /** @var DmsWsClient */
+  private $wsClient;
+  
+  /**
+   * @throws sfConfigurationException
+   */
   function initialize()
   {
     $this->diskStore = new DmsDiskStorage($this->options);
-    $this->wsUrl = sfConfig::get('sf_dms_ws_url');
-    if (!$this->wsUrl){
-      throw new sfConfigurationException('sf_dms_ws_url config not found in config/settings.yml');
-    }
     $this->cache = new DmsDiskCache($this->options);
+    $this->wsClient = new DmsWsClient();
   }
-
+  
+  /**
+   * @param DmsNodeMetadata $metadata
+   */
   function output(DmsNodeMetadata $metadata)
   {
-    $WsClientMetadata = $this->getWsClientMetadataForMetadata($metadata);
-    if (! $this->cache->has($WsClientMetadata->getPath())){
-      // file does not exist => get it via ws
-      $url = sprintf("%s/getActiviteitNode?id=%u", $this->wsUrl, $WsClientMetadata->getId());
-
-      // write it locally
-      $this->cache->set($WsClientMetadata->getPath(), file_get_contents($url));
+    $cacheKey = $this->getCacheKey($metadata);
+    if (!$this->cache->has($cacheKey)) {
+      if ($output = $this->wsClient->output($metadata) !== null) {
+        // write it locally
+        $this->cache->set($cacheKey, $output);
+      } else {
+        // @todo: nadenken of er hier nog iets moet gebeuren
+      };
     }
-
-    $this->cache->get($WsClientMetadata->getPath());
+    
+    $this->cache->get($cacheKey);
   }
-
-  function exists(DmsNodeMetadata $metadata)
-  {
-    return $this->diskStore->exists($this->getWsClientMetadataForMetadata($metadata));
-  }
-
+  
+  /**
+   * @param DmsNodeMetadata $metadata
+   * @param $data
+   */
   function write(DmsNodeMetadata $metadata, $data)
   {
-    $this->diskStore->write($this->getWsClientMetadataForMetadata($metadata), $data);
+    $this->wsClient->write($metadata, $data);
   }
-
-
+  
+  /**
+   * @param string $requestFileName
+   * @param DmsNodeMetadata $metadata
+   */
+  function moveUploadedFile($requestFileName, DmsNodeMetadata $metadata)
+  {
+    $tmpFilename = $_FILES[$requestFileName]['tmp_name'];
+    $data = file_get_contents($tmpFilename);
+    
+    $this->wsClient->write($metadata, $data);
+  }
+  
+  /**
+   * @param DmsNodeMetadata $metadata
+   */
+  function mkdir(DmsNodeMetadata $metadata)
+  {
+    $this->wsClient->mkdir($metadata);
+  }
+  
+  /**
+   * @param DmsNodeMetadata $metadata
+   */
+  function unlink(DmsNodeMetadata $metadata)
+  {
+    $this->wsClient->unlink($metadata);
+  }
+  
+  /**
+   * @param DmsNodeMetadata $metadata
+   * @return bool|null
+   */
+  function exists(DmsNodeMetadata $metadata)
+  {
+    return $this->wsClient->exists($metadata);
+  }
+  
+  
+  
+  
+  
+  
   // volgens mij is rest voorlopig niet nodig
   function copy(DmsNodeMetadata $oldMetadata, DmsNodeMetadata $newMetadata)
   {
     $this->throwMethodNotImplementedYetException(__FUNCTION__);
   }
-
-  function mkdir(DmsNodeMetadata $metadata)
-  {
-    $this->throwMethodNotImplementedYetException(__FUNCTION__);
-  }
-
+  
   function isDir(DmsNodeMetadata $metadata)
   {
     $this->throwMethodNotImplementedYetException(__FUNCTION__);
   }
-
+  
   function isFile(DmsNodeMetadata $metadata)
   {
     $this->throwMethodNotImplementedYetException(__FUNCTION__);
   }
-
+  
   function getSize(DmsNodeMetadata $metadata)
   {
     $this->throwMethodNotImplementedYetException(__FUNCTION__);
   }
-
+  
   function rename(DmsNodeMetadata $oldMetadata, DmsNodeMetadata $newMetadata)
   {
     $this->throwMethodNotImplementedYetException(__FUNCTION__);
   }
-
+  
   function listdir(DmsNodeMetadata $metadata)
   {
     $this->throwMethodNotImplementedYetException(__FUNCTION__);
   }
-
+  
   function read(DmsNodeMetadata $metadata)
   {
     $this->throwMethodNotImplementedYetException(__FUNCTION__);
   }
-
-  function unlink(DmsNodeMetadata $metadata)
-  {
-    $this->throwMethodNotImplementedYetException(__FUNCTION__);
-  }
-
-  function moveUploadedFile($requestFileName, DmsNodeMetadata $metadata)
-  {
-    $this->throwMethodNotImplementedYetException(__FUNCTION__);
-  }
-
+  
   function loadFromFile($absoluteFilepath, DmsNodeMetadata $metadata)
   {
     $this->throwMethodNotImplementedYetException(__FUNCTION__);
   }
-
+  
   function saveToFile(DmsNodeMetadata $metadata, $absoluteFilepath)
   {
     $this->throwMethodNotImplementedYetException(__FUNCTION__);
   }
-
+  
   function getMimeType(DmsNodeMetadata $metadata)
   {
     $this->throwMethodNotImplementedYetException(__FUNCTION__);
   }
-
+  
   private function throwMethodNotImplementedYetException($methodName)
   {
     throw new sfException(sprintf("%s: method %s not implemented yet.", get_class($this), $methodName));
   }
-
+  
   /**
    * @param DmsNodeMetadata $metadata
-   *
-   * @return DmsNodeMetadata
+   * @return string
    */
-  private function getWsClientMetadataForMetadata(DmsNodeMetadata $metadata)
+  private function getCacheKey(DmsNodeMetadata $metadata)
   {
-    $wsPath = sprintf("/%u_%s.bin", $metadata->getId(), $metadata->getLastUpdatedTimestamp());
-
-    return new DmsNodeMetadata($metadata->getId(), $metadata->getName(), $wsPath, $metadata->getLastUpdatedTimestamp());
+    return sprintf("/%u_%s.bin", $metadata->getId(), $metadata->getLastUpdatedTimestamp());
   }
 }

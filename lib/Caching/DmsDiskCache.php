@@ -29,7 +29,7 @@ class DmsDiskCache implements CacheInterface
    */
   public function has($key)
   {
-    return file_exists($this->root . $key);
+    return file_exists($this->root . $key) && is_file($this->root . $key);
   }
 
   /**
@@ -65,7 +65,7 @@ class DmsDiskCache implements CacheInterface
    */
   public function get($key, $default = null)
   {
-    return readfile($this->root . $key) ?: $default;
+    return @readfile($this->root . $key) ?: $default;
   }
 
   /**

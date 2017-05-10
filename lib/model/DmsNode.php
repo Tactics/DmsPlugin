@@ -96,7 +96,7 @@ class DmsNode extends BaseDmsNode
     
     return DmsNodePeer::doSelectOne($c);
   }
-   
+  
   /**
    * Geeft het pad als een array met alle parentobjecten of
    * als array met het resultaat van een functie op de parentobjecten
@@ -176,21 +176,19 @@ class DmsNode extends BaseDmsNode
       $safeName = $basename . '_' . $c . ($extension ? ('.' . $extension) : '');
       $c++;
     }
-
-    if ($folder)
-    {
-      $metadata = new DmsNodeMetadata(null, '', $this->getStoragePath() . '/' . $safeName, null);
-      $this->getDmsStore()->getStorage()->mkdir($metadata);
-    }
-    
+  
     $node = new DmsNode();
     $node->setName($name);
     $node->setDiskName($safeName);
     $node->setStoreId($this->getStoreId());
     $node->setParentId($this->getId());
     $node->setIsFolder($folder);
-    
     $node->save();
+
+    if ($folder)
+    {
+      $this->getDmsStore()->getStorage()->mkdir($node->getMetadata());
+    }
     
     return $node;
   }
@@ -309,7 +307,7 @@ class DmsNode extends BaseDmsNode
     {
       $extension = pathinfo($safeName, PATHINFO_EXTENSION);
       $basename = basename($safeName, $extension ? ('.' . $extension) : '');
-       
+      
       $basename = substr($basename, 0, min(strlen($basename), $maxFilenameLength - strlen($extension) - 1));
       $safeName = $basename . ($extension ? ('.' . $extension) : '');
     }

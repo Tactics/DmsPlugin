@@ -1,0 +1,4 @@
+dms_node_api:
+  url:   /api/dms/node/:id/:action
+  param: { module: ttDmsApi, action: :action }
+  requirements: { id: ^\d+$ }
