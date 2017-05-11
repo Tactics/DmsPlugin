@@ -29,7 +29,7 @@ class DmsWsClientStorage extends DmsStorage
   {
     $cacheKey = $this->getCacheKey($metadata);
     if (!$this->cache->has($cacheKey)) {
-      if ($output = $this->wsClient->output($metadata) !== null) {
+      if (($output = $this->wsClient->output($metadata)) !== null) {
         // write it locally
         $this->cache->set($cacheKey, $output);
       } else {
@@ -83,9 +83,23 @@ class DmsWsClientStorage extends DmsStorage
     return $this->wsClient->exists($metadata);
   }
   
+  /**
+   * @param DmsNodeMetadata $metadata
+   * @return int|null
+   */
+  function getSize(DmsNodeMetadata $metadata)
+  {
+    return $this->wsClient->getSize($metadata);
+  }
   
-  
-  
+  /**
+   * @param DmsNodeMetadata $metadata
+   * @return null|string
+   */
+  function getMimeType(DmsNodeMetadata $metadata)
+  {
+    return $this->wsClient->getMimeType($metadata);
+  }
   
   
   // volgens mij is rest voorlopig niet nodig
@@ -100,11 +114,6 @@ class DmsWsClientStorage extends DmsStorage
   }
   
   function isFile(DmsNodeMetadata $metadata)
-  {
-    $this->throwMethodNotImplementedYetException(__FUNCTION__);
-  }
-  
-  function getSize(DmsNodeMetadata $metadata)
   {
     $this->throwMethodNotImplementedYetException(__FUNCTION__);
   }
@@ -134,10 +143,7 @@ class DmsWsClientStorage extends DmsStorage
     $this->throwMethodNotImplementedYetException(__FUNCTION__);
   }
   
-  function getMimeType(DmsNodeMetadata $metadata)
-  {
-    $this->throwMethodNotImplementedYetException(__FUNCTION__);
-  }
+  
   
   private function throwMethodNotImplementedYetException($methodName)
   {

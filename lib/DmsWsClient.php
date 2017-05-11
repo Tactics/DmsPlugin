@@ -77,7 +77,29 @@ class DmsWsClient
   {
     $response = $this->get($this->generateUri($metadata, 'exists'));
     
-    return $response->success() ? (bool)$response->getData() : null;
+    return $response->success() ? $response->getData() : null;
+  }
+  
+  /**
+   * @param $metadata
+   * @return int|null
+   */
+  public function getSize($metadata)
+  {
+    $response = $this->get($this->generateUri($metadata, 'getSize'));
+    
+    return $response->success() ? $response->getData() : null;
+  }
+  
+  /**
+   * @param $metadata
+   * @return string|null
+   */
+  public function getMimeType($metadata)
+  {
+    $response = $this->get($this->generateUri($metadata, 'getMimeType'));
+    
+    return $response->success() ? $response->getData() : null;
   }
   
   /**

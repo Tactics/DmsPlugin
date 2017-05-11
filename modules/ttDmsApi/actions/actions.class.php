@@ -111,6 +111,28 @@ class ttDmsApiActions extends sfActions
   }
   
   /**
+   * Uitvoeren van de getSize actie
+   * @return string sfView::NONE
+   */
+  public function executeGetSize()
+  {
+    $this->validateHttpMethodIs(sfRequest::GET);
+    
+    return $this->createJsonSuccessResponse($this->node->getSize());
+  }
+  
+  /**
+   * Uitvoeren van de getMimeType actie
+   * @return string
+   */
+  public function executeGetMimeType()
+  {
+    $this->validateHttpMethodIs(sfRequest::GET);
+    
+    return $this->createJsonSuccessResponse($this->node->getMimeType());
+  }
+  
+  /**
    * @param $method
    * @throws DmsWsException
    */
