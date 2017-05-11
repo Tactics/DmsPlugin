@@ -323,10 +323,10 @@ class DmsNode extends BaseDmsNode
     $oldPath = $this->getStoragePath();
     $newPath = dirname($oldPath) . '/' . $safeName;
 
-    $oldMetadata = new DmsNodeMetadata(null, '', $oldPath, null);
-    $newMetadata = new DmsNodeMetadata(null, '', $newPath, null);
+    $oldMetadata = $this->getMetadata();
+    $newMetadata = new DmsNodeMetadata(null, $newName, $newPath, null);
     $this->getDmsStore()->getStorage()->rename($oldMetadata, $newMetadata);
-
+    
     $this->setName($newName);
     $this->setDiskName($safeName);
     $this->save();

@@ -36,12 +36,23 @@ class DmsWsClient
   }
   
   /**
-   * @param DmsNodeMetadata $metadata
-   * @param string|resource|array|\Guzzle\Http\EntityBodyInterface $body Body to send in the request
+   * @param $metadata
+   * @return string|null
    */
-  public function write(DmsNodeMetadata $metadata, $body)
+  public function read(DmsNodeMetadata $metadata)
   {
-    $this->put($this->generateUri($metadata, 'write'), $body);
+    $response = $this->get($this->generateUri($metadata, 'read'));
+    
+    return $response->success() ? $response->getData() : null;
+  }
+  
+  /**
+   * @param DmsNodeMetadata $metadata
+   * @param string|resource|array|\Guzzle\Http\EntityBodyInterface $fileContents Body to send in the request
+   */
+  public function write(DmsNodeMetadata $metadata, $fileContents)
+  {
+    $this->put($this->generateUri($metadata, 'write'), $fileContents);
   }
   
   /**
@@ -81,25 +92,35 @@ class DmsWsClient
   }
   
   /**
-   * @param $metadata
+   * @param DmsNodeMetadata $metadata
    * @return int|null
    */
-  public function getSize($metadata)
+  public function getSize(DmsNodeMetadata $metadata)
   {
     $response = $this->get($this->generateUri($metadata, 'getSize'));
     
     return $response->success() ? $response->getData() : null;
   }
   
+  
   /**
-   * @param $metadata
+   * @param DmsNodeMetadata $metadata
    * @return string|null
    */
-  public function getMimeType($metadata)
+  public function getMimeType(DmsNodeMetadata $metadata)
   {
     $response = $this->get($this->generateUri($metadata, 'getMimeType'));
     
     return $response->success() ? $response->getData() : null;
+  }
+  
+  /**
+   * @param DmsNodeMetadata $oldMetadata
+   * @param DmsNodeMetadata $newMetadata
+   */
+  public function rename(DmsNodeMetadata $oldMetadata, DmsNodeMetadata $newMetadata)
+  {
+    $this->put($this->generateUri($oldMetadata, 'rename'), $newMetadata->getPath());
   }
   
   /**
@@ -179,10 +200,13 @@ class DmsWsClient
   private function send(RequestInterface $request)
   {
     try {
-      return DmsWsResponse::fromGuzzleResponse($request->send());
+      $response = $request->send();
+      return DmsWsResponse::fromGuzzleResponse($response);
     } catch (BadResponseException $e) { // catches 4XX en 5XX from API
       if ($e->getResponse()->getContentType() === 'application/problem+json') {
         return DmsWsResponse::fromGuzzleResponse($e->getResponse());
+      } else {
+        return DmsWsResponse::fromException($e);
       };
     } catch (Exception $e) { // catches all other exceptions
       return DmsWsResponse::fromException($e);

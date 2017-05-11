@@ -65,7 +65,7 @@ class DmsDiskCache implements CacheInterface
    */
   public function get($key, $default = null)
   {
-    return @readfile($this->root . $key) ?: $default;
+    return file_get_contents($this->root . $key) ?: $default;
   }
 
   /**

@@ -5,8 +5,8 @@
  */
 class ttDmsApiActions extends sfActions
 {
-  /** @var DmsNode */
-  private $node;
+  /** @var DmsStorage */
+  private $storage;
   
   /** @var DmsNodeMetadata */
   private $metadata;
@@ -17,28 +17,24 @@ class ttDmsApiActions extends sfActions
    */
   public function preExecute()
   {
-    $this->node = DmsNodePeer::retrieveByPK($this->getRequestParameter('id'));
-  
-    if (!$this->node) {
-      $dmsWsProblem = new DmsWsProblem(404, DmsWsProblem::TYPE_NODE_NOT_FOUND);
-      return $this->createJsonErrorResponse($dmsWsProblem);
-    }
+    $node = DmsNodePeer::retrieveByPK($this->getRequestParameter('id'));
+    $this->validateNode($node);
     
-    $this->metadata = $this->node->getMetadata();
+    $this->metadata = $node->getMetadata();
+    $this->storage = $node->getDmsStore()->getStorage();
   }
   
   /**
-   * Uitvoeren van Output actie
+   * Uitvoeren van de read actie
    * @return string sfView::NONE
-   * @throws DmsWsException
    */
-  public function executeOutput()
+  public function executeRead()
   {
     $this->validateHttpMethodIs(sfRequest::GET);
     
-//    if ($_SERVER['DMS_ACCESS'] != 'true') $this->forward404();
+    $fileContents = $this->storage->read($this->metadata);
     
-    return $this->createJsonSuccessResponse($this->node->read(), true);
+    return $this->createJsonSuccessResponse($fileContents, true);
   }
   
   /**
@@ -51,7 +47,7 @@ class ttDmsApiActions extends sfActions
     $this->validateHttpMethodIs(sfRequest::PUT);
     
     $data = file_get_contents('php://input');
-    $this->node->write($data);
+    $this->storage->write($this->metadata, $data);
     
     return $this->createJsonSuccessResponse();
   }
@@ -65,8 +61,8 @@ class ttDmsApiActions extends sfActions
   {
     $this->validateHttpMethodIs(sfRequest::POST);
     
-    $this->node->moveUploadedFile('file');
-  
+    $this->storage->moveUploadedFile('file', $this->metadata);
+    
     return $this->createJsonSuccessResponse();
   }
   
@@ -79,7 +75,7 @@ class ttDmsApiActions extends sfActions
   {
     $this->validateHttpMethodIs(sfRequest::POST);
   
-    $this->node->getDmsStore()->getStorage()->mkdir($this->metadata);
+    $this->storage->mkdir($this->metadata);
   
     return $this->createJsonSuccessResponse();
   }
@@ -92,7 +88,7 @@ class ttDmsApiActions extends sfActions
   {
     $this->validateHttpMethodIs(sfRequest::GET);
     
-    $exists = $this->node->getDmsStore()->getStorage()->exists($this->metadata);
+    $exists = $this->storage->exists($this->metadata);
     
     return $this->createJsonSuccessResponse($exists);
   }
@@ -105,7 +101,7 @@ class ttDmsApiActions extends sfActions
   {
     $this->validateHttpMethodIs(sfRequest::DELETE);
   
-    $this->node->delete();
+    $this->storage->unlink($this->metadata);
     
     return $this->createJsonSuccessResponse();
   }
@@ -118,7 +114,7 @@ class ttDmsApiActions extends sfActions
   {
     $this->validateHttpMethodIs(sfRequest::GET);
     
-    return $this->createJsonSuccessResponse($this->node->getSize());
+    return $this->createJsonSuccessResponse($this->storage->getSize($this->metadata));
   }
   
   /**
@@ -129,7 +125,22 @@ class ttDmsApiActions extends sfActions
   {
     $this->validateHttpMethodIs(sfRequest::GET);
     
-    return $this->createJsonSuccessResponse($this->node->getMimeType());
+    return $this->createJsonSuccessResponse($this->storage->getMimeType($this->metadata));
+  }
+  
+  /**
+   * Uitvoeren van de rename actie
+   * @return string
+   */
+  public function executeRename()
+  {
+    $this->validateHttpMethodIs(sfRequest::PUT);
+    
+    $newPath = file_get_contents('php://input');
+    $newMetadata = new DmsNodeMetadata(null, null, $newPath, null);
+    $this->storage->rename($this->metadata, $newMetadata);
+    
+    return $this->createJsonSuccessResponse();
   }
   
   /**
@@ -188,5 +199,17 @@ class ttDmsApiActions extends sfActions
       'title' => $dmsWsProblem->getTitle(),
       'details' => $dmsWsProblem->getDetails()
     ]));
+  }
+  
+  /**
+   * @param DmsNode $node
+   * @return string sfView::NONE
+   */
+  private function validateNode(DmsNode $node)
+  {
+    if (!$node) {
+      $dmsWsProblem = new DmsWsProblem(404, DmsWsProblem::TYPE_NODE_NOT_FOUND);
+      return $this->createJsonErrorResponse($dmsWsProblem);
+    }
   }
 }
