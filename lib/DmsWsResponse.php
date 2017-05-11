@@ -30,21 +30,16 @@ class DmsWsResponse
   
     $success = (bool)$responseArr['success'];
     $statusCode = (int)$responseArr['status'];
-    $data = null;
+    $data = isset($responseArr['data']) ? $responseArr['data'] : null;
     $problem = null;
   
-    if ($success) {
-      $data = (bool)$responseArr['base64_encoded'] ? base64_decode($responseArr['data']) : $responseArr['data'];
-    } else {
+    if (!$success) {
       $problem = new DmsWsProblem($statusCode, $responseArr['type'], $responseArr['details']);
+    } elseif ($data) {
+      $data = (bool)$responseArr['base64_encoded'] ? base64_decode($data) : $data;
     }
     
-    return new self(
-      (bool)$responseArr['success'],
-      (int)$responseArr['status'],
-      $data,
-      $problem
-    );
+    return new self($success, $statusCode, $data, $problem);
   }
   
   /**

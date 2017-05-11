@@ -178,6 +178,18 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 	protected $lastRoutesCriteria = null;
 
 	/**
+	 * Collection to store aggregation of collTegoedbons.
+	 * @var        array
+	 */
+	protected $collTegoedbons;
+
+	/**
+	 * The criteria used to select the current contents of collTegoedbons.
+	 * @var        Criteria
+	 */
+	protected $lastTegoedbonCriteria = null;
+
+	/**
 	 * Flag to prevent endless save loop, if this object is referenced
 	 * by another object which falls in this transaction.
 	 * @var        boolean
@@ -882,6 +894,14 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 				}
 			}
 
+			if ($this->collTegoedbons !== null) {
+				foreach($this->collTegoedbons as $referrerFK) {
+					if (!$referrerFK->isDeleted()) {
+						$affectedRows += $referrerFK->save($con);
+					}
+				}
+			}
+
 			$this->alreadyInSave = false;
 		}
 		return $affectedRows;
@@ -1004,6 +1024,14 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 
 				if ($this->collRoutess !== null) {
 					foreach($this->collRoutess as $referrerFK) {
+						if (!$referrerFK->validate($columns)) {
+							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+						}
+					}
+				}
+
+				if ($this->collTegoedbons !== null) {
+					foreach($this->collTegoedbons as $referrerFK) {
 						if (!$referrerFK->validate($columns)) {
 							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
 						}
@@ -1332,6 +1360,10 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 
 			foreach($this->getRoutess() as $relObj) {
 				$copyObj->addRoutes($relObj->copy($deepCopy));
+			}
+
+			foreach($this->getTegoedbons() as $relObj) {
+				$copyObj->addTegoedbon($relObj->copy($deepCopy));
 			}
 
 		} // if ($deepCopy)
@@ -2504,6 +2536,221 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 		$this->lastRoutesCriteria = $criteria;
 
 		return $this->collRoutess;
+	}
+
+	/**
+	 * Temporary storage of collTegoedbons to save a possible db hit in
+	 * the event objects are add to the collection, but the
+	 * complete collection is never requested.
+	 * @return     void
+	 */
+	public function initTegoedbons()
+	{
+		if ($this->collTegoedbons === null) {
+			$this->collTegoedbons = array();
+		}
+	}
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode has previously
+	 * been saved, it will retrieve related Tegoedbons from storage.
+	 * If this DmsNode is new, it will return
+	 * an empty collection or the current collection, the criteria
+	 * is ignored on a new object.
+	 *
+	 * @param      Connection $con
+	 * @param      Criteria $criteria
+	 * @throws     PropelException
+	 * @return     Tegoedbon[] Tegoedbons
+	 */
+	public function getTegoedbons($criteria = null, $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseTegoedbonPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collTegoedbons === null) {
+			if ($this->isNew()) {
+			   $this->collTegoedbons = array();
+			} else {
+
+				$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
+
+				TegoedbonPeer::addSelectColumns($criteria);
+				$this->collTegoedbons = TegoedbonPeer::doSelect($criteria, $con);
+			}
+		} else {
+			// criteria has no effect for a new object
+			if (!$this->isNew()) {
+				// the following code is to determine if a new query is
+				// called for.  If the criteria is the same as the last
+				// one, just return the collection.
+
+
+				$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
+
+				TegoedbonPeer::addSelectColumns($criteria);
+				if (!isset($this->lastTegoedbonCriteria) || !$this->lastTegoedbonCriteria->equals($criteria)) {
+					$this->collTegoedbons = TegoedbonPeer::doSelect($criteria, $con);
+				}
+			}
+		}
+		$this->lastTegoedbonCriteria = $criteria;
+		return $this->collTegoedbons;
+	}
+
+	/**
+	 * Returns the number of related Tegoedbons.
+	 *
+	 * @param      Criteria $criteria
+	 * @param      boolean $distinct
+	 * @param      Connection $con
+	 * @return     int The number of Tegoedbons
+	 * @throws     PropelException
+	 */
+	public function countTegoedbons($criteria = null, $distinct = false, $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseTegoedbonPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
+
+		return TegoedbonPeer::doCount($criteria, $distinct, $con);
+	}
+
+	/**
+	 * Method called to associate a Tegoedbon object to this object
+	 * through the Tegoedbon foreign key attribute
+	 *
+	 * @param      Tegoedbon $l Tegoedbon
+	 * @return     void
+	 * @throws     PropelException
+	 */
+	public function addTegoedbon(Tegoedbon $l)
+	{
+		$this->collTegoedbons[] = $l;
+		$l->setDmsNode($this);
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related Tegoedbons from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return Tegoedbon[] Tegoedbons joined with Persoon
+	 */
+	public function getTegoedbonsJoinPersoon(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseTegoedbonPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collTegoedbons === null) {
+			if ($this->isNew()) {
+				$this->collTegoedbons = array();
+			} else {
+
+				$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
+
+				$this->collTegoedbons = TegoedbonPeer::doSelectJoinPersoon($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
+
+			if (!isset($this->lastTegoedbonCriteria) || !$this->lastTegoedbonCriteria->equals($criteria)) {
+				$this->collTegoedbons = TegoedbonPeer::doSelectJoinPersoon($criteria, $con);
+			}
+		}
+		$this->lastTegoedbonCriteria = $criteria;
+
+		return $this->collTegoedbons;
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related Tegoedbons from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return Tegoedbon[] Tegoedbons joined with LedenActiviteitInschrijving
+	 */
+	public function getTegoedbonsJoinLedenActiviteitInschrijving(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseTegoedbonPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collTegoedbons === null) {
+			if ($this->isNew()) {
+				$this->collTegoedbons = array();
+			} else {
+
+				$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
+
+				$this->collTegoedbons = TegoedbonPeer::doSelectJoinLedenActiviteitInschrijving($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
+
+			if (!isset($this->lastTegoedbonCriteria) || !$this->lastTegoedbonCriteria->equals($criteria)) {
+				$this->collTegoedbons = TegoedbonPeer::doSelectJoinLedenActiviteitInschrijving($criteria, $con);
+			}
+		}
+		$this->lastTegoedbonCriteria = $criteria;
+
+		return $this->collTegoedbons;
 	}
 
 
