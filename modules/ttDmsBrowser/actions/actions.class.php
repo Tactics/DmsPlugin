@@ -2,12 +2,12 @@
 
 /*
  * Dit bestand maakt deel uit van een applicatie voor Digipolis Antwerpen.
- * 
+ *
  * (c) <?php echo date('Y'); ?> Tactics BVBA
  *
  * Recht werd verleend om dit bestand te gebruiken als onderdeel van de genoemde
  * applicatie. Mag niet doorverkocht worden, noch rechtstreeks noch via een
- * derde partij. Meer informatie in het desbetreffende aankoopcontract. 
+ * derde partij. Meer informatie in het desbetreffende aankoopcontract.
  */
  
 /**
@@ -91,7 +91,7 @@ class ttDmsBrowserActions extends sfActions
         }
       }
     }
-        
+    
     // filter op datum van - tot
     if ($pager->addAndGet('datum_van', array('addToCriteria' => false)))
     {
@@ -245,10 +245,10 @@ class ttDmsBrowserActions extends sfActions
       {
         $this->response->setHttpHeader('Content-Type', 'application/force-download');
       }
-
+      
+      $output = $node->read();
       $this->getResponse()->sendHttpHeaders();
-
-      $node->output();
+      echo $output;
       exit();
     }
     else // $type == 'zip'

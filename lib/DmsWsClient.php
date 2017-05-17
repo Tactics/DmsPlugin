@@ -194,8 +194,9 @@ class DmsWsClient
   }
   
   /**
-   * @param $request
+   * @param RequestInterface $request
    * @return DmsWsResponse
+   * @throws DmsWsException
    */
   private function send(RequestInterface $request)
   {
@@ -204,12 +205,15 @@ class DmsWsClient
       return DmsWsResponse::fromGuzzleResponse($response);
     } catch (BadResponseException $e) { // catches 4XX en 5XX from API
       if ($e->getResponse()->getContentType() === 'application/problem+json') {
-        return DmsWsResponse::fromGuzzleResponse($e->getResponse());
+        $responseObj = DmsWsResponse::fromGuzzleResponse($e->getResponse());
+        $wsException = new DmsWsException($e->getMessage(), $e->getCode());
+        $wsException->setResponse($responseObj);
+        throw $wsException;
       } else {
-        return DmsWsResponse::fromException($e);
-      };
+        throw new DmsWsException($e->getMessage(), $e->getCode());
+      }
     } catch (Exception $e) { // catches all other exceptions
-      return DmsWsResponse::fromException($e);
+      throw new DmsWsException($e->getMessage(), $e->getCode());
     }
   }
 }
