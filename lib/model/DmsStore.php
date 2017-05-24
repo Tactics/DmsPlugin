@@ -95,17 +95,18 @@ class DmsStore extends BaseDmsStore
     $folder->setStoreId($this->getId());
     $folder->setParentId(null);
     $folder->setIsFolder(true);
+    $folder->save();
     
     try
     {
       $this->getStorage()->mkdir($folder->getMetadata());
-    }
-    catch (DmsFolderExistsException $exception)
-    {
+    } catch (DmsFolderExistsException $exception) {
       // do nothing, folder exists.
+    } catch (\Exception $e) {
+      // folder could not be created => delete node in db again.
+      $folder->delete();
+      throw $e;
     }
-    
-    $folder->save();
 
     return $folder;
   }
