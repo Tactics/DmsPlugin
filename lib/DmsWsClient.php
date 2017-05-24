@@ -186,7 +186,12 @@ class DmsWsClient
    */
   private function postFile($uri, $fileId)
   {
-    $tmpFilename = $_FILES[$fileId]['tmp_name'];
+    // indien collection
+    if (preg_match('/(.*)\[(\d*)\]/', $fileId, $result) === 1) {
+      $tmpFilename = $_FILES[$result[1]]['tmp_name'][$result[2]];
+    } else {
+      $tmpFilename = $_FILES[$fileId]['tmp_name'];
+    }
     
     $request = $this->client->post($uri, null, ['file' => '@' . $tmpFilename]);
     
