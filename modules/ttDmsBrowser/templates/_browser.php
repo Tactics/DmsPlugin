@@ -4,13 +4,19 @@
   use_stylesheet('/ttBase/ui/css/dialog.css');
   use_javascript('/ttDms/js/ajaxupload.js');
 ?>
+
+<?php
+if(! function_exists('__'))
+  \Misc::use_helper('i18n');
+?>
+
 <table style="width: <?php echo $options['width']; ?>">
   <?php if ($options['filter_enabled']): ?>
   <tr>
     <td colspan="2">
       <div class="pageblock">
         <header>
-          <h2 class="pageblock">Zoeken in bestanden</h2>
+          <h2 class="pageblock"><?php echo __('Zoeken in bestanden');?></h2>
         </header>
         <?php include_component('ttDmsBrowser', 'nodeFilter', array('node' => $node, 'options' => $options)); ?>
       </div>
@@ -21,7 +27,7 @@
   <td style="vertical-align:top; width: <?php echo $options['list_width']; ?>;">
     <div class="pageblock" style="overflow: auto;">
       <header>
-      <h2 class="pageblock">Folders</h2>
+      <h2 class="pageblock"><?php echo __('Folders');?></h2>
       </header>
       <?php include_component('ttDmsBrowser', 'nodeTree', array('node' => $node)); ?>
     </div>
@@ -58,7 +64,7 @@
           onSubmit: function(file, extension)
           {
             this.setData({node_id : jQuery.tree.reference("#nodeTree").selected.attr("node_id")});
-            $('#upload_status').text('Bezig met verzenden...');
+            $('#upload_status').text('<?php echo __("Bezig met verzenden") . "...";?>');
             
           },
           // Fired when file upload is completed
@@ -67,7 +73,7 @@
           // @param response server response
           onComplete: function(file, response) {
             loadNode(jQuery.tree.reference("#nodeTree").selected.attr("node_id"))
-            $('#upload_status').text('Verzenden voltooid.');
+            $('#upload_status').text('<?php echo __("Verzenden voltooid") . '.';?>');
           }
         });
       });

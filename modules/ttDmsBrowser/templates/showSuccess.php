@@ -1,3 +1,8 @@
+<?php
+if(! function_exists('__'))
+  \Misc::use_helper('i18n');
+?>
+
 <style type="text/css">
   div.calendar{
     z-index: 10000;
@@ -17,30 +22,30 @@
       <td>
         <table class="objectdetails">
           <tr>
-            <th>Naam:</th>
+            <th><?php echo __('Naam');?>:</th>
             <td><?php echo $node->getName(); ?></td>
           </tr>
           <tr>
-            <th>Type:</th>
+            <th><?php echo __('Type');?>:</th>
             <td><?php echo $mime_type; ?></td>
           </tr>
           <tr>
-            <th>Grootte:</th>
+            <th><?php echo __('Grootte');?>:</th>
             <td><?php echo format_filesize($node->getSize()); ?></td>
           </tr>
           <tr>
-            <th>Aangemaakt op:</th>
+            <th><?php echo __('Aangemaakt op');?>:</th>
             <td>
               <?php echo format_date($node->getCreatedAt(), 'f'); ?>
             </td>
           </tr>
           <tr>
-            <th>Laatst gewijzigd op:</th>
+            <th><?php echo __('Laatst gewijzigd op');?>:</th>
             <td><?php echo format_date($node->getUpdatedAt(), 'f'); ?></td>
           </tr>
           <tr>
-            <th>Laatst gewijzigd door:</th>
-            <td><?php echo $gewijzigd_door ? $gewijzigd_door->getNaam() : 'Onbekend'; ?></td>
+            <th><?php echo __('Laatst gewijzigd door');?>:</th>
+            <td><?php echo $gewijzigd_door ? $gewijzigd_door->getNaam() : __('Onbekend'); ?></td>
           </tr>
         </table>
       </td>
@@ -51,7 +56,7 @@
 <?php if (count($aspects)): ?>
 <div class="pageblock">
   <header>
-  <h2 class="pageblock">Eigenschappen</h2>
+  <h2 class="pageblock"><?php echo __('Eigenschappen');?></h2>
   </header>
   <?php if (count($aspects)): ?>
     <?php echo form_tag('ttDmsBrowser/addAspect'); ?>
@@ -75,7 +80,7 @@
     <fieldset>
       <legend>
         <?php echo $nodeAspect->getDmsAspect()->getName(); ?>
-        <?php echo link_to('X', 'ttDmsBrowser/removeAspect?nodeaspect_id=' . $nodeAspect->getId(), array('confirm' => 'Dit aspect en bijhorende gegevens verwijderen?')); ?>
+        <?php echo link_to('X', 'ttDmsBrowser/removeAspect?nodeaspect_id=' . $nodeAspect->getId(), array('confirm' => __('Dit aspect en bijhorende gegevens verwijderen?'))); ?>
       </legend>
 
       <table class="formtable">
@@ -120,12 +125,12 @@
 
     <?php endforeach; ?>
 
-    <?php echo submit_tag('Opslaan', array('style' => 'float:left;'));?>&nbsp;
+    <?php echo submit_tag(__('Opslaan'), array('style' => 'float:left;'));?>&nbsp;
   </form>
   <?php
   endif;
   ?>
-  <?php echo button_to_function('Annuleren', 'closeNodeDetails();'); ?>
+  <?php echo button_to_function(__('Annuleren'), 'closeNodeDetails();'); ?>
 
 </div>
 <?php endif; ?>

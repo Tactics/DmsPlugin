@@ -1,11 +1,17 @@
 <?php use_helper('Dms'); ?>
+
+<?php
+if(! function_exists('__'))
+  \Misc::use_helper('i18n');
+?>
+
 <?php if (!$sf_request->isXmlHttpRequest()) : ?>
   <ul class="breadcrumb">
     <li><?php echo link_to("Home", "@homepage") ?></li>
     <li>&gt;Dms files</li>
   </ul>
 
-  <h2 class="pageblock">Zoeken in nodelijst</h2>
+  <h2 class="pageblock"><?php echo __('Zoeken in nodelijst');?></h2>
   <div class="pageblock">
     <?php
     echo tt_form_remote_tag(array(
@@ -23,15 +29,15 @@
         <td width='50%'>
           <table>
             <tr>
-              <th>Naam:</th>
+              <th><?php echo __('Naam');?>:</th>
               <td><?php echo input_tag(DmsNodePeer::NAME, $pager->get(DmsNodePeer::NAME)); ?></td>
             </tr>
             <tr>
-              <th>Aspect:</th>
+              <th><?php echo __('Aspect');?>:</th>
               <td><?php echo select_tag(DmsNodeAspectPeer::ASPECT_ID, options_for_select(DmsAspectPeer::getOptionsForSelect(), $pager->get(DmsNodeAspectPeer::ASPECT_ID), array('include_blank' => true)), array('class' => 'aspects')) ?></td>
             </tr>
             <tr>
-              <th style='width: 80px;'><label for='datum_van'>Geupload van:</label></th>
+              <th style='width: 80px;'><label for='datum_van'><?php echo __('Geupload van');?>:</label></th>
               <td>
                 <?php
                 echo input_date_tag('datum_van', myDateTools::cultureDateToPropelDate($pager->get('datum_van', null)),
@@ -40,7 +46,7 @@
               </td>
             </tr>
             <tr>
-              <th style='width: 80px;'><label for='datum_tot'>Geupload tot:</label></th>
+              <th style='width: 80px;'><label for='datum_tot'><?php echo __('Geupload tot');?>:</label></th>
               <td>
                 <?php
                 echo input_date_tag('datum_tot', myDateTools::cultureDateToPropelDate($pager->get('datum_tot', null)),
@@ -104,30 +110,30 @@
     </table>
     <?php echo input_hidden_tag("reset", 1); ?>
     <br/>
-    <?php echo submit_tag('Zoeken') ?>
-    <?php echo button_to_function('Filter wissen', 'filterWissen()'); ?>
+    <?php echo submit_tag(__('Zoeken')) ?>
+    <?php echo button_to_function(__('Filter wissen'), 'filterWissen()'); ?>
     </form>
   </div>
 
-  <h2 class="pageblock">Documentenlijst</h2>
+  <h2 class="pageblock"><?php echo __('Documentenlijst');?></h2>
   <div class="pageblock">
 <?php endif ?>
 
   <div id="zoekresultaten">
   <div class="filter">
-    &nbsp;<?php echo $pager->getNbResults() ?> resultaten gevonden,
+    &nbsp;<?php echo $pager->getNbResults() . ' ' . __('resultaten gevonden');?>,
     <strong><?php echo $pager->getLastIndice() ? $pager->getFirstIndice() : 0 ?>
-      -<?php echo $pager->getLastIndice() ?></strong> worden weergegeven.
+      -<?php echo $pager->getLastIndice() ?></strong> <?php echo __('worden weergegeven');?>.
   </div>
 
 <?php
 $table = new myTable(
   array(
-    array('name' => DmsNodePeer::NAME, 'text' => 'Naam', 'align' => 'left', 'sortable' => true),
-    array('name' => DmsObjectNodeRefPeer::ID, 'text' => 'Object', 'align' => 'left', 'sortable' => true),
-    array('name' => 'storagepath', 'text' => 'Mapstructuur', 'align' => 'left'),
-    array('name' => DmsNodePeer::CREATED_AT, 'text' => 'Datum upload', 'align' => 'left', 'sortable' => true),
-    array("text" => "Acties", "width" => 55, "align" => "center")
+    array('name' => DmsNodePeer::NAME, 'text' => __('Naam'), 'align' => 'left', 'sortable' => true),
+    array('name' => DmsObjectNodeRefPeer::ID, 'text' => __('Object'), 'align' => 'left', 'sortable' => true),
+    array('name' => 'storagepath', 'text' => __('Mapstructuur'), 'align' => 'left'),
+    array('name' => DmsNodePeer::CREATED_AT, 'text' => __('Datum upload'), 'align' => 'left', 'sortable' => true),
+    array("text" => __("Acties"), "width" => 55, "align" => "center")
   ),
   array(
     "sortfield" => $pager->getOrderBy(),
