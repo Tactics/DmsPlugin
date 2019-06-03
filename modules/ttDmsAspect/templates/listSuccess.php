@@ -1,14 +1,20 @@
 <?php if (! $sf_request->isXmlHttpRequest()) : ?>
+
+<?php
+if(! function_exists('__'))
+  \Misc::use_helper('I18N');
+?>
+
 <?php echo include_partial('breadcrumb', array('actie' => 'Aspecten')); ?>
-<h2 class="pageblock">Dms Aspecten</h2>
+<h2 class="pageblock"><?php echo __('Dms Aspecten');?></h2>
 <div class="pageblock">
   <div id="zoekresultaten">
   <?php
 endif; // end XmlHttpRequest
 
   $table = new myTable(array(
-    array('name' => DmsAspectPeer::NAME, 'text' => 'Naam'),
-    array('text' => 'Acties', 'width' => 40, 'align' => 'center')
+    array('name' => DmsAspectPeer::NAME, 'text' => __('Naam')),
+    array('text' => __('Acties'), 'width' => 40, 'align' => 'center')
   ));
 
   foreach($pager->getResults() as $dms_aspect)
@@ -24,7 +30,7 @@ endif; // end XmlHttpRequest
   <?php echo pager_navigation($pager, 'ttDmsAspect/list', "zoekresultaten") ?>
   <?php if (! $sf_request->isXmlHttpRequest()) : ?>
     <hr />
-    <?php echo button_to ('Nieuw aspect', 'ttDmsAspect/create') ?>
+    <?php echo button_to (__('Nieuw aspect'), 'ttDmsAspect/create') ?>
   </div>
 </div>
 <?php endif; ?>

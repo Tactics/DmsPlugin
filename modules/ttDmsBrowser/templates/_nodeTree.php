@@ -5,6 +5,11 @@
   //use_javascript('/ttDms/jsTree/plugins/jquery.tree.cookie.js');
 ?>
 
+<?php
+if(! function_exists('__'))
+  \Misc::use_helper('I18N');
+?>
+
 <script>
   jQuery(document).ready(function($)
   {
@@ -114,13 +119,13 @@
         if (! data.success)
         {
           jQuery.tree.rollback(rollbackObject);
-          jQuery.tt.alert('Error', "De folder kon niet hernoemd worden.\n Error: " + data.message);
+          jQuery.tt.alert('<?php echo __("Error");?>', "<?php echo __('De folder kon niet hernoemd worden') . '.\n ' . __('Error');?>: " + data.message);
         }
       },
       error : function(XMLHttpRequest, textStatus, errorThrown)
       {
         jQuery.tree.rollback(rollbackObject);
-        jQuery.tt.alert('Error', "De folder kon niet hernoemd worden.\n Error: " + (textStatus ? textStatus : errorThrown));
+        jQuery.tt.alert('<?php echo __("Error");?>', "<?php echo __('De folder kon niet hernoemd worden') . '.\n ' . __('Error');?>: " + (textStatus ? textStatus : errorThrown));
       }
     });
 	}
@@ -130,7 +135,7 @@
 	 */
 	function treeDelete(node, tree_obj, rollbackObject)
   {
-    jQuery.tt.confirm('Bent u zeker dat u wenst te verwijderen?', '', function(value, dialog)
+    jQuery.tt.confirm('<?php echo __("Bent u zeker dat u wenst te verwijderen?");?>', '', function(value, dialog)
     {
       if (value)
       {
@@ -144,7 +149,7 @@
             if (! data.success)
             {
               if (rollbackObject) jQuery.tree.rollback(rollbackObject);
-              jQuery.tt.alert('Error', 'Het object kon niet verwijderd worden. Error: ' + data.message);
+              jQuery.tt.alert('<?php echo __("Error");?>', '<?php echo __("Het object kon niet verwijderd worden") . ". " . __("Error");?>: ' + data.message);
             }
           },
           "json"
@@ -179,7 +184,7 @@
           if (! data.success)
           {
             if (rollbackObject) jQuery.tree.rollback(rollbackObject);
-            jQuery.tt.alert('Error', 'De file of folder kon niet verwijderd worden. Error: ' + data.message);
+            jQuery.tt.alert('<?php echo __("Error");?>', '<?php echo __("De file of folder kon niet verwijderd worden") . ". " . __("Error");?>: ' + data.message);
           }
         },
         "json"
@@ -205,7 +210,7 @@
         if (! data.success)
         {
           if (rollbackObject) jQuery.tree.rollback(rollbackObject);
-          jQuery.tt.alert('Error', 'De file of folder kon niet verwijderd worden. Error: ' + data.message);
+          jQuery.tt.alert('<?php echo __("Error");?>', '<?php echo __("De file of folder kon niet verwijderd worden") . ". " . __("Error");?>: ' + data.message);
         }
         else
         {
@@ -244,7 +249,7 @@
           
           if (! data.success)
           {
-            jQuery.tt.alert('Error', 'De file of folder kon niet verwijderd worden. Error: ' + data.message);
+            jQuery.tt.alert('<?php echo __("Error");?>', '<?php echo __("De file of folder kon niet verwijderd worden") . ". " . __("Error");?>: ' + data.message);
           }
           else
           {
