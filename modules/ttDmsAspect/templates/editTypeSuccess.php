@@ -8,7 +8,7 @@
 
 <?php
 if(! function_exists('__'))
-  \Misc::use_helper('i18n');
+  \Misc::use_helper('I18N');
 ?>
 
 <h2 class="pageblock"><?php echo $dms_type->getId() ? __('Bewerk') : __('Nieuw'); ?> <?php echo __('aspect');?></h2>
