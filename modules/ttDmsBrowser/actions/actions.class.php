@@ -598,6 +598,7 @@ class ttDmsBrowserActions extends sfActions
     if ($this->hasRequestParameter('options'))
     {
       $options = $this->getRequestParameter('options');
+      if ($options['actions_enabled'] == 'false') $options['actions_enabled'] = false;
     }
     else
     {

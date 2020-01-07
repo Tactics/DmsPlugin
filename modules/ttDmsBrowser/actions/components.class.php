@@ -42,7 +42,7 @@ class ttDmsBrowserComponents extends sfComponents
       'filter_enabled' => false,
       'systemname_for_sportsubsidies' => null
     );
-    
+
     $this->options = is_array($this->options) ? $this->options : array();
     $this->options = $this->options + $defaultOptions;
   }
@@ -63,7 +63,8 @@ class ttDmsBrowserComponents extends sfComponents
     }
 
     $defaultOptions = array(
-      'showFolders' => false
+      'showFolders' => false,
+      'actions_enabled' => true,
     );
     
     $this->options = is_array($this->options) ? $this->options : array();
