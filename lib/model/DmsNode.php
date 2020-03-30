@@ -152,14 +152,6 @@ class DmsNode extends BaseDmsNode
    */
   public function createNode($name, $folder = false)
   {
-    // Controleer of er reeds een node bestaat met exact dezelfde naam (speciale characters ..)
-    if ($existingNode = $this->getChildByName($name))
-    {
-      $e = new DmsNodeExistsException('A node with this name already exists. (Name: ' . $name . ')');
-      $e->setNode($existingNode);
-      throw $e;
-    }
-
     // Controleer of er reeds een node bestaat met dezelfde diskname: zoek een ongebruikte diskname
     $safeName = DmsTools::safeFilename($name);
     $extension = pathinfo($safeName, PATHINFO_EXTENSION);
