@@ -22,9 +22,6 @@ class DmsWsClient
       throw new sfConfigurationException('sf_dms_ws_url config not found in config/settings.yml');
     }
     $this->client = new Client($wsUrl);
-    $curlOptions = $this->client->getConfig('curl.options');
-    $curlOptions[CURLOPT_SSLVERSION] = CURL_SSLVERSION_SSLv3;
-    $this->client->getConfig()->set('curl.options', $curlOptions);
   }
   
   /**
