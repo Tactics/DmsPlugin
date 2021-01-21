@@ -69,6 +69,13 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 
 
 	/**
+	 * The value for the gearchiveerd field.
+	 * @var        boolean
+	 */
+	protected $gearchiveerd = false;
+
+
+	/**
 	 * The value for the created_by field.
 	 * @var        int
 	 */
@@ -104,6 +111,78 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 	 * @var        DmsNode
 	 */
 	protected $aDmsNodeRelatedByParentId;
+
+	/**
+	 * Collection to store aggregation of collSubsidieBijlages.
+	 * @var        array
+	 */
+	protected $collSubsidieBijlages;
+
+	/**
+	 * The criteria used to select the current contents of collSubsidieBijlages.
+	 * @var        Criteria
+	 */
+	protected $lastSubsidieBijlageCriteria = null;
+
+	/**
+	 * Collection to store aggregation of collAccountAanvraags.
+	 * @var        array
+	 */
+	protected $collAccountAanvraags;
+
+	/**
+	 * The criteria used to select the current contents of collAccountAanvraags.
+	 * @var        Criteria
+	 */
+	protected $lastAccountAanvraagCriteria = null;
+
+	/**
+	 * Collection to store aggregation of collMateriaalCategories.
+	 * @var        array
+	 */
+	protected $collMateriaalCategories;
+
+	/**
+	 * The criteria used to select the current contents of collMateriaalCategories.
+	 * @var        Criteria
+	 */
+	protected $lastMateriaalCategorieCriteria = null;
+
+	/**
+	 * Collection to store aggregation of collRoutess.
+	 * @var        array
+	 */
+	protected $collRoutess;
+
+	/**
+	 * The criteria used to select the current contents of collRoutess.
+	 * @var        Criteria
+	 */
+	protected $lastRoutesCriteria = null;
+
+	/**
+	 * Collection to store aggregation of collTegoedbons.
+	 * @var        array
+	 */
+	protected $collTegoedbons;
+
+	/**
+	 * The criteria used to select the current contents of collTegoedbons.
+	 * @var        Criteria
+	 */
+	protected $lastTegoedbonCriteria = null;
+
+	/**
+	 * Collection to store aggregation of collSportsubsidieBestelbonUitbetalings.
+	 * @var        array
+	 */
+	protected $collSportsubsidieBestelbonUitbetalings;
+
+	/**
+	 * The criteria used to select the current contents of collSportsubsidieBestelbonUitbetalings.
+	 * @var        Criteria
+	 */
+	protected $lastSportsubsidieBestelbonUitbetalingCriteria = null;
 
 	/**
 	 * Collection to store aggregation of collDmsNodesRelatedByParentId.
@@ -152,42 +231,6 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 	 * @var        Criteria
 	 */
 	protected $lastDmsObjectNodeRefCriteria = null;
-
-	/**
-	 * Collection to store aggregation of collSubsidieBijlages.
-	 * @var        array
-	 */
-	protected $collSubsidieBijlages;
-
-	/**
-	 * The criteria used to select the current contents of collSubsidieBijlages.
-	 * @var        Criteria
-	 */
-	protected $lastSubsidieBijlageCriteria = null;
-
-	/**
-	 * Collection to store aggregation of collRoutess.
-	 * @var        array
-	 */
-	protected $collRoutess;
-
-	/**
-	 * The criteria used to select the current contents of collRoutess.
-	 * @var        Criteria
-	 */
-	protected $lastRoutesCriteria = null;
-
-	/**
-	 * Collection to store aggregation of collTegoedbons.
-	 * @var        array
-	 */
-	protected $collTegoedbons;
-
-	/**
-	 * The criteria used to select the current contents of collTegoedbons.
-	 * @var        Criteria
-	 */
-	protected $lastTegoedbonCriteria = null;
 
 	/**
 	 * Flag to prevent endless save loop, if this object is referenced
@@ -298,6 +341,17 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 		} else {
 			return date($format, $ts);
 		}
+	}
+
+	/**
+	 * Get the [gearchiveerd] column value.
+	 * 
+	 * @return     boolean
+	 */
+	public function getGearchiveerd()
+	{
+
+		return $this->gearchiveerd;
 	}
 
 	/**
@@ -544,6 +598,22 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 	} // setContentUpdatedAt()
 
 	/**
+	 * Set the value of [gearchiveerd] column.
+	 * 
+	 * @param      boolean $v new value
+	 * @return     void
+	 */
+	public function setGearchiveerd($v)
+	{
+
+		if ($this->gearchiveerd !== $v || $v === false) {
+			$this->gearchiveerd = $v;
+			$this->modifiedColumns[] = DmsNodePeer::GEARCHIVEERD;
+		}
+
+	} // setGearchiveerd()
+
+	/**
 	 * Set the value of [created_by] column.
 	 * 
 	 * @param      int $v new value
@@ -668,13 +738,15 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 
 			$this->content_updated_at = $rs->getTimestamp($startcol + 6, null);
 
-			$this->created_by = $rs->getInt($startcol + 7);
+			$this->gearchiveerd = $rs->getBoolean($startcol + 7);
 
-			$this->updated_by = $rs->getInt($startcol + 8);
+			$this->created_by = $rs->getInt($startcol + 8);
 
-			$this->created_at = $rs->getTimestamp($startcol + 9, null);
+			$this->updated_by = $rs->getInt($startcol + 9);
 
-			$this->updated_at = $rs->getTimestamp($startcol + 10, null);
+			$this->created_at = $rs->getTimestamp($startcol + 10, null);
+
+			$this->updated_at = $rs->getTimestamp($startcol + 11, null);
 
 			$this->resetModified();
 
@@ -846,6 +918,54 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 				$this->resetModified(); // [HL] After being saved an object is no longer 'modified'
 			}
 
+			if ($this->collSubsidieBijlages !== null) {
+				foreach($this->collSubsidieBijlages as $referrerFK) {
+					if (!$referrerFK->isDeleted()) {
+						$affectedRows += $referrerFK->save($con);
+					}
+				}
+			}
+
+			if ($this->collAccountAanvraags !== null) {
+				foreach($this->collAccountAanvraags as $referrerFK) {
+					if (!$referrerFK->isDeleted()) {
+						$affectedRows += $referrerFK->save($con);
+					}
+				}
+			}
+
+			if ($this->collMateriaalCategories !== null) {
+				foreach($this->collMateriaalCategories as $referrerFK) {
+					if (!$referrerFK->isDeleted()) {
+						$affectedRows += $referrerFK->save($con);
+					}
+				}
+			}
+
+			if ($this->collRoutess !== null) {
+				foreach($this->collRoutess as $referrerFK) {
+					if (!$referrerFK->isDeleted()) {
+						$affectedRows += $referrerFK->save($con);
+					}
+				}
+			}
+
+			if ($this->collTegoedbons !== null) {
+				foreach($this->collTegoedbons as $referrerFK) {
+					if (!$referrerFK->isDeleted()) {
+						$affectedRows += $referrerFK->save($con);
+					}
+				}
+			}
+
+			if ($this->collSportsubsidieBestelbonUitbetalings !== null) {
+				foreach($this->collSportsubsidieBestelbonUitbetalings as $referrerFK) {
+					if (!$referrerFK->isDeleted()) {
+						$affectedRows += $referrerFK->save($con);
+					}
+				}
+			}
+
 			if ($this->collDmsNodesRelatedByParentId !== null) {
 				foreach($this->collDmsNodesRelatedByParentId as $referrerFK) {
 					if (!$referrerFK->isDeleted()) {
@@ -872,30 +992,6 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 
 			if ($this->collDmsObjectNodeRefs !== null) {
 				foreach($this->collDmsObjectNodeRefs as $referrerFK) {
-					if (!$referrerFK->isDeleted()) {
-						$affectedRows += $referrerFK->save($con);
-					}
-				}
-			}
-
-			if ($this->collSubsidieBijlages !== null) {
-				foreach($this->collSubsidieBijlages as $referrerFK) {
-					if (!$referrerFK->isDeleted()) {
-						$affectedRows += $referrerFK->save($con);
-					}
-				}
-			}
-
-			if ($this->collRoutess !== null) {
-				foreach($this->collRoutess as $referrerFK) {
-					if (!$referrerFK->isDeleted()) {
-						$affectedRows += $referrerFK->save($con);
-					}
-				}
-			}
-
-			if ($this->collTegoedbons !== null) {
-				foreach($this->collTegoedbons as $referrerFK) {
 					if (!$referrerFK->isDeleted()) {
 						$affectedRows += $referrerFK->save($con);
 					}
@@ -990,6 +1086,54 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 			}
 
 
+				if ($this->collSubsidieBijlages !== null) {
+					foreach($this->collSubsidieBijlages as $referrerFK) {
+						if (!$referrerFK->validate($columns)) {
+							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+						}
+					}
+				}
+
+				if ($this->collAccountAanvraags !== null) {
+					foreach($this->collAccountAanvraags as $referrerFK) {
+						if (!$referrerFK->validate($columns)) {
+							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+						}
+					}
+				}
+
+				if ($this->collMateriaalCategories !== null) {
+					foreach($this->collMateriaalCategories as $referrerFK) {
+						if (!$referrerFK->validate($columns)) {
+							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+						}
+					}
+				}
+
+				if ($this->collRoutess !== null) {
+					foreach($this->collRoutess as $referrerFK) {
+						if (!$referrerFK->validate($columns)) {
+							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+						}
+					}
+				}
+
+				if ($this->collTegoedbons !== null) {
+					foreach($this->collTegoedbons as $referrerFK) {
+						if (!$referrerFK->validate($columns)) {
+							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+						}
+					}
+				}
+
+				if ($this->collSportsubsidieBestelbonUitbetalings !== null) {
+					foreach($this->collSportsubsidieBestelbonUitbetalings as $referrerFK) {
+						if (!$referrerFK->validate($columns)) {
+							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
+						}
+					}
+				}
+
 				if ($this->collDmsNodePropertys !== null) {
 					foreach($this->collDmsNodePropertys as $referrerFK) {
 						if (!$referrerFK->validate($columns)) {
@@ -1008,30 +1152,6 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 
 				if ($this->collDmsObjectNodeRefs !== null) {
 					foreach($this->collDmsObjectNodeRefs as $referrerFK) {
-						if (!$referrerFK->validate($columns)) {
-							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
-						}
-					}
-				}
-
-				if ($this->collSubsidieBijlages !== null) {
-					foreach($this->collSubsidieBijlages as $referrerFK) {
-						if (!$referrerFK->validate($columns)) {
-							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
-						}
-					}
-				}
-
-				if ($this->collRoutess !== null) {
-					foreach($this->collRoutess as $referrerFK) {
-						if (!$referrerFK->validate($columns)) {
-							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
-						}
-					}
-				}
-
-				if ($this->collTegoedbons !== null) {
-					foreach($this->collTegoedbons as $referrerFK) {
 						if (!$referrerFK->validate($columns)) {
 							$failureMap = array_merge($failureMap, $referrerFK->getValidationFailures());
 						}
@@ -1092,15 +1212,18 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 				return $this->getContentUpdatedAt();
 				break;
 			case 7:
-				return $this->getCreatedBy();
+				return $this->getGearchiveerd();
 				break;
 			case 8:
-				return $this->getUpdatedBy();
+				return $this->getCreatedBy();
 				break;
 			case 9:
-				return $this->getCreatedAt();
+				return $this->getUpdatedBy();
 				break;
 			case 10:
+				return $this->getCreatedAt();
+				break;
+			case 11:
 				return $this->getUpdatedAt();
 				break;
 			default:
@@ -1130,10 +1253,11 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 			$keys[4] => $this->getName(),
 			$keys[5] => $this->getDiskName(),
 			$keys[6] => $this->getContentUpdatedAt(),
-			$keys[7] => $this->getCreatedBy(),
-			$keys[8] => $this->getUpdatedBy(),
-			$keys[9] => $this->getCreatedAt(),
-			$keys[10] => $this->getUpdatedAt(),
+			$keys[7] => $this->getGearchiveerd(),
+			$keys[8] => $this->getCreatedBy(),
+			$keys[9] => $this->getUpdatedBy(),
+			$keys[10] => $this->getCreatedAt(),
+			$keys[11] => $this->getUpdatedAt(),
 		);
 		return $result;
 	}
@@ -1187,15 +1311,18 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 				$this->setContentUpdatedAt($value);
 				break;
 			case 7:
-				$this->setCreatedBy($value);
+				$this->setGearchiveerd($value);
 				break;
 			case 8:
-				$this->setUpdatedBy($value);
+				$this->setCreatedBy($value);
 				break;
 			case 9:
-				$this->setCreatedAt($value);
+				$this->setUpdatedBy($value);
 				break;
 			case 10:
+				$this->setCreatedAt($value);
+				break;
+			case 11:
 				$this->setUpdatedAt($value);
 				break;
 		} // switch()
@@ -1228,10 +1355,11 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 		if (array_key_exists($keys[4], $arr)) $this->setName($arr[$keys[4]]);
 		if (array_key_exists($keys[5], $arr)) $this->setDiskName($arr[$keys[5]]);
 		if (array_key_exists($keys[6], $arr)) $this->setContentUpdatedAt($arr[$keys[6]]);
-		if (array_key_exists($keys[7], $arr)) $this->setCreatedBy($arr[$keys[7]]);
-		if (array_key_exists($keys[8], $arr)) $this->setUpdatedBy($arr[$keys[8]]);
-		if (array_key_exists($keys[9], $arr)) $this->setCreatedAt($arr[$keys[9]]);
-		if (array_key_exists($keys[10], $arr)) $this->setUpdatedAt($arr[$keys[10]]);
+		if (array_key_exists($keys[7], $arr)) $this->setGearchiveerd($arr[$keys[7]]);
+		if (array_key_exists($keys[8], $arr)) $this->setCreatedBy($arr[$keys[8]]);
+		if (array_key_exists($keys[9], $arr)) $this->setUpdatedBy($arr[$keys[9]]);
+		if (array_key_exists($keys[10], $arr)) $this->setCreatedAt($arr[$keys[10]]);
+		if (array_key_exists($keys[11], $arr)) $this->setUpdatedAt($arr[$keys[11]]);
 	}
 
 	/**
@@ -1250,6 +1378,7 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 		if ($this->isColumnModified(DmsNodePeer::NAME)) $criteria->add(DmsNodePeer::NAME, $this->name);
 		if ($this->isColumnModified(DmsNodePeer::DISK_NAME)) $criteria->add(DmsNodePeer::DISK_NAME, $this->disk_name);
 		if ($this->isColumnModified(DmsNodePeer::CONTENT_UPDATED_AT)) $criteria->add(DmsNodePeer::CONTENT_UPDATED_AT, $this->content_updated_at);
+		if ($this->isColumnModified(DmsNodePeer::GEARCHIVEERD)) $criteria->add(DmsNodePeer::GEARCHIVEERD, $this->gearchiveerd);
 		if ($this->isColumnModified(DmsNodePeer::CREATED_BY)) $criteria->add(DmsNodePeer::CREATED_BY, $this->created_by);
 		if ($this->isColumnModified(DmsNodePeer::UPDATED_BY)) $criteria->add(DmsNodePeer::UPDATED_BY, $this->updated_by);
 		if ($this->isColumnModified(DmsNodePeer::CREATED_AT)) $criteria->add(DmsNodePeer::CREATED_AT, $this->created_at);
@@ -1320,6 +1449,8 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 
 		$copyObj->setContentUpdatedAt($this->content_updated_at);
 
+		$copyObj->setGearchiveerd($this->gearchiveerd);
+
 		$copyObj->setCreatedBy($this->created_by);
 
 		$copyObj->setUpdatedBy($this->updated_by);
@@ -1333,6 +1464,30 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 			// important: temporarily setNew(false) because this affects the behavior of
 			// the getter/setter methods for fkey referrer objects.
 			$copyObj->setNew(false);
+
+			foreach($this->getSubsidieBijlages() as $relObj) {
+				$copyObj->addSubsidieBijlage($relObj->copy($deepCopy));
+			}
+
+			foreach($this->getAccountAanvraags() as $relObj) {
+				$copyObj->addAccountAanvraag($relObj->copy($deepCopy));
+			}
+
+			foreach($this->getMateriaalCategories() as $relObj) {
+				$copyObj->addMateriaalCategorie($relObj->copy($deepCopy));
+			}
+
+			foreach($this->getRoutess() as $relObj) {
+				$copyObj->addRoutes($relObj->copy($deepCopy));
+			}
+
+			foreach($this->getTegoedbons() as $relObj) {
+				$copyObj->addTegoedbon($relObj->copy($deepCopy));
+			}
+
+			foreach($this->getSportsubsidieBestelbonUitbetalings() as $relObj) {
+				$copyObj->addSportsubsidieBestelbonUitbetaling($relObj->copy($deepCopy));
+			}
 
 			foreach($this->getDmsNodesRelatedByParentId() as $relObj) {
 				if($this->getPrimaryKey() === $relObj->getPrimaryKey()) {
@@ -1352,18 +1507,6 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 
 			foreach($this->getDmsObjectNodeRefs() as $relObj) {
 				$copyObj->addDmsObjectNodeRef($relObj->copy($deepCopy));
-			}
-
-			foreach($this->getSubsidieBijlages() as $relObj) {
-				$copyObj->addSubsidieBijlage($relObj->copy($deepCopy));
-			}
-
-			foreach($this->getRoutess() as $relObj) {
-				$copyObj->addRoutes($relObj->copy($deepCopy));
-			}
-
-			foreach($this->getTegoedbons() as $relObj) {
-				$copyObj->addTegoedbon($relObj->copy($deepCopy));
 			}
 
 		} // if ($deepCopy)
@@ -1511,6 +1654,1720 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 			 */
 		}
 		return $this->aDmsNodeRelatedByParentId;
+	}
+
+	/**
+	 * Temporary storage of collSubsidieBijlages to save a possible db hit in
+	 * the event objects are add to the collection, but the
+	 * complete collection is never requested.
+	 * @return     void
+	 */
+	public function initSubsidieBijlages()
+	{
+		if ($this->collSubsidieBijlages === null) {
+			$this->collSubsidieBijlages = array();
+		}
+	}
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode has previously
+	 * been saved, it will retrieve related SubsidieBijlages from storage.
+	 * If this DmsNode is new, it will return
+	 * an empty collection or the current collection, the criteria
+	 * is ignored on a new object.
+	 *
+	 * @param      Connection $con
+	 * @param      Criteria $criteria
+	 * @throws     PropelException
+	 * @return     SubsidieBijlage[] SubsidieBijlages
+	 */
+	public function getSubsidieBijlages($criteria = null, $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseSubsidieBijlagePeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collSubsidieBijlages === null) {
+			if ($this->isNew()) {
+			   $this->collSubsidieBijlages = array();
+			} else {
+
+				$criteria->add(SubsidieBijlagePeer::NODE_ID, $this->getId());
+
+				SubsidieBijlagePeer::addSelectColumns($criteria);
+				$this->collSubsidieBijlages = SubsidieBijlagePeer::doSelect($criteria, $con);
+			}
+		} else {
+			// criteria has no effect for a new object
+			if (!$this->isNew()) {
+				// the following code is to determine if a new query is
+				// called for.  If the criteria is the same as the last
+				// one, just return the collection.
+
+
+				$criteria->add(SubsidieBijlagePeer::NODE_ID, $this->getId());
+
+				SubsidieBijlagePeer::addSelectColumns($criteria);
+				if (!isset($this->lastSubsidieBijlageCriteria) || !$this->lastSubsidieBijlageCriteria->equals($criteria)) {
+					$this->collSubsidieBijlages = SubsidieBijlagePeer::doSelect($criteria, $con);
+				}
+			}
+		}
+		$this->lastSubsidieBijlageCriteria = $criteria;
+		return $this->collSubsidieBijlages;
+	}
+
+	/**
+	 * Returns the number of related SubsidieBijlages.
+	 *
+	 * @param      Criteria $criteria
+	 * @param      boolean $distinct
+	 * @param      Connection $con
+	 * @return     int The number of SubsidieBijlages
+	 * @throws     PropelException
+	 */
+	public function countSubsidieBijlages($criteria = null, $distinct = false, $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseSubsidieBijlagePeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		$criteria->add(SubsidieBijlagePeer::NODE_ID, $this->getId());
+
+		return SubsidieBijlagePeer::doCount($criteria, $distinct, $con);
+	}
+
+	/**
+	 * Method called to associate a SubsidieBijlage object to this object
+	 * through the SubsidieBijlage foreign key attribute
+	 *
+	 * @param      SubsidieBijlage $l SubsidieBijlage
+	 * @return     void
+	 * @throws     PropelException
+	 */
+	public function addSubsidieBijlage(SubsidieBijlage $l)
+	{
+		$this->collSubsidieBijlages[] = $l;
+		$l->setDmsNode($this);
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related SubsidieBijlages from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return SubsidieBijlage[] SubsidieBijlages joined with SubsidieAanvraag
+	 */
+	public function getSubsidieBijlagesJoinSubsidieAanvraag(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseSubsidieBijlagePeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collSubsidieBijlages === null) {
+			if ($this->isNew()) {
+				$this->collSubsidieBijlages = array();
+			} else {
+
+				$criteria->add(SubsidieBijlagePeer::NODE_ID, $this->getId());
+
+				$this->collSubsidieBijlages = SubsidieBijlagePeer::doSelectJoinSubsidieAanvraag($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(SubsidieBijlagePeer::NODE_ID, $this->getId());
+
+			if (!isset($this->lastSubsidieBijlageCriteria) || !$this->lastSubsidieBijlageCriteria->equals($criteria)) {
+				$this->collSubsidieBijlages = SubsidieBijlagePeer::doSelectJoinSubsidieAanvraag($criteria, $con);
+			}
+		}
+		$this->lastSubsidieBijlageCriteria = $criteria;
+
+		return $this->collSubsidieBijlages;
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related SubsidieBijlages from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return SubsidieBijlage[] SubsidieBijlages joined with OrganisatieTrainer
+	 */
+	public function getSubsidieBijlagesJoinOrganisatieTrainer(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseSubsidieBijlagePeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collSubsidieBijlages === null) {
+			if ($this->isNew()) {
+				$this->collSubsidieBijlages = array();
+			} else {
+
+				$criteria->add(SubsidieBijlagePeer::NODE_ID, $this->getId());
+
+				$this->collSubsidieBijlages = SubsidieBijlagePeer::doSelectJoinOrganisatieTrainer($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(SubsidieBijlagePeer::NODE_ID, $this->getId());
+
+			if (!isset($this->lastSubsidieBijlageCriteria) || !$this->lastSubsidieBijlageCriteria->equals($criteria)) {
+				$this->collSubsidieBijlages = SubsidieBijlagePeer::doSelectJoinOrganisatieTrainer($criteria, $con);
+			}
+		}
+		$this->lastSubsidieBijlageCriteria = $criteria;
+
+		return $this->collSubsidieBijlages;
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related SubsidieBijlages from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return SubsidieBijlage[] SubsidieBijlages joined with SubsidieAanvraagPatrimonium
+	 */
+	public function getSubsidieBijlagesJoinSubsidieAanvraagPatrimonium(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseSubsidieBijlagePeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collSubsidieBijlages === null) {
+			if ($this->isNew()) {
+				$this->collSubsidieBijlages = array();
+			} else {
+
+				$criteria->add(SubsidieBijlagePeer::NODE_ID, $this->getId());
+
+				$this->collSubsidieBijlages = SubsidieBijlagePeer::doSelectJoinSubsidieAanvraagPatrimonium($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(SubsidieBijlagePeer::NODE_ID, $this->getId());
+
+			if (!isset($this->lastSubsidieBijlageCriteria) || !$this->lastSubsidieBijlageCriteria->equals($criteria)) {
+				$this->collSubsidieBijlages = SubsidieBijlagePeer::doSelectJoinSubsidieAanvraagPatrimonium($criteria, $con);
+			}
+		}
+		$this->lastSubsidieBijlageCriteria = $criteria;
+
+		return $this->collSubsidieBijlages;
+	}
+
+	/**
+	 * Temporary storage of collAccountAanvraags to save a possible db hit in
+	 * the event objects are add to the collection, but the
+	 * complete collection is never requested.
+	 * @return     void
+	 */
+	public function initAccountAanvraags()
+	{
+		if ($this->collAccountAanvraags === null) {
+			$this->collAccountAanvraags = array();
+		}
+	}
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode has previously
+	 * been saved, it will retrieve related AccountAanvraags from storage.
+	 * If this DmsNode is new, it will return
+	 * an empty collection or the current collection, the criteria
+	 * is ignored on a new object.
+	 *
+	 * @param      Connection $con
+	 * @param      Criteria $criteria
+	 * @throws     PropelException
+	 * @return     AccountAanvraag[] AccountAanvraags
+	 */
+	public function getAccountAanvraags($criteria = null, $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseAccountAanvraagPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collAccountAanvraags === null) {
+			if ($this->isNew()) {
+			   $this->collAccountAanvraags = array();
+			} else {
+
+				$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+				AccountAanvraagPeer::addSelectColumns($criteria);
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelect($criteria, $con);
+			}
+		} else {
+			// criteria has no effect for a new object
+			if (!$this->isNew()) {
+				// the following code is to determine if a new query is
+				// called for.  If the criteria is the same as the last
+				// one, just return the collection.
+
+
+				$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+				AccountAanvraagPeer::addSelectColumns($criteria);
+				if (!isset($this->lastAccountAanvraagCriteria) || !$this->lastAccountAanvraagCriteria->equals($criteria)) {
+					$this->collAccountAanvraags = AccountAanvraagPeer::doSelect($criteria, $con);
+				}
+			}
+		}
+		$this->lastAccountAanvraagCriteria = $criteria;
+		return $this->collAccountAanvraags;
+	}
+
+	/**
+	 * Returns the number of related AccountAanvraags.
+	 *
+	 * @param      Criteria $criteria
+	 * @param      boolean $distinct
+	 * @param      Connection $con
+	 * @return     int The number of AccountAanvraags
+	 * @throws     PropelException
+	 */
+	public function countAccountAanvraags($criteria = null, $distinct = false, $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseAccountAanvraagPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+		return AccountAanvraagPeer::doCount($criteria, $distinct, $con);
+	}
+
+	/**
+	 * Method called to associate a AccountAanvraag object to this object
+	 * through the AccountAanvraag foreign key attribute
+	 *
+	 * @param      AccountAanvraag $l AccountAanvraag
+	 * @return     void
+	 * @throws     PropelException
+	 */
+	public function addAccountAanvraag(AccountAanvraag $l)
+	{
+		$this->collAccountAanvraags[] = $l;
+		$l->setDmsNode($this);
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related AccountAanvraags from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return AccountAanvraag[] AccountAanvraags joined with BedrijfRelatedByBedrijfId
+	 */
+	public function getAccountAanvraagsJoinBedrijfRelatedByBedrijfId(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseAccountAanvraagPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collAccountAanvraags === null) {
+			if ($this->isNew()) {
+				$this->collAccountAanvraags = array();
+			} else {
+
+				$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinBedrijfRelatedByBedrijfId($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+			if (!isset($this->lastAccountAanvraagCriteria) || !$this->lastAccountAanvraagCriteria->equals($criteria)) {
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinBedrijfRelatedByBedrijfId($criteria, $con);
+			}
+		}
+		$this->lastAccountAanvraagCriteria = $criteria;
+
+		return $this->collAccountAanvraags;
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related AccountAanvraags from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return AccountAanvraag[] AccountAanvraags joined with LandRelatedByOrganisatieLandId
+	 */
+	public function getAccountAanvraagsJoinLandRelatedByOrganisatieLandId(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseAccountAanvraagPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collAccountAanvraags === null) {
+			if ($this->isNew()) {
+				$this->collAccountAanvraags = array();
+			} else {
+
+				$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinLandRelatedByOrganisatieLandId($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+			if (!isset($this->lastAccountAanvraagCriteria) || !$this->lastAccountAanvraagCriteria->equals($criteria)) {
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinLandRelatedByOrganisatieLandId($criteria, $con);
+			}
+		}
+		$this->lastAccountAanvraagCriteria = $criteria;
+
+		return $this->collAccountAanvraags;
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related AccountAanvraags from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return AccountAanvraag[] AccountAanvraags joined with OrganisatieContactFunctie
+	 */
+	public function getAccountAanvraagsJoinOrganisatieContactFunctie(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseAccountAanvraagPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collAccountAanvraags === null) {
+			if ($this->isNew()) {
+				$this->collAccountAanvraags = array();
+			} else {
+
+				$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinOrganisatieContactFunctie($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+			if (!isset($this->lastAccountAanvraagCriteria) || !$this->lastAccountAanvraagCriteria->equals($criteria)) {
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinOrganisatieContactFunctie($criteria, $con);
+			}
+		}
+		$this->lastAccountAanvraagCriteria = $criteria;
+
+		return $this->collAccountAanvraags;
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related AccountAanvraags from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return AccountAanvraag[] AccountAanvraags joined with LandRelatedByNationaliteit
+	 */
+	public function getAccountAanvraagsJoinLandRelatedByNationaliteit(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseAccountAanvraagPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collAccountAanvraags === null) {
+			if ($this->isNew()) {
+				$this->collAccountAanvraags = array();
+			} else {
+
+				$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinLandRelatedByNationaliteit($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+			if (!isset($this->lastAccountAanvraagCriteria) || !$this->lastAccountAanvraagCriteria->equals($criteria)) {
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinLandRelatedByNationaliteit($criteria, $con);
+			}
+		}
+		$this->lastAccountAanvraagCriteria = $criteria;
+
+		return $this->collAccountAanvraags;
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related AccountAanvraags from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return AccountAanvraag[] AccountAanvraags joined with LandRelatedByLandId
+	 */
+	public function getAccountAanvraagsJoinLandRelatedByLandId(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseAccountAanvraagPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collAccountAanvraags === null) {
+			if ($this->isNew()) {
+				$this->collAccountAanvraags = array();
+			} else {
+
+				$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinLandRelatedByLandId($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+			if (!isset($this->lastAccountAanvraagCriteria) || !$this->lastAccountAanvraagCriteria->equals($criteria)) {
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinLandRelatedByLandId($criteria, $con);
+			}
+		}
+		$this->lastAccountAanvraagCriteria = $criteria;
+
+		return $this->collAccountAanvraags;
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related AccountAanvraags from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return AccountAanvraag[] AccountAanvraags joined with Organisatie
+	 */
+	public function getAccountAanvraagsJoinOrganisatie(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseAccountAanvraagPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collAccountAanvraags === null) {
+			if ($this->isNew()) {
+				$this->collAccountAanvraags = array();
+			} else {
+
+				$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinOrganisatie($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+			if (!isset($this->lastAccountAanvraagCriteria) || !$this->lastAccountAanvraagCriteria->equals($criteria)) {
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinOrganisatie($criteria, $con);
+			}
+		}
+		$this->lastAccountAanvraagCriteria = $criteria;
+
+		return $this->collAccountAanvraags;
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related AccountAanvraags from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return AccountAanvraag[] AccountAanvraags joined with Persoon
+	 */
+	public function getAccountAanvraagsJoinPersoon(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseAccountAanvraagPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collAccountAanvraags === null) {
+			if ($this->isNew()) {
+				$this->collAccountAanvraags = array();
+			} else {
+
+				$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinPersoon($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+			if (!isset($this->lastAccountAanvraagCriteria) || !$this->lastAccountAanvraagCriteria->equals($criteria)) {
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinPersoon($criteria, $con);
+			}
+		}
+		$this->lastAccountAanvraagCriteria = $criteria;
+
+		return $this->collAccountAanvraags;
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related AccountAanvraags from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return AccountAanvraag[] AccountAanvraags joined with BedrijfRelatedByVerwerktDoorBedrijfId
+	 */
+	public function getAccountAanvraagsJoinBedrijfRelatedByVerwerktDoorBedrijfId(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseAccountAanvraagPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collAccountAanvraags === null) {
+			if ($this->isNew()) {
+				$this->collAccountAanvraags = array();
+			} else {
+
+				$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinBedrijfRelatedByVerwerktDoorBedrijfId($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+			if (!isset($this->lastAccountAanvraagCriteria) || !$this->lastAccountAanvraagCriteria->equals($criteria)) {
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinBedrijfRelatedByVerwerktDoorBedrijfId($criteria, $con);
+			}
+		}
+		$this->lastAccountAanvraagCriteria = $criteria;
+
+		return $this->collAccountAanvraags;
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related AccountAanvraags from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return AccountAanvraag[] AccountAanvraags joined with BedrijfRelatedByBronBedrijfId
+	 */
+	public function getAccountAanvraagsJoinBedrijfRelatedByBronBedrijfId(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseAccountAanvraagPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collAccountAanvraags === null) {
+			if ($this->isNew()) {
+				$this->collAccountAanvraags = array();
+			} else {
+
+				$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinBedrijfRelatedByBronBedrijfId($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+			if (!isset($this->lastAccountAanvraagCriteria) || !$this->lastAccountAanvraagCriteria->equals($criteria)) {
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinBedrijfRelatedByBronBedrijfId($criteria, $con);
+			}
+		}
+		$this->lastAccountAanvraagCriteria = $criteria;
+
+		return $this->collAccountAanvraags;
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related AccountAanvraags from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return AccountAanvraag[] AccountAanvraags joined with AccountRelatedByCreatedBy
+	 */
+	public function getAccountAanvraagsJoinAccountRelatedByCreatedBy(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseAccountAanvraagPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collAccountAanvraags === null) {
+			if ($this->isNew()) {
+				$this->collAccountAanvraags = array();
+			} else {
+
+				$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinAccountRelatedByCreatedBy($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+			if (!isset($this->lastAccountAanvraagCriteria) || !$this->lastAccountAanvraagCriteria->equals($criteria)) {
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinAccountRelatedByCreatedBy($criteria, $con);
+			}
+		}
+		$this->lastAccountAanvraagCriteria = $criteria;
+
+		return $this->collAccountAanvraags;
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related AccountAanvraags from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return AccountAanvraag[] AccountAanvraags joined with AccountRelatedByUpdatedBy
+	 */
+	public function getAccountAanvraagsJoinAccountRelatedByUpdatedBy(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseAccountAanvraagPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collAccountAanvraags === null) {
+			if ($this->isNew()) {
+				$this->collAccountAanvraags = array();
+			} else {
+
+				$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinAccountRelatedByUpdatedBy($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(AccountAanvraagPeer::BEWIJSSTUK_NODE_ID, $this->getId());
+
+			if (!isset($this->lastAccountAanvraagCriteria) || !$this->lastAccountAanvraagCriteria->equals($criteria)) {
+				$this->collAccountAanvraags = AccountAanvraagPeer::doSelectJoinAccountRelatedByUpdatedBy($criteria, $con);
+			}
+		}
+		$this->lastAccountAanvraagCriteria = $criteria;
+
+		return $this->collAccountAanvraags;
+	}
+
+	/**
+	 * Temporary storage of collMateriaalCategories to save a possible db hit in
+	 * the event objects are add to the collection, but the
+	 * complete collection is never requested.
+	 * @return     void
+	 */
+	public function initMateriaalCategories()
+	{
+		if ($this->collMateriaalCategories === null) {
+			$this->collMateriaalCategories = array();
+		}
+	}
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode has previously
+	 * been saved, it will retrieve related MateriaalCategories from storage.
+	 * If this DmsNode is new, it will return
+	 * an empty collection or the current collection, the criteria
+	 * is ignored on a new object.
+	 *
+	 * @param      Connection $con
+	 * @param      Criteria $criteria
+	 * @throws     PropelException
+	 * @return     MateriaalCategorie[] MateriaalCategories
+	 */
+	public function getMateriaalCategories($criteria = null, $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseMateriaalCategoriePeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collMateriaalCategories === null) {
+			if ($this->isNew()) {
+			   $this->collMateriaalCategories = array();
+			} else {
+
+				$criteria->add(MateriaalCategoriePeer::AFBEELDING_NODE_ID, $this->getId());
+
+				MateriaalCategoriePeer::addSelectColumns($criteria);
+				$this->collMateriaalCategories = MateriaalCategoriePeer::doSelect($criteria, $con);
+			}
+		} else {
+			// criteria has no effect for a new object
+			if (!$this->isNew()) {
+				// the following code is to determine if a new query is
+				// called for.  If the criteria is the same as the last
+				// one, just return the collection.
+
+
+				$criteria->add(MateriaalCategoriePeer::AFBEELDING_NODE_ID, $this->getId());
+
+				MateriaalCategoriePeer::addSelectColumns($criteria);
+				if (!isset($this->lastMateriaalCategorieCriteria) || !$this->lastMateriaalCategorieCriteria->equals($criteria)) {
+					$this->collMateriaalCategories = MateriaalCategoriePeer::doSelect($criteria, $con);
+				}
+			}
+		}
+		$this->lastMateriaalCategorieCriteria = $criteria;
+		return $this->collMateriaalCategories;
+	}
+
+	/**
+	 * Returns the number of related MateriaalCategories.
+	 *
+	 * @param      Criteria $criteria
+	 * @param      boolean $distinct
+	 * @param      Connection $con
+	 * @return     int The number of MateriaalCategories
+	 * @throws     PropelException
+	 */
+	public function countMateriaalCategories($criteria = null, $distinct = false, $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseMateriaalCategoriePeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		$criteria->add(MateriaalCategoriePeer::AFBEELDING_NODE_ID, $this->getId());
+
+		return MateriaalCategoriePeer::doCount($criteria, $distinct, $con);
+	}
+
+	/**
+	 * Method called to associate a MateriaalCategorie object to this object
+	 * through the MateriaalCategorie foreign key attribute
+	 *
+	 * @param      MateriaalCategorie $l MateriaalCategorie
+	 * @return     void
+	 * @throws     PropelException
+	 */
+	public function addMateriaalCategorie(MateriaalCategorie $l)
+	{
+		$this->collMateriaalCategories[] = $l;
+		$l->setDmsNode($this);
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related MateriaalCategories from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return MateriaalCategorie[] MateriaalCategories joined with MateriaalCategorieRelatedByParentId
+	 */
+	public function getMateriaalCategoriesJoinMateriaalCategorieRelatedByParentId(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseMateriaalCategoriePeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collMateriaalCategories === null) {
+			if ($this->isNew()) {
+				$this->collMateriaalCategories = array();
+			} else {
+
+				$criteria->add(MateriaalCategoriePeer::AFBEELDING_NODE_ID, $this->getId());
+
+				$this->collMateriaalCategories = MateriaalCategoriePeer::doSelectJoinMateriaalCategorieRelatedByParentId($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(MateriaalCategoriePeer::AFBEELDING_NODE_ID, $this->getId());
+
+			if (!isset($this->lastMateriaalCategorieCriteria) || !$this->lastMateriaalCategorieCriteria->equals($criteria)) {
+				$this->collMateriaalCategories = MateriaalCategoriePeer::doSelectJoinMateriaalCategorieRelatedByParentId($criteria, $con);
+			}
+		}
+		$this->lastMateriaalCategorieCriteria = $criteria;
+
+		return $this->collMateriaalCategories;
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related MateriaalCategories from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return MateriaalCategorie[] MateriaalCategories joined with Bedrijf
+	 */
+	public function getMateriaalCategoriesJoinBedrijf(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseMateriaalCategoriePeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collMateriaalCategories === null) {
+			if ($this->isNew()) {
+				$this->collMateriaalCategories = array();
+			} else {
+
+				$criteria->add(MateriaalCategoriePeer::AFBEELDING_NODE_ID, $this->getId());
+
+				$this->collMateriaalCategories = MateriaalCategoriePeer::doSelectJoinBedrijf($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(MateriaalCategoriePeer::AFBEELDING_NODE_ID, $this->getId());
+
+			if (!isset($this->lastMateriaalCategorieCriteria) || !$this->lastMateriaalCategorieCriteria->equals($criteria)) {
+				$this->collMateriaalCategories = MateriaalCategoriePeer::doSelectJoinBedrijf($criteria, $con);
+			}
+		}
+		$this->lastMateriaalCategorieCriteria = $criteria;
+
+		return $this->collMateriaalCategories;
+	}
+
+	/**
+	 * Temporary storage of collRoutess to save a possible db hit in
+	 * the event objects are add to the collection, but the
+	 * complete collection is never requested.
+	 * @return     void
+	 */
+	public function initRoutess()
+	{
+		if ($this->collRoutess === null) {
+			$this->collRoutess = array();
+		}
+	}
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode has previously
+	 * been saved, it will retrieve related Routess from storage.
+	 * If this DmsNode is new, it will return
+	 * an empty collection or the current collection, the criteria
+	 * is ignored on a new object.
+	 *
+	 * @param      Connection $con
+	 * @param      Criteria $criteria
+	 * @throws     PropelException
+	 * @return     Routes[] Routess
+	 */
+	public function getRoutess($criteria = null, $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseRoutesPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collRoutess === null) {
+			if ($this->isNew()) {
+			   $this->collRoutess = array();
+			} else {
+
+				$criteria->add(RoutesPeer::DMS_NODE_ID, $this->getId());
+
+				RoutesPeer::addSelectColumns($criteria);
+				$this->collRoutess = RoutesPeer::doSelect($criteria, $con);
+			}
+		} else {
+			// criteria has no effect for a new object
+			if (!$this->isNew()) {
+				// the following code is to determine if a new query is
+				// called for.  If the criteria is the same as the last
+				// one, just return the collection.
+
+
+				$criteria->add(RoutesPeer::DMS_NODE_ID, $this->getId());
+
+				RoutesPeer::addSelectColumns($criteria);
+				if (!isset($this->lastRoutesCriteria) || !$this->lastRoutesCriteria->equals($criteria)) {
+					$this->collRoutess = RoutesPeer::doSelect($criteria, $con);
+				}
+			}
+		}
+		$this->lastRoutesCriteria = $criteria;
+		return $this->collRoutess;
+	}
+
+	/**
+	 * Returns the number of related Routess.
+	 *
+	 * @param      Criteria $criteria
+	 * @param      boolean $distinct
+	 * @param      Connection $con
+	 * @return     int The number of Routess
+	 * @throws     PropelException
+	 */
+	public function countRoutess($criteria = null, $distinct = false, $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseRoutesPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		$criteria->add(RoutesPeer::DMS_NODE_ID, $this->getId());
+
+		return RoutesPeer::doCount($criteria, $distinct, $con);
+	}
+
+	/**
+	 * Method called to associate a Routes object to this object
+	 * through the Routes foreign key attribute
+	 *
+	 * @param      Routes $l Routes
+	 * @return     void
+	 * @throws     PropelException
+	 */
+	public function addRoutes(Routes $l)
+	{
+		$this->collRoutess[] = $l;
+		$l->setDmsNode($this);
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related Routess from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return Routes[] Routess joined with Activiteit
+	 */
+	public function getRoutessJoinActiviteit(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseRoutesPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collRoutess === null) {
+			if ($this->isNew()) {
+				$this->collRoutess = array();
+			} else {
+
+				$criteria->add(RoutesPeer::DMS_NODE_ID, $this->getId());
+
+				$this->collRoutess = RoutesPeer::doSelectJoinActiviteit($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(RoutesPeer::DMS_NODE_ID, $this->getId());
+
+			if (!isset($this->lastRoutesCriteria) || !$this->lastRoutesCriteria->equals($criteria)) {
+				$this->collRoutess = RoutesPeer::doSelectJoinActiviteit($criteria, $con);
+			}
+		}
+		$this->lastRoutesCriteria = $criteria;
+
+		return $this->collRoutess;
+	}
+
+	/**
+	 * Temporary storage of collTegoedbons to save a possible db hit in
+	 * the event objects are add to the collection, but the
+	 * complete collection is never requested.
+	 * @return     void
+	 */
+	public function initTegoedbons()
+	{
+		if ($this->collTegoedbons === null) {
+			$this->collTegoedbons = array();
+		}
+	}
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode has previously
+	 * been saved, it will retrieve related Tegoedbons from storage.
+	 * If this DmsNode is new, it will return
+	 * an empty collection or the current collection, the criteria
+	 * is ignored on a new object.
+	 *
+	 * @param      Connection $con
+	 * @param      Criteria $criteria
+	 * @throws     PropelException
+	 * @return     Tegoedbon[] Tegoedbons
+	 */
+	public function getTegoedbons($criteria = null, $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseTegoedbonPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collTegoedbons === null) {
+			if ($this->isNew()) {
+			   $this->collTegoedbons = array();
+			} else {
+
+				$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
+
+				TegoedbonPeer::addSelectColumns($criteria);
+				$this->collTegoedbons = TegoedbonPeer::doSelect($criteria, $con);
+			}
+		} else {
+			// criteria has no effect for a new object
+			if (!$this->isNew()) {
+				// the following code is to determine if a new query is
+				// called for.  If the criteria is the same as the last
+				// one, just return the collection.
+
+
+				$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
+
+				TegoedbonPeer::addSelectColumns($criteria);
+				if (!isset($this->lastTegoedbonCriteria) || !$this->lastTegoedbonCriteria->equals($criteria)) {
+					$this->collTegoedbons = TegoedbonPeer::doSelect($criteria, $con);
+				}
+			}
+		}
+		$this->lastTegoedbonCriteria = $criteria;
+		return $this->collTegoedbons;
+	}
+
+	/**
+	 * Returns the number of related Tegoedbons.
+	 *
+	 * @param      Criteria $criteria
+	 * @param      boolean $distinct
+	 * @param      Connection $con
+	 * @return     int The number of Tegoedbons
+	 * @throws     PropelException
+	 */
+	public function countTegoedbons($criteria = null, $distinct = false, $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseTegoedbonPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
+
+		return TegoedbonPeer::doCount($criteria, $distinct, $con);
+	}
+
+	/**
+	 * Method called to associate a Tegoedbon object to this object
+	 * through the Tegoedbon foreign key attribute
+	 *
+	 * @param      Tegoedbon $l Tegoedbon
+	 * @return     void
+	 * @throws     PropelException
+	 */
+	public function addTegoedbon(Tegoedbon $l)
+	{
+		$this->collTegoedbons[] = $l;
+		$l->setDmsNode($this);
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related Tegoedbons from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return Tegoedbon[] Tegoedbons joined with Persoon
+	 */
+	public function getTegoedbonsJoinPersoon(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseTegoedbonPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collTegoedbons === null) {
+			if ($this->isNew()) {
+				$this->collTegoedbons = array();
+			} else {
+
+				$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
+
+				$this->collTegoedbons = TegoedbonPeer::doSelectJoinPersoon($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
+
+			if (!isset($this->lastTegoedbonCriteria) || !$this->lastTegoedbonCriteria->equals($criteria)) {
+				$this->collTegoedbons = TegoedbonPeer::doSelectJoinPersoon($criteria, $con);
+			}
+		}
+		$this->lastTegoedbonCriteria = $criteria;
+
+		return $this->collTegoedbons;
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related Tegoedbons from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return Tegoedbon[] Tegoedbons joined with LedenActiviteitInschrijving
+	 */
+	public function getTegoedbonsJoinLedenActiviteitInschrijving(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseTegoedbonPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collTegoedbons === null) {
+			if ($this->isNew()) {
+				$this->collTegoedbons = array();
+			} else {
+
+				$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
+
+				$this->collTegoedbons = TegoedbonPeer::doSelectJoinLedenActiviteitInschrijving($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
+
+			if (!isset($this->lastTegoedbonCriteria) || !$this->lastTegoedbonCriteria->equals($criteria)) {
+				$this->collTegoedbons = TegoedbonPeer::doSelectJoinLedenActiviteitInschrijving($criteria, $con);
+			}
+		}
+		$this->lastTegoedbonCriteria = $criteria;
+
+		return $this->collTegoedbons;
+	}
+
+	/**
+	 * Temporary storage of collSportsubsidieBestelbonUitbetalings to save a possible db hit in
+	 * the event objects are add to the collection, but the
+	 * complete collection is never requested.
+	 * @return     void
+	 */
+	public function initSportsubsidieBestelbonUitbetalings()
+	{
+		if ($this->collSportsubsidieBestelbonUitbetalings === null) {
+			$this->collSportsubsidieBestelbonUitbetalings = array();
+		}
+	}
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode has previously
+	 * been saved, it will retrieve related SportsubsidieBestelbonUitbetalings from storage.
+	 * If this DmsNode is new, it will return
+	 * an empty collection or the current collection, the criteria
+	 * is ignored on a new object.
+	 *
+	 * @param      Connection $con
+	 * @param      Criteria $criteria
+	 * @throws     PropelException
+	 * @return     SportsubsidieBestelbonUitbetaling[] SportsubsidieBestelbonUitbetalings
+	 */
+	public function getSportsubsidieBestelbonUitbetalings($criteria = null, $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseSportsubsidieBestelbonUitbetalingPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collSportsubsidieBestelbonUitbetalings === null) {
+			if ($this->isNew()) {
+			   $this->collSportsubsidieBestelbonUitbetalings = array();
+			} else {
+
+				$criteria->add(SportsubsidieBestelbonUitbetalingPeer::BIJLAGE_ID, $this->getId());
+
+				SportsubsidieBestelbonUitbetalingPeer::addSelectColumns($criteria);
+				$this->collSportsubsidieBestelbonUitbetalings = SportsubsidieBestelbonUitbetalingPeer::doSelect($criteria, $con);
+			}
+		} else {
+			// criteria has no effect for a new object
+			if (!$this->isNew()) {
+				// the following code is to determine if a new query is
+				// called for.  If the criteria is the same as the last
+				// one, just return the collection.
+
+
+				$criteria->add(SportsubsidieBestelbonUitbetalingPeer::BIJLAGE_ID, $this->getId());
+
+				SportsubsidieBestelbonUitbetalingPeer::addSelectColumns($criteria);
+				if (!isset($this->lastSportsubsidieBestelbonUitbetalingCriteria) || !$this->lastSportsubsidieBestelbonUitbetalingCriteria->equals($criteria)) {
+					$this->collSportsubsidieBestelbonUitbetalings = SportsubsidieBestelbonUitbetalingPeer::doSelect($criteria, $con);
+				}
+			}
+		}
+		$this->lastSportsubsidieBestelbonUitbetalingCriteria = $criteria;
+		return $this->collSportsubsidieBestelbonUitbetalings;
+	}
+
+	/**
+	 * Returns the number of related SportsubsidieBestelbonUitbetalings.
+	 *
+	 * @param      Criteria $criteria
+	 * @param      boolean $distinct
+	 * @param      Connection $con
+	 * @return     int The number of SportsubsidieBestelbonUitbetalings
+	 * @throws     PropelException
+	 */
+	public function countSportsubsidieBestelbonUitbetalings($criteria = null, $distinct = false, $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseSportsubsidieBestelbonUitbetalingPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		$criteria->add(SportsubsidieBestelbonUitbetalingPeer::BIJLAGE_ID, $this->getId());
+
+		return SportsubsidieBestelbonUitbetalingPeer::doCount($criteria, $distinct, $con);
+	}
+
+	/**
+	 * Method called to associate a SportsubsidieBestelbonUitbetaling object to this object
+	 * through the SportsubsidieBestelbonUitbetaling foreign key attribute
+	 *
+	 * @param      SportsubsidieBestelbonUitbetaling $l SportsubsidieBestelbonUitbetaling
+	 * @return     void
+	 * @throws     PropelException
+	 */
+	public function addSportsubsidieBestelbonUitbetaling(SportsubsidieBestelbonUitbetaling $l)
+	{
+		$this->collSportsubsidieBestelbonUitbetalings[] = $l;
+		$l->setDmsNode($this);
+	}
+
+
+	/**
+	 * If this collection has already been initialized with
+	 * an identical criteria, it returns the collection.
+	 * Otherwise if this DmsNode is new, it will return
+	 * an empty collection; or if this DmsNode has previously
+	 * been saved, it will retrieve related SportsubsidieBestelbonUitbetalings from storage.
+	 *
+	 * This method is protected by default in order to keep the public
+	 * api reasonable.  You can provide public methods for those you
+	 * actually need in DmsNode.
+	 *
+	 * @param Criteria     $criteria
+	 * @param Connection   $con
+	 * @return SportsubsidieBestelbonUitbetaling[] SportsubsidieBestelbonUitbetalings joined with SportsubsidieBestelbon
+	 */
+	public function getSportsubsidieBestelbonUitbetalingsJoinSportsubsidieBestelbon(Criteria $criteria = null, Connection $con = null)
+	{
+		// include the Peer class
+		include_once 'lib/model/om/BaseSportsubsidieBestelbonUitbetalingPeer.php';
+		if ($criteria === null) {
+			$criteria = new Criteria();
+		}
+		elseif ($criteria instanceof Criteria)
+		{
+			$criteria = clone $criteria;
+		}
+
+		if ($this->collSportsubsidieBestelbonUitbetalings === null) {
+			if ($this->isNew()) {
+				$this->collSportsubsidieBestelbonUitbetalings = array();
+			} else {
+
+				$criteria->add(SportsubsidieBestelbonUitbetalingPeer::BIJLAGE_ID, $this->getId());
+
+				$this->collSportsubsidieBestelbonUitbetalings = SportsubsidieBestelbonUitbetalingPeer::doSelectJoinSportsubsidieBestelbon($criteria, $con);
+			}
+		} else {
+			// the following code is to determine if a new query is
+			// called for.  If the criteria is the same as the last
+			// one, just return the collection.
+
+			$criteria->add(SportsubsidieBestelbonUitbetalingPeer::BIJLAGE_ID, $this->getId());
+
+			if (!isset($this->lastSportsubsidieBestelbonUitbetalingCriteria) || !$this->lastSportsubsidieBestelbonUitbetalingCriteria->equals($criteria)) {
+				$this->collSportsubsidieBestelbonUitbetalings = SportsubsidieBestelbonUitbetalingPeer::doSelectJoinSportsubsidieBestelbon($criteria, $con);
+			}
+		}
+		$this->lastSportsubsidieBestelbonUitbetalingCriteria = $criteria;
+
+		return $this->collSportsubsidieBestelbonUitbetalings;
 	}
 
 	/**
@@ -2106,651 +3963,6 @@ abstract class BaseDmsNode extends BaseObject  implements Persistent {
 	{
 		$this->collDmsObjectNodeRefs[] = $l;
 		$l->setDmsNode($this);
-	}
-
-	/**
-	 * Temporary storage of collSubsidieBijlages to save a possible db hit in
-	 * the event objects are add to the collection, but the
-	 * complete collection is never requested.
-	 * @return     void
-	 */
-	public function initSubsidieBijlages()
-	{
-		if ($this->collSubsidieBijlages === null) {
-			$this->collSubsidieBijlages = array();
-		}
-	}
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this DmsNode has previously
-	 * been saved, it will retrieve related SubsidieBijlages from storage.
-	 * If this DmsNode is new, it will return
-	 * an empty collection or the current collection, the criteria
-	 * is ignored on a new object.
-	 *
-	 * @param      Connection $con
-	 * @param      Criteria $criteria
-	 * @throws     PropelException
-	 * @return     SubsidieBijlage[] SubsidieBijlages
-	 */
-	public function getSubsidieBijlages($criteria = null, $con = null)
-	{
-		// include the Peer class
-		include_once 'lib/model/om/BaseSubsidieBijlagePeer.php';
-		if ($criteria === null) {
-			$criteria = new Criteria();
-		}
-		elseif ($criteria instanceof Criteria)
-		{
-			$criteria = clone $criteria;
-		}
-
-		if ($this->collSubsidieBijlages === null) {
-			if ($this->isNew()) {
-			   $this->collSubsidieBijlages = array();
-			} else {
-
-				$criteria->add(SubsidieBijlagePeer::NODE_ID, $this->getId());
-
-				SubsidieBijlagePeer::addSelectColumns($criteria);
-				$this->collSubsidieBijlages = SubsidieBijlagePeer::doSelect($criteria, $con);
-			}
-		} else {
-			// criteria has no effect for a new object
-			if (!$this->isNew()) {
-				// the following code is to determine if a new query is
-				// called for.  If the criteria is the same as the last
-				// one, just return the collection.
-
-
-				$criteria->add(SubsidieBijlagePeer::NODE_ID, $this->getId());
-
-				SubsidieBijlagePeer::addSelectColumns($criteria);
-				if (!isset($this->lastSubsidieBijlageCriteria) || !$this->lastSubsidieBijlageCriteria->equals($criteria)) {
-					$this->collSubsidieBijlages = SubsidieBijlagePeer::doSelect($criteria, $con);
-				}
-			}
-		}
-		$this->lastSubsidieBijlageCriteria = $criteria;
-		return $this->collSubsidieBijlages;
-	}
-
-	/**
-	 * Returns the number of related SubsidieBijlages.
-	 *
-	 * @param      Criteria $criteria
-	 * @param      boolean $distinct
-	 * @param      Connection $con
-	 * @return     int The number of SubsidieBijlages
-	 * @throws     PropelException
-	 */
-	public function countSubsidieBijlages($criteria = null, $distinct = false, $con = null)
-	{
-		// include the Peer class
-		include_once 'lib/model/om/BaseSubsidieBijlagePeer.php';
-		if ($criteria === null) {
-			$criteria = new Criteria();
-		}
-		elseif ($criteria instanceof Criteria)
-		{
-			$criteria = clone $criteria;
-		}
-
-		$criteria->add(SubsidieBijlagePeer::NODE_ID, $this->getId());
-
-		return SubsidieBijlagePeer::doCount($criteria, $distinct, $con);
-	}
-
-	/**
-	 * Method called to associate a SubsidieBijlage object to this object
-	 * through the SubsidieBijlage foreign key attribute
-	 *
-	 * @param      SubsidieBijlage $l SubsidieBijlage
-	 * @return     void
-	 * @throws     PropelException
-	 */
-	public function addSubsidieBijlage(SubsidieBijlage $l)
-	{
-		$this->collSubsidieBijlages[] = $l;
-		$l->setDmsNode($this);
-	}
-
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this DmsNode is new, it will return
-	 * an empty collection; or if this DmsNode has previously
-	 * been saved, it will retrieve related SubsidieBijlages from storage.
-	 *
-	 * This method is protected by default in order to keep the public
-	 * api reasonable.  You can provide public methods for those you
-	 * actually need in DmsNode.
-	 *
-	 * @param Criteria     $criteria
-	 * @param Connection   $con
-	 * @return SubsidieBijlage[] SubsidieBijlages joined with SubsidieAanvraag
-	 */
-	public function getSubsidieBijlagesJoinSubsidieAanvraag(Criteria $criteria = null, Connection $con = null)
-	{
-		// include the Peer class
-		include_once 'lib/model/om/BaseSubsidieBijlagePeer.php';
-		if ($criteria === null) {
-			$criteria = new Criteria();
-		}
-		elseif ($criteria instanceof Criteria)
-		{
-			$criteria = clone $criteria;
-		}
-
-		if ($this->collSubsidieBijlages === null) {
-			if ($this->isNew()) {
-				$this->collSubsidieBijlages = array();
-			} else {
-
-				$criteria->add(SubsidieBijlagePeer::NODE_ID, $this->getId());
-
-				$this->collSubsidieBijlages = SubsidieBijlagePeer::doSelectJoinSubsidieAanvraag($criteria, $con);
-			}
-		} else {
-			// the following code is to determine if a new query is
-			// called for.  If the criteria is the same as the last
-			// one, just return the collection.
-
-			$criteria->add(SubsidieBijlagePeer::NODE_ID, $this->getId());
-
-			if (!isset($this->lastSubsidieBijlageCriteria) || !$this->lastSubsidieBijlageCriteria->equals($criteria)) {
-				$this->collSubsidieBijlages = SubsidieBijlagePeer::doSelectJoinSubsidieAanvraag($criteria, $con);
-			}
-		}
-		$this->lastSubsidieBijlageCriteria = $criteria;
-
-		return $this->collSubsidieBijlages;
-	}
-
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this DmsNode is new, it will return
-	 * an empty collection; or if this DmsNode has previously
-	 * been saved, it will retrieve related SubsidieBijlages from storage.
-	 *
-	 * This method is protected by default in order to keep the public
-	 * api reasonable.  You can provide public methods for those you
-	 * actually need in DmsNode.
-	 *
-	 * @param Criteria     $criteria
-	 * @param Connection   $con
-	 * @return SubsidieBijlage[] SubsidieBijlages joined with OrganisatieTrainer
-	 */
-	public function getSubsidieBijlagesJoinOrganisatieTrainer(Criteria $criteria = null, Connection $con = null)
-	{
-		// include the Peer class
-		include_once 'lib/model/om/BaseSubsidieBijlagePeer.php';
-		if ($criteria === null) {
-			$criteria = new Criteria();
-		}
-		elseif ($criteria instanceof Criteria)
-		{
-			$criteria = clone $criteria;
-		}
-
-		if ($this->collSubsidieBijlages === null) {
-			if ($this->isNew()) {
-				$this->collSubsidieBijlages = array();
-			} else {
-
-				$criteria->add(SubsidieBijlagePeer::NODE_ID, $this->getId());
-
-				$this->collSubsidieBijlages = SubsidieBijlagePeer::doSelectJoinOrganisatieTrainer($criteria, $con);
-			}
-		} else {
-			// the following code is to determine if a new query is
-			// called for.  If the criteria is the same as the last
-			// one, just return the collection.
-
-			$criteria->add(SubsidieBijlagePeer::NODE_ID, $this->getId());
-
-			if (!isset($this->lastSubsidieBijlageCriteria) || !$this->lastSubsidieBijlageCriteria->equals($criteria)) {
-				$this->collSubsidieBijlages = SubsidieBijlagePeer::doSelectJoinOrganisatieTrainer($criteria, $con);
-			}
-		}
-		$this->lastSubsidieBijlageCriteria = $criteria;
-
-		return $this->collSubsidieBijlages;
-	}
-
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this DmsNode is new, it will return
-	 * an empty collection; or if this DmsNode has previously
-	 * been saved, it will retrieve related SubsidieBijlages from storage.
-	 *
-	 * This method is protected by default in order to keep the public
-	 * api reasonable.  You can provide public methods for those you
-	 * actually need in DmsNode.
-	 *
-	 * @param Criteria     $criteria
-	 * @param Connection   $con
-	 * @return SubsidieBijlage[] SubsidieBijlages joined with SubsidieAanvraagPatrimonium
-	 */
-	public function getSubsidieBijlagesJoinSubsidieAanvraagPatrimonium(Criteria $criteria = null, Connection $con = null)
-	{
-		// include the Peer class
-		include_once 'lib/model/om/BaseSubsidieBijlagePeer.php';
-		if ($criteria === null) {
-			$criteria = new Criteria();
-		}
-		elseif ($criteria instanceof Criteria)
-		{
-			$criteria = clone $criteria;
-		}
-
-		if ($this->collSubsidieBijlages === null) {
-			if ($this->isNew()) {
-				$this->collSubsidieBijlages = array();
-			} else {
-
-				$criteria->add(SubsidieBijlagePeer::NODE_ID, $this->getId());
-
-				$this->collSubsidieBijlages = SubsidieBijlagePeer::doSelectJoinSubsidieAanvraagPatrimonium($criteria, $con);
-			}
-		} else {
-			// the following code is to determine if a new query is
-			// called for.  If the criteria is the same as the last
-			// one, just return the collection.
-
-			$criteria->add(SubsidieBijlagePeer::NODE_ID, $this->getId());
-
-			if (!isset($this->lastSubsidieBijlageCriteria) || !$this->lastSubsidieBijlageCriteria->equals($criteria)) {
-				$this->collSubsidieBijlages = SubsidieBijlagePeer::doSelectJoinSubsidieAanvraagPatrimonium($criteria, $con);
-			}
-		}
-		$this->lastSubsidieBijlageCriteria = $criteria;
-
-		return $this->collSubsidieBijlages;
-	}
-
-	/**
-	 * Temporary storage of collRoutess to save a possible db hit in
-	 * the event objects are add to the collection, but the
-	 * complete collection is never requested.
-	 * @return     void
-	 */
-	public function initRoutess()
-	{
-		if ($this->collRoutess === null) {
-			$this->collRoutess = array();
-		}
-	}
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this DmsNode has previously
-	 * been saved, it will retrieve related Routess from storage.
-	 * If this DmsNode is new, it will return
-	 * an empty collection or the current collection, the criteria
-	 * is ignored on a new object.
-	 *
-	 * @param      Connection $con
-	 * @param      Criteria $criteria
-	 * @throws     PropelException
-	 * @return     Routes[] Routess
-	 */
-	public function getRoutess($criteria = null, $con = null)
-	{
-		// include the Peer class
-		include_once 'lib/model/om/BaseRoutesPeer.php';
-		if ($criteria === null) {
-			$criteria = new Criteria();
-		}
-		elseif ($criteria instanceof Criteria)
-		{
-			$criteria = clone $criteria;
-		}
-
-		if ($this->collRoutess === null) {
-			if ($this->isNew()) {
-			   $this->collRoutess = array();
-			} else {
-
-				$criteria->add(RoutesPeer::DMS_NODE_ID, $this->getId());
-
-				RoutesPeer::addSelectColumns($criteria);
-				$this->collRoutess = RoutesPeer::doSelect($criteria, $con);
-			}
-		} else {
-			// criteria has no effect for a new object
-			if (!$this->isNew()) {
-				// the following code is to determine if a new query is
-				// called for.  If the criteria is the same as the last
-				// one, just return the collection.
-
-
-				$criteria->add(RoutesPeer::DMS_NODE_ID, $this->getId());
-
-				RoutesPeer::addSelectColumns($criteria);
-				if (!isset($this->lastRoutesCriteria) || !$this->lastRoutesCriteria->equals($criteria)) {
-					$this->collRoutess = RoutesPeer::doSelect($criteria, $con);
-				}
-			}
-		}
-		$this->lastRoutesCriteria = $criteria;
-		return $this->collRoutess;
-	}
-
-	/**
-	 * Returns the number of related Routess.
-	 *
-	 * @param      Criteria $criteria
-	 * @param      boolean $distinct
-	 * @param      Connection $con
-	 * @return     int The number of Routess
-	 * @throws     PropelException
-	 */
-	public function countRoutess($criteria = null, $distinct = false, $con = null)
-	{
-		// include the Peer class
-		include_once 'lib/model/om/BaseRoutesPeer.php';
-		if ($criteria === null) {
-			$criteria = new Criteria();
-		}
-		elseif ($criteria instanceof Criteria)
-		{
-			$criteria = clone $criteria;
-		}
-
-		$criteria->add(RoutesPeer::DMS_NODE_ID, $this->getId());
-
-		return RoutesPeer::doCount($criteria, $distinct, $con);
-	}
-
-	/**
-	 * Method called to associate a Routes object to this object
-	 * through the Routes foreign key attribute
-	 *
-	 * @param      Routes $l Routes
-	 * @return     void
-	 * @throws     PropelException
-	 */
-	public function addRoutes(Routes $l)
-	{
-		$this->collRoutess[] = $l;
-		$l->setDmsNode($this);
-	}
-
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this DmsNode is new, it will return
-	 * an empty collection; or if this DmsNode has previously
-	 * been saved, it will retrieve related Routess from storage.
-	 *
-	 * This method is protected by default in order to keep the public
-	 * api reasonable.  You can provide public methods for those you
-	 * actually need in DmsNode.
-	 *
-	 * @param Criteria     $criteria
-	 * @param Connection   $con
-	 * @return Routes[] Routess joined with Activiteit
-	 */
-	public function getRoutessJoinActiviteit(Criteria $criteria = null, Connection $con = null)
-	{
-		// include the Peer class
-		include_once 'lib/model/om/BaseRoutesPeer.php';
-		if ($criteria === null) {
-			$criteria = new Criteria();
-		}
-		elseif ($criteria instanceof Criteria)
-		{
-			$criteria = clone $criteria;
-		}
-
-		if ($this->collRoutess === null) {
-			if ($this->isNew()) {
-				$this->collRoutess = array();
-			} else {
-
-				$criteria->add(RoutesPeer::DMS_NODE_ID, $this->getId());
-
-				$this->collRoutess = RoutesPeer::doSelectJoinActiviteit($criteria, $con);
-			}
-		} else {
-			// the following code is to determine if a new query is
-			// called for.  If the criteria is the same as the last
-			// one, just return the collection.
-
-			$criteria->add(RoutesPeer::DMS_NODE_ID, $this->getId());
-
-			if (!isset($this->lastRoutesCriteria) || !$this->lastRoutesCriteria->equals($criteria)) {
-				$this->collRoutess = RoutesPeer::doSelectJoinActiviteit($criteria, $con);
-			}
-		}
-		$this->lastRoutesCriteria = $criteria;
-
-		return $this->collRoutess;
-	}
-
-	/**
-	 * Temporary storage of collTegoedbons to save a possible db hit in
-	 * the event objects are add to the collection, but the
-	 * complete collection is never requested.
-	 * @return     void
-	 */
-	public function initTegoedbons()
-	{
-		if ($this->collTegoedbons === null) {
-			$this->collTegoedbons = array();
-		}
-	}
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this DmsNode has previously
-	 * been saved, it will retrieve related Tegoedbons from storage.
-	 * If this DmsNode is new, it will return
-	 * an empty collection or the current collection, the criteria
-	 * is ignored on a new object.
-	 *
-	 * @param      Connection $con
-	 * @param      Criteria $criteria
-	 * @throws     PropelException
-	 * @return     Tegoedbon[] Tegoedbons
-	 */
-	public function getTegoedbons($criteria = null, $con = null)
-	{
-		// include the Peer class
-		include_once 'lib/model/om/BaseTegoedbonPeer.php';
-		if ($criteria === null) {
-			$criteria = new Criteria();
-		}
-		elseif ($criteria instanceof Criteria)
-		{
-			$criteria = clone $criteria;
-		}
-
-		if ($this->collTegoedbons === null) {
-			if ($this->isNew()) {
-			   $this->collTegoedbons = array();
-			} else {
-
-				$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
-
-				TegoedbonPeer::addSelectColumns($criteria);
-				$this->collTegoedbons = TegoedbonPeer::doSelect($criteria, $con);
-			}
-		} else {
-			// criteria has no effect for a new object
-			if (!$this->isNew()) {
-				// the following code is to determine if a new query is
-				// called for.  If the criteria is the same as the last
-				// one, just return the collection.
-
-
-				$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
-
-				TegoedbonPeer::addSelectColumns($criteria);
-				if (!isset($this->lastTegoedbonCriteria) || !$this->lastTegoedbonCriteria->equals($criteria)) {
-					$this->collTegoedbons = TegoedbonPeer::doSelect($criteria, $con);
-				}
-			}
-		}
-		$this->lastTegoedbonCriteria = $criteria;
-		return $this->collTegoedbons;
-	}
-
-	/**
-	 * Returns the number of related Tegoedbons.
-	 *
-	 * @param      Criteria $criteria
-	 * @param      boolean $distinct
-	 * @param      Connection $con
-	 * @return     int The number of Tegoedbons
-	 * @throws     PropelException
-	 */
-	public function countTegoedbons($criteria = null, $distinct = false, $con = null)
-	{
-		// include the Peer class
-		include_once 'lib/model/om/BaseTegoedbonPeer.php';
-		if ($criteria === null) {
-			$criteria = new Criteria();
-		}
-		elseif ($criteria instanceof Criteria)
-		{
-			$criteria = clone $criteria;
-		}
-
-		$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
-
-		return TegoedbonPeer::doCount($criteria, $distinct, $con);
-	}
-
-	/**
-	 * Method called to associate a Tegoedbon object to this object
-	 * through the Tegoedbon foreign key attribute
-	 *
-	 * @param      Tegoedbon $l Tegoedbon
-	 * @return     void
-	 * @throws     PropelException
-	 */
-	public function addTegoedbon(Tegoedbon $l)
-	{
-		$this->collTegoedbons[] = $l;
-		$l->setDmsNode($this);
-	}
-
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this DmsNode is new, it will return
-	 * an empty collection; or if this DmsNode has previously
-	 * been saved, it will retrieve related Tegoedbons from storage.
-	 *
-	 * This method is protected by default in order to keep the public
-	 * api reasonable.  You can provide public methods for those you
-	 * actually need in DmsNode.
-	 *
-	 * @param Criteria     $criteria
-	 * @param Connection   $con
-	 * @return Tegoedbon[] Tegoedbons joined with Persoon
-	 */
-	public function getTegoedbonsJoinPersoon(Criteria $criteria = null, Connection $con = null)
-	{
-		// include the Peer class
-		include_once 'lib/model/om/BaseTegoedbonPeer.php';
-		if ($criteria === null) {
-			$criteria = new Criteria();
-		}
-		elseif ($criteria instanceof Criteria)
-		{
-			$criteria = clone $criteria;
-		}
-
-		if ($this->collTegoedbons === null) {
-			if ($this->isNew()) {
-				$this->collTegoedbons = array();
-			} else {
-
-				$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
-
-				$this->collTegoedbons = TegoedbonPeer::doSelectJoinPersoon($criteria, $con);
-			}
-		} else {
-			// the following code is to determine if a new query is
-			// called for.  If the criteria is the same as the last
-			// one, just return the collection.
-
-			$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
-
-			if (!isset($this->lastTegoedbonCriteria) || !$this->lastTegoedbonCriteria->equals($criteria)) {
-				$this->collTegoedbons = TegoedbonPeer::doSelectJoinPersoon($criteria, $con);
-			}
-		}
-		$this->lastTegoedbonCriteria = $criteria;
-
-		return $this->collTegoedbons;
-	}
-
-
-	/**
-	 * If this collection has already been initialized with
-	 * an identical criteria, it returns the collection.
-	 * Otherwise if this DmsNode is new, it will return
-	 * an empty collection; or if this DmsNode has previously
-	 * been saved, it will retrieve related Tegoedbons from storage.
-	 *
-	 * This method is protected by default in order to keep the public
-	 * api reasonable.  You can provide public methods for those you
-	 * actually need in DmsNode.
-	 *
-	 * @param Criteria     $criteria
-	 * @param Connection   $con
-	 * @return Tegoedbon[] Tegoedbons joined with LedenActiviteitInschrijving
-	 */
-	public function getTegoedbonsJoinLedenActiviteitInschrijving(Criteria $criteria = null, Connection $con = null)
-	{
-		// include the Peer class
-		include_once 'lib/model/om/BaseTegoedbonPeer.php';
-		if ($criteria === null) {
-			$criteria = new Criteria();
-		}
-		elseif ($criteria instanceof Criteria)
-		{
-			$criteria = clone $criteria;
-		}
-
-		if ($this->collTegoedbons === null) {
-			if ($this->isNew()) {
-				$this->collTegoedbons = array();
-			} else {
-
-				$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
-
-				$this->collTegoedbons = TegoedbonPeer::doSelectJoinLedenActiviteitInschrijving($criteria, $con);
-			}
-		} else {
-			// the following code is to determine if a new query is
-			// called for.  If the criteria is the same as the last
-			// one, just return the collection.
-
-			$criteria->add(TegoedbonPeer::VERANTWOORDINGSDOCUMENT_ID, $this->getId());
-
-			if (!isset($this->lastTegoedbonCriteria) || !$this->lastTegoedbonCriteria->equals($criteria)) {
-				$this->collTegoedbons = TegoedbonPeer::doSelectJoinLedenActiviteitInschrijving($criteria, $con);
-			}
-		}
-		$this->lastTegoedbonCriteria = $criteria;
-
-		return $this->collTegoedbons;
 	}
 
 

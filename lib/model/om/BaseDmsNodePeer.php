@@ -19,7 +19,7 @@ abstract class BaseDmsNodePeer {
 	const CLASS_DEFAULT = 'plugins.ttDmsPlugin.lib.model.DmsNode';
 
 	/** The total number of columns. */
-	const NUM_COLUMNS = 11;
+	const NUM_COLUMNS = 12;
 
 	/** The number of lazy-loaded columns. */
 	const NUM_LAZY_LOAD_COLUMNS = 0;
@@ -46,6 +46,9 @@ abstract class BaseDmsNodePeer {
 	/** the column name for the CONTENT_UPDATED_AT field */
 	const CONTENT_UPDATED_AT = 'dms_node.CONTENT_UPDATED_AT';
 
+	/** the column name for the GEARCHIVEERD field */
+	const GEARCHIVEERD = 'dms_node.GEARCHIVEERD';
+
 	/** the column name for the CREATED_BY field */
 	const CREATED_BY = 'dms_node.CREATED_BY';
 
@@ -69,10 +72,10 @@ abstract class BaseDmsNodePeer {
 	 * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
 	 */
 	private static $fieldNames = array (
-		BasePeer::TYPE_PHPNAME => array ('Id', 'StoreId', 'ParentId', 'IsFolder', 'Name', 'DiskName', 'ContentUpdatedAt', 'CreatedBy', 'UpdatedBy', 'CreatedAt', 'UpdatedAt', ),
-		BasePeer::TYPE_COLNAME => array (DmsNodePeer::ID, DmsNodePeer::STORE_ID, DmsNodePeer::PARENT_ID, DmsNodePeer::IS_FOLDER, DmsNodePeer::NAME, DmsNodePeer::DISK_NAME, DmsNodePeer::CONTENT_UPDATED_AT, DmsNodePeer::CREATED_BY, DmsNodePeer::UPDATED_BY, DmsNodePeer::CREATED_AT, DmsNodePeer::UPDATED_AT, ),
-		BasePeer::TYPE_FIELDNAME => array ('id', 'store_id', 'parent_id', 'is_folder', 'name', 'disk_name', 'content_updated_at', 'created_by', 'updated_by', 'created_at', 'updated_at', ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, )
+		BasePeer::TYPE_PHPNAME => array ('Id', 'StoreId', 'ParentId', 'IsFolder', 'Name', 'DiskName', 'ContentUpdatedAt', 'Gearchiveerd', 'CreatedBy', 'UpdatedBy', 'CreatedAt', 'UpdatedAt', ),
+		BasePeer::TYPE_COLNAME => array (DmsNodePeer::ID, DmsNodePeer::STORE_ID, DmsNodePeer::PARENT_ID, DmsNodePeer::IS_FOLDER, DmsNodePeer::NAME, DmsNodePeer::DISK_NAME, DmsNodePeer::CONTENT_UPDATED_AT, DmsNodePeer::GEARCHIVEERD, DmsNodePeer::CREATED_BY, DmsNodePeer::UPDATED_BY, DmsNodePeer::CREATED_AT, DmsNodePeer::UPDATED_AT, ),
+		BasePeer::TYPE_FIELDNAME => array ('id', 'store_id', 'parent_id', 'is_folder', 'name', 'disk_name', 'content_updated_at', 'gearchiveerd', 'created_by', 'updated_by', 'created_at', 'updated_at', ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, )
 	);
 
 	/**
@@ -82,10 +85,10 @@ abstract class BaseDmsNodePeer {
 	 * e.g. self::$fieldNames[BasePeer::TYPE_PHPNAME]['Id'] = 0
 	 */
 	private static $fieldKeys = array (
-		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'StoreId' => 1, 'ParentId' => 2, 'IsFolder' => 3, 'Name' => 4, 'DiskName' => 5, 'ContentUpdatedAt' => 6, 'CreatedBy' => 7, 'UpdatedBy' => 8, 'CreatedAt' => 9, 'UpdatedAt' => 10, ),
-		BasePeer::TYPE_COLNAME => array (DmsNodePeer::ID => 0, DmsNodePeer::STORE_ID => 1, DmsNodePeer::PARENT_ID => 2, DmsNodePeer::IS_FOLDER => 3, DmsNodePeer::NAME => 4, DmsNodePeer::DISK_NAME => 5, DmsNodePeer::CONTENT_UPDATED_AT => 6, DmsNodePeer::CREATED_BY => 7, DmsNodePeer::UPDATED_BY => 8, DmsNodePeer::CREATED_AT => 9, DmsNodePeer::UPDATED_AT => 10, ),
-		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'store_id' => 1, 'parent_id' => 2, 'is_folder' => 3, 'name' => 4, 'disk_name' => 5, 'content_updated_at' => 6, 'created_by' => 7, 'updated_by' => 8, 'created_at' => 9, 'updated_at' => 10, ),
-		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, )
+		BasePeer::TYPE_PHPNAME => array ('Id' => 0, 'StoreId' => 1, 'ParentId' => 2, 'IsFolder' => 3, 'Name' => 4, 'DiskName' => 5, 'ContentUpdatedAt' => 6, 'Gearchiveerd' => 7, 'CreatedBy' => 8, 'UpdatedBy' => 9, 'CreatedAt' => 10, 'UpdatedAt' => 11, ),
+		BasePeer::TYPE_COLNAME => array (DmsNodePeer::ID => 0, DmsNodePeer::STORE_ID => 1, DmsNodePeer::PARENT_ID => 2, DmsNodePeer::IS_FOLDER => 3, DmsNodePeer::NAME => 4, DmsNodePeer::DISK_NAME => 5, DmsNodePeer::CONTENT_UPDATED_AT => 6, DmsNodePeer::GEARCHIVEERD => 7, DmsNodePeer::CREATED_BY => 8, DmsNodePeer::UPDATED_BY => 9, DmsNodePeer::CREATED_AT => 10, DmsNodePeer::UPDATED_AT => 11, ),
+		BasePeer::TYPE_FIELDNAME => array ('id' => 0, 'store_id' => 1, 'parent_id' => 2, 'is_folder' => 3, 'name' => 4, 'disk_name' => 5, 'content_updated_at' => 6, 'gearchiveerd' => 7, 'created_by' => 8, 'updated_by' => 9, 'created_at' => 10, 'updated_at' => 11, ),
+		BasePeer::TYPE_NUM => array (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, )
 	);
 
 	/**
@@ -222,6 +225,11 @@ abstract class BaseDmsNodePeer {
 		$columnToSelect = $alias
 		  ? DmsNodePeer::alias($alias, DmsNodePeer::CONTENT_UPDATED_AT)
 		  : DmsNodePeer::CONTENT_UPDATED_AT;
+		$criteria->addSelectColumn($columnToSelect);
+
+		$columnToSelect = $alias
+		  ? DmsNodePeer::alias($alias, DmsNodePeer::GEARCHIVEERD)
+		  : DmsNodePeer::GEARCHIVEERD;
 		$criteria->addSelectColumn($columnToSelect);
 
 		$columnToSelect = $alias

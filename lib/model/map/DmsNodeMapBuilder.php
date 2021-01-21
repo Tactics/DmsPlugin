@@ -75,6 +75,8 @@ class DmsNodeMapBuilder {
 
 		$tMap->addColumn('CONTENT_UPDATED_AT', 'ContentUpdatedAt', 'int', CreoleTypes::TIMESTAMP, false, null);
 
+		$tMap->addColumn('GEARCHIVEERD', 'Gearchiveerd', 'boolean', CreoleTypes::BOOLEAN, true, null);
+
 		$tMap->addColumn('CREATED_BY', 'CreatedBy', 'int', CreoleTypes::INTEGER, false, null);
 
 		$tMap->addColumn('UPDATED_BY', 'UpdatedBy', 'int', CreoleTypes::INTEGER, false, null);

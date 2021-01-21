@@ -8,6 +8,7 @@
     <column name="name" type="VARCHAR" size="255"/>
     <column name="disk_name" type="VARCHAR" size="255"/>
     <column name="content_updated_at" type="TIMESTAMP"/>
+    <column name="gearchiveerd" type="BOOLEAN" required="true" default="0"/>
     <column name="created_by" type="INTEGER"/>
     <column name="updated_by" type="INTEGER"/>
     <column name="created_at" type="TIMESTAMP"/>
