@@ -1,3 +1,5 @@
+<?php /** @var DmsNode $node the root folder node */ ?>
+
 <header>
   <h2 class="pageblock">Bestanden</h2>
 </header>
@@ -104,6 +106,62 @@ function multiActie(actie)
 		  .appendTo('body').submit().remove();
 
       break;
+    case 'archive':
+        jQuery.tt.confirm('Bestanden archiveren', 'Bent u zeker dat deze ' + cnt + ' bestanden wilt archiveren?', function(value)
+        {
+            if (! value) return;
+
+            jQuery.ajax({
+                url: '<?php echo url_for('ttDmsBrowser/jsonNodeArchive'); ?>',
+                dataType: 'json',
+                data: {node_ids: checkboxes},
+                success: function (data)
+                {
+                    if (! data.success)
+                    {
+                        jQuery.tt.alert('Probleem', 'Er is een probleem opgetreden bij het archiveren van bestanden. <p><pre>' + data.message + '</pre></p>');
+                    }
+                    else
+                    {
+                        loadNode(<?php echo $node->getId(); ?>);
+                    }
+                },
+                error: function()
+                {
+                    jQuery.tt.alert('Probleem', 'Er is een probleem opgetreden bij het archiveren van de bestanden. <p><pre>404 Not Found</pre></p>', {className: 'error'});
+                }
+            });
+        });
+
+        break;
+      case 'unarchive':
+          jQuery.tt.confirm('Bestanden dearchiveren', 'Bent u zeker dat deze ' + cnt + ' bestanden wilt dearchiveren?', function(value)
+          {
+              if (! value) return;
+
+              jQuery.ajax({
+                  url: '<?php echo url_for('ttDmsBrowser/jsonNodeUnArchive'); ?>',
+                  dataType: 'json',
+                  data: {node_ids: checkboxes},
+                  success: function (data)
+                  {
+                      if (! data.success)
+                      {
+                          jQuery.tt.alert('Probleem', 'Er is een probleem opgetreden bij het dearchiveren van bestanden. <p><pre>' + data.message + '</pre></p>');
+                      }
+                      else
+                      {
+                          loadNode(<?php echo $node->getId(); ?>);
+                      }
+                  },
+                  error: function()
+                  {
+                      jQuery.tt.alert('Probleem', 'Er is een probleem opgetreden bij het dearchiveren van de bestanden. <p><pre>404 Not Found</pre></p>', {className: 'error'});
+                  }
+              });
+          });
+
+          break;
   }
 }
 
@@ -133,6 +191,54 @@ function deleteNode(node_id)
       }
     });
   });
+}
+
+function archiveNode(node_id)
+{
+    jQuery.tt.confirm('Bestand archiveren', 'Bent u zeker dat dit bestand wilt archiveren?', function(value)
+    {
+        if (! value) return;
+        jQuery.ajax({
+            url: '<?php echo url_for('ttDmsBrowser/jsonNodeArchive'); ?>',
+            dataType: 'json',
+            data: {node_ids: node_id},
+            success: function (data)
+            {
+                if (! data.success) {
+                    jQuery.tt.alert('Probleem bij het archiveren van bestand. <br/><br/><i>' + data.message + '</i>');
+                } else {
+                    loadNode(<?php echo $node->getId(); ?>);
+                }
+            },
+            error: function() {
+                jQuery.tt.alert('Probleem', 'Er is een probleem opgetreden bij het archiveren van het bestand. <p><pre>404 Not Found</pre></p>', {className: 'error'});
+            }
+        });
+    });
+}
+
+function unArchiveNode(node_id)
+{
+    jQuery.tt.confirm('Bestand dearchiveren', 'Bent u zeker dat dit bestand wilt dearchiveren?', function(value)
+    {
+        if (! value) return;
+        jQuery.ajax({
+            url: '<?php echo url_for('ttDmsBrowser/jsonNodeUnArchive'); ?>',
+            dataType: 'json',
+            data: {node_ids: node_id},
+            success: function (data)
+            {
+                if (! data.success) {
+                    jQuery.tt.alert('Probleem bij het dearchiveren van bestand. <br/><br/><i>' + data.message + '</i>');
+                } else {
+                    loadNode(<?php echo $node->getId(); ?>);
+                }
+            },
+            error: function() {
+                jQuery.tt.alert('Probleem', 'Er is een probleem opgetreden bij het dearchiveren van het bestand. <p><pre>404 Not Found</pre></p>', {className: 'error'});
+            }
+        });
+    });
 }
 
 function showNodeDetails(node_id)
@@ -172,6 +278,7 @@ if ($options['showAnnotations'] && ($options['showAnnotations'] !== 'false'))
 
 $headers = array_merge($headers, array(array('text' => 'Grootte', 'width' => 80, 'align' => 'right', 'sortable' => true), array('text' => 'Acties', 'width' => 60, 'align' => 'center')));
 
+$smartadmin = sfConfig::get('sf_style_smartadmin');
 $table = new myTable(
   $headers,
   array(
@@ -180,10 +287,12 @@ $table = new myTable(
     "sortorder"  => $orderAsc ? "ASC" : "DESC",
     "sorturi"    => 'ttDmsBrowser/ajaxNodeList?node_id=' . $node->getId() . '&showType='.$options['showType'].'&showAnnotations='.$options['showAnnotations'],
     "sorttarget" => 'nodeList',
-    "smartadmin" => sfConfig::get('sf_style_smartadmin')
+    "smartadmin" => $smartadmin
   )
 );
 
+// show folders first
+/** @var DmsNode $subnode */
 foreach($nodes as $subnode)
 {
   if ($options['showFolders'] && $subnode->getIsFolder())
@@ -209,18 +318,18 @@ foreach($nodes as $subnode)
   }
 }
 
-foreach($nodes as $subnode)
-{
-  // controle of bestand gevonden kan worden in de storage
-  $storage = $subnode->getDmsStore()->getStorage();
-  if (!$storage->exists($subnode->getMetadata()))
-  {    
+/**
+ * @param DmsNode $node
+ * @return closure
+ */
+function createNodeNotFoundRow($options) {
+  $innerFunc = function (DmsNode $node) use ($options) {
     $errorTdAttributes= array('style' => 'color: red; background-color:pink');
 
     $row = array(
       array('content' => '', 'tdAttributes' => $errorTdAttributes),
-      array('content' => $subnode->getName(), 'tdAttributes' => $errorTdAttributes),
-      array('content' => format_date($subnode->getCreatedAt(), 'g'), 'tdAttributes' => $errorTdAttributes));
+      array('content' => $node->getName(), 'tdAttributes' => $errorTdAttributes),
+      array('content' => format_date($node->getCreatedAt(), 'g'), 'tdAttributes' => $errorTdAttributes));
 
     if ($options['showType'] && ($options['showType'] !== 'false'))
     {
@@ -231,60 +340,111 @@ foreach($nodes as $subnode)
       $row[] = array('content' => '', 'tdAttributes' => $errorTdAttributes);
     }
 
-    $row = array_merge($row, array(
+    return array_merge($row, array(
       array('content' => '', 'tdAttributes' => $errorTdAttributes),
       array('content' => '', 'tdAttributes' => $errorTdAttributes),
     ));
+  };
+  return $innerFunc;
+}
+$nodeNotFoundRow = createNodeNotFoundRow($options);
 
-    $table->addRow($row, array('style' => 'white-space: nowrap;'));
-    
+/** @var DmsNode $subnode */
+foreach($nodes as $subnode)
+{
+  // folders are already listed
+  if ($subnode->getIsFolder()) {
     continue;
   }
 
-  if (! $subnode->getIsFolder())
-  {
-    $row = array(
-      $options['actions_enabled'] ? checkbox_tag('nodes[]', $subnode->getId(), false) : '',
-      image_tag(filetype_image_path($subnode->getExtension()), array('style' => 'width:16px; vertical-align: -20%;', 'title' => $subnode->getMimeType())) . ' ' . $subnode->getName(),
-      format_date($subnode->getCreatedAt(), 'g'));
-
-    if ($options['showType'] && ($options['showType'] !== 'false'))
-    {
-      $row[] = $subnode->getMimeType();
-    }
-    if ($options['showAnnotations'] && ($options['showAnnotations'] !== 'false'))
-    {
-      $aspects = array();
-      foreach($subnode->getDmsNodeAspectsJoinDmsAspect() as $nodeAspect)
-      {
-        $aspects[] = $nodeAspect->getDmsAspect()->getName();
-      }
-      $row[] = implode(', ', $aspects);
-    }
-
-    $row = array_merge($row, array(
-      format_filesize($subnode->getSize()),
-      $options['actions_enabled']
-        ? link_to(sfConfig::get('sf_style_smartadmin') ? '<i class="fa fa-save" title="Downloaden"></i>' : image_tag('/ttDms/images/icons/diskette_16.gif', array('title' => 'Downloaden')), 'ttDmsBrowser/download?node_id=' . $subnode->getId())
-          . link_to_function(sfConfig::get('sf_style_smartadmin') ? '<i class="fa fa-minus-circle" title="Verwijderen"></i>' : image_tag('/ttDms/images/icons/delete_16.gif', array('title' => 'Verwijderen')), 'deleteNode(' . $subnode->getId() . ');')
-          . link_to_function(sfConfig::get('sf_style_smartadmin') ? '<i class="fa fa-search" title="Details"></i>' : image_tag('/ttDms/images/icons/document_zoom_16.gif', array('title' => 'Details')), 'showNodeDetails(' . $subnode->getId() . ');')
-        : ''
-    ));
-
-    $table->addRow($row, array('style' => 'white-space: nowrap'));
+  // controle of bestand gevonden kan worden in de storage
+  $storage = $subnode->getDmsStore()->getStorage();
+  if (!$storage->exists($subnode->getMetadata())) {
+    $row = $nodeNotFoundRow($subnode);
+    $table->addRow($row, array('style' => 'white-space: nowrap;'));
+    continue;
   }
+
+  $row = array(
+    $options['actions_enabled'] ? checkbox_tag('nodes[]', $subnode->getId(), false) : '',
+    image_tag(filetype_image_path($subnode->getExtension()), array('style' => 'width:16px; vertical-align: -20%;', 'title' => $subnode->getMimeType())) . ' ' . $subnode->getName(),
+    format_date($subnode->getCreatedAt(), 'g'));
+
+  if ($options['showType'] && ($options['showType'] !== 'false'))
+  {
+    $row[] = $subnode->getMimeType();
+  }
+  if ($options['showAnnotations'] && ($options['showAnnotations'] !== 'false'))
+  {
+    $aspects = array();
+    foreach($subnode->getDmsNodeAspectsJoinDmsAspect() as $nodeAspect)
+    {
+      $aspects[] = $nodeAspect->getDmsAspect()->getName();
+    }
+    $row[] = implode(', ', $aspects);
+  }
+
+  $actions = [];
+  if ($options['actions_enabled']) {
+    if ($smartadmin) {
+      $actions[] = link_to('<i class="fa fa-save" title="Downloaden"></i>', 'ttDmsBrowser/download?node_id=' . $subnode->getId());
+      $actions[] = link_to_function('<i class="fa fa-minus-circle" title="Verwijderen"></i>', 'deleteNode(' . $subnode->getId() . ');');
+      $actions[] = link_to_function('<i class="fa fa-search" title="Details"></i>', 'showNodeDetails(' . $subnode->getId() . ');');
+      if ($options['archive_enabled']) {
+        if ($subnode->getGearchiveerd()) {
+          $actions[] = link_to_function('<i class="fa fa-archive" title="Dearchiveren"></i>', 'unArchiveNode(' . $subnode->getId().');');
+        } else {
+          $actions[] = link_to_function('<i class="fa fa-archive-fill" title="Archiveren"></i>', 'archiveNode(' . $subnode->getId().');');
+        }
+      }
+    } else {
+      $actions[] = link_to(image_tag('/ttDms/images/icons/diskette_16.gif', array('title' => 'Downloaden')), 'ttDmsBrowser/download?node_id=' . $subnode->getId());
+      $actions[] = link_to_function(image_tag('/ttDms/images/icons/delete_16.gif', array('title' => 'Verwijderen')), 'deleteNode(' . $subnode->getId() . ');');
+      $actions[] = link_to_function(image_tag('/ttDms/images/icons/document_zoom_16.gif', array('title' => 'Details')), 'showNodeDetails(' . $subnode->getId() . ');');
+      if ($options['archive_enabled']) {
+        if ($subnode->getGearchiveerd()) {
+          $actions[] = link_to_function(image_tag('/ttDms/images/icons/dearchiveer.16.png', array('title' => 'Dearchiveren')), 'unArchiveNode(' . $subnode->getId().');');
+        } else {
+          $actions[] = link_to_function(image_tag('/ttDms/images/icons/archiveer.16.png', array('title' => 'Archiveren')), 'archiveNode(' . $subnode->getId().');');
+        }
+      }
+    }
+  }
+
+  $row = array_merge($row, array(
+    format_filesize($subnode->getSize()),
+    implode(' ', $actions)
+  ));
+
+  $rowOptions['style'] = 'white-space: nowrap';
+  if ($subnode->getGearchiveerd()) {
+    $rowOptions['rowClass'] = 'gearchiveerd';
+  }
+
+  $table->addRow($row, $rowOptions);
+
 }
 
 echo $table;
 if ($options['actions_enabled']):
 ?>
 Met geselecteerde:
-<?php if (sfConfig::get('sf_style_smartadmin')): ?>
+<?php if ($smartadmin): ?>
   <?php echo link_to_function('<i class="fa fa-minus-circle" title="Verwijderen"></i>', 'multiActie("delete")'); ?>
   <?php echo link_to_function('<i class="fa fa-save" title="downloaden"></i>', 'multiActie("download")'); ?>
+  <?php if ($options['archive_enabled']) : ?>
+    <?php echo link_to_function('<i class="fa fa-archive-fil" title="archiveren"></i>', 'multiActie("archive")'); ?>
+    <?php echo link_to_function('<i class="fa fa-archive" title="dearchiveren"></i>', 'multiActie("unarchive")'); ?>
+  <?php endif; ?>
+
 <?php else: ?>
   <?php echo link_to_function(image_tag('/ttDms/images/icons/delete_16.gif', array('title' => 'Verwijderen')), 'multiActie("delete")'); ?>
   <?php echo link_to_function(image_tag('/ttDms/images/icons/diskette_16.gif', array('title' => 'Downloaden')), 'multiActie("download")'); ?>
+  <?php if ($options['archive_enabled']) : ?>
+    <?php echo link_to_function(image_tag('/ttDms/images/icons/archiveer.16.png', array('title' => 'Archiveren')), 'multiActie("archive")'); ?>
+    <?php echo link_to_function(image_tag('/ttDms/images/icons/dearchiveer.16.png', array('title' => 'Dearchiveren')), 'multiActie("unarchive")'); ?>
+  <?php endif; ?>
+
 <?php endif; ?>
 <?php endif; ?>
 </div>

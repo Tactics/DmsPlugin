@@ -599,6 +599,7 @@ class ttDmsBrowserActions extends sfActions
     {
       $options = $this->getRequestParameter('options');
       if ($options['actions_enabled'] == 'false') $options['actions_enabled'] = false;
+      if ($options['archive_enabled'] == 'false') $options['archive_enabled'] = false;
     }
     else
     {
@@ -610,4 +611,83 @@ class ttDmsBrowserActions extends sfActions
     exit();
   }
 
+  public function executeJsonNodeArchive()
+  {
+    $node_ids = explode(',', trim($this->getRequestParameter('node_ids'), ','));
+    if (!count($node_ids)) {
+      echo json_encode(array('success' => false, 'message' => 'Geen bestand(en) geselecteerd'));
+      exit();
+    }
+
+    $c = new Criteria();
+    $c->add(DmsNodePeer::ID, $node_ids, Criteria::IN);
+    /** @var DmsNode[] $nodes */
+    $nodes = DmsNodePeer::doSelect($c);
+
+    if (empty($nodes)) {
+      echo json_encode(array('success' => false, 'message' => 'Geen bestand(en) geselecteerd'));
+      exit();
+    }
+
+    $archiefFolder = null;
+    foreach ($nodes as $node) {
+      /** @var DmsNode $folder */
+      $folder = $node->getParentNode();
+      if (!$archiefFolder) {
+        try {
+          $archiefFolder = $folder->createFolder('Archief');
+          $archiefFolder->setGearchiveerd(true);
+          $archiefFolder->save();
+        } catch (DmsNodeExistsException $e) {
+          $archiefFolder = $e->getNode(); // hergebruik reeds bestaande Archief folder
+        }
+      }
+
+      $node->move($archiefFolder);
+      $node->setGearchiveerd(true);
+      $node->save();
+    }
+    echo json_encode(array('success' => true, 'message' => 'ok'));
+    exit();
+  }
+
+  public function executeJsonNodeUnArchive()
+  {
+    $node_ids = explode(',', trim($this->getRequestParameter('node_ids'), ','));
+    if (!count($node_ids)) {
+      echo json_encode(array('success' => false, 'message' => 'Geen bestand(en) geselecteerd'));
+      exit();
+    }
+
+    $c = new Criteria();
+    $c->add(DmsNodePeer::ID, $node_ids, Criteria::IN);
+    /** @var DmsNode[] $nodes */
+    $nodes = DmsNodePeer::doSelect($c);
+
+    if (empty($nodes)) {
+      echo json_encode(array('success' => false, 'message' => 'Geen bestand(en) geselecteerd'));
+      exit();
+    }
+
+    // archive moves file to subdir "Archief" in original dir where file was located
+    // so now we move the file back to this dir = the parent dir of the "Archief folder"
+    $originalFolder = null;
+    foreach ($nodes as $node) {
+      /** @var DmsNode $archiefFolder */
+      $archiefFolder = $node->getParentNode();
+      if (!$originalFolder) {
+        $originalFolder = $archiefFolder->getParentNode();
+        if (!$originalFolder) {
+          echo json_encode(array('success' => false, 'message' => 'Bestand kon niet teruggezet worden.'));
+          exit();
+        }
+      }
+
+      $node->move($originalFolder);
+      $node->setGearchiveerd(false);
+      $node->save();
+    }
+    echo json_encode(array('success' => true, 'message' => 'ok'));
+    exit();
+  }
 }
