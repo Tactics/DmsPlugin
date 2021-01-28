@@ -279,13 +279,23 @@ if ($options['showAnnotations'] && ($options['showAnnotations'] !== 'false'))
 $headers = array_merge($headers, array(array('text' => 'Grootte', 'width' => 80, 'align' => 'right', 'sortable' => true), array('text' => 'Acties', 'width' => 60, 'align' => 'center')));
 
 $smartadmin = sfConfig::get('sf_style_smartadmin');
+
+$queryParams = [
+  'node_id' => $node->getId(),
+  'showType' => $options['showType'],
+  'showAnnotations' => $options['showAnnotations'],
+  'archive_enabled' => $options['archive_enabled']
+];
+
+//Misc::pre_print_r(http_build_query($queryParams));
+
 $table = new myTable(
   $headers,
   array(
     'class' => 'ttDmsFileList',
     "sortfield"  => $orderBy,
     "sortorder"  => $orderAsc ? "ASC" : "DESC",
-    "sorturi"    => 'ttDmsBrowser/ajaxNodeList?node_id=' . $node->getId() . '&showType='.$options['showType'].'&showAnnotations='.$options['showAnnotations'],
+    "sorturi"    => 'ttDmsBrowser/ajaxNodeList?'.http_build_query($queryParams, null, '&'),
     "sorttarget" => 'nodeList',
     "smartadmin" => $smartadmin
   )
