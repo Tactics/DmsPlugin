@@ -25,6 +25,7 @@ class DmsWsClient
     $curlOptions = $this->client->getConfig('curl.options');
     $curlOptions[CURLOPT_SSL_VERIFYHOST] = false;
     $this->client->getConfig()->set('curl.options', $curlOptions);
+    $this->client->setSslVerification(false);
   }
   
   /**
