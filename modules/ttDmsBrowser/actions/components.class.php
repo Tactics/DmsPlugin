@@ -40,7 +40,8 @@ class ttDmsBrowserComponents extends sfComponents
       'showType' => true,
       'showAnnotations' => false,
       'filter_enabled' => false,
-      'systemname_for_sportsubsidies' => null
+      'systemname_for_sportsubsidies' => null,
+      'archive_enabled' => false,
     );
 
     $this->options = is_array($this->options) ? $this->options : array();
@@ -101,7 +102,7 @@ class ttDmsBrowserComponents extends sfComponents
       $c->add($jaarCton);
     }
     
-    $this->nodes = $this->node->getChildNodes($c);    
+    $this->nodes = $this->node->getChildNodes($c);
   }
   
   
