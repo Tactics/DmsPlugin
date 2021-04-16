@@ -142,7 +142,7 @@ class ttDmsStorageBehavior
    **/  
   public function postSave($object, $con = null)
   {
-    if (sfConfig::get('propel_behavior_storage'.get_class($object).'_auto_rename', true))
+    if (sfConfig::get('propel_behavior_storage_'.get_class($object).'_auto_rename', false))
     {
       self::renameDmsStorageFolder($object);
     }
