@@ -11,6 +11,7 @@ echo tt_form_remote_tag(array(
   ));
 echo input_hidden_tag('showType', $options['showType']);
 echo input_hidden_tag('showAnnotations', $options['showAnnotations']);
+echo input_hidden_tag('archive_enabled', $options['archive_enabled']);
 echo input_hidden_tag('systemname_for_sportsubsidies', $options['systemname_for_sportsubsidies']);
 ?>
 <table class="formtable" width='100%'>
