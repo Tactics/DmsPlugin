@@ -97,7 +97,7 @@ function multiActie(actie)
           },
           error: function()
           {
-            jQuery.tt.alert('<?php echo __("Probleem");?>, '<?php echo __("Er is een probleem opgetreden bij het verwijderen van de bestanden");?>' + '. <p><pre>404 Not Found</pre></p>', {className: 'error'});
+            jQuery.tt.alert('<?php echo __("Probleem");?>', '<?php echo __("Er is een probleem opgetreden bij het verwijderen van de bestanden");?>' + '. <p><pre>404 Not Found</pre></p>', {className: 'error'});
           }
         });  
       });
@@ -134,7 +134,7 @@ function deleteNode(node_id)
       },
       error: function()
       {
-        jQuery.tt.alert('<?php echo __("Probleem");?>', '<?php echo __("Er is een probleem opgetreden bij het verwijderen van het bestand");?> + '. <p><pre>404 Not Found</pre></p>', {className: 'error'});
+        jQuery.tt.alert('<?php echo __("Probleem");?>', '<?php echo __("Er is een probleem opgetreden bij het verwijderen van het bestand");?>' + '. <p><pre>404 Not Found</pre></p>', {className: 'error'});
                           }
                         });
                       });
