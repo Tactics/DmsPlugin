@@ -232,6 +232,8 @@ class ttDmsBrowserActions extends sfActions
     // Indien een enkel bestand: directe download
     if ($type == 'file')
     {
+      $this->forward404Unless($node->getDmsStore()->getStorage()->exists($node->getMetadata()));
+
       if ($mime_type = $node->getMimeType())
       {
         $this->response->setContentType($mime_type, true);
@@ -300,7 +302,11 @@ class ttDmsBrowserActions extends sfActions
       $this->response->setHttpHeader('Last-modified', gmdate("D, d M Y H:i:s", time()) . " GMT");
       $this->response->setContentType('application/octet-stream', true);
       $this->response->setHttpHeader('Content-Transfer-Encoding', 'binary', true);
-      $this->response->setHttpHeader('Content-Length', (string)filesize($tmpZipFileName));
+      $zipSize = filesize($tmpZipFileName);
+      if ($zipSize !== false)
+      {
+        $this->response->setHttpHeader('Content-Length', (string)$zipSize);
+      }
       $this->response->setHttpHeader('Content-Disposition', 'attachment; filename=' . $zipFilename);
       $this->getResponse()->sendHttpHeaders();
 

@@ -482,7 +482,11 @@ class DmsNode extends BaseDmsNode
         $response->setContentType($mime_type, true);
       }
 
-      $response->setHttpHeader('Content-Length', (string)($this->getSize()));
+      $size = $this->getSize();
+      if ($size !== false && $size !== null)
+      {
+        $response->setHttpHeader('Content-Length', (string)$size);
+      }
       $response->setHttpHeader('Last-modified', gmdate("D, d M Y H:i:s", $this->getUpdatedAt(null)) . " GMT");
       $response->setHttpHeader('Content-Disposition', 'attachment; filename=' . $this->getName());
       $response->sendHttpHeaders();
